@@ -1,0 +1,20 @@
+# Folders
+build/
+
+# Editor files
+.vscode
+.cache
+
+
+# File extensions
+*.o
+*.a
+*.log
+
+# Binaries
+corewar
+
+# Whatever these are
+.idea
+compile_commands.json
+.DS_Store
