@@ -6,8 +6,18 @@
 */
 
 #include "corewar.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
+
+static bool is_graphical_env(char **env)
+{
+    for (size_t i = 0; env[i]; i++) {
+        if (!my_strncmp(env[i], "DISPLAY", 7))
+            return true;
+    }
+    return false;
+}
 
 static corewar_data_t *initialize_data(
     int argc,
@@ -31,6 +41,7 @@ static corewar_data_t *initialize_data(
         display_usage();
         return NULL;
     }
+    data->graphical_env = is_graphical_env(env);
     return data;
 }
 
@@ -41,14 +52,14 @@ int main(
 {
     corewar_data_t *data = initialize_data(argc, argv, env);
 
-    if (!data || !data->nbr_cycle) {
-        free_garbage();
-        return 84;
-    }
     if (data->usage) {
         display_usage();
         free_garbage();
         return 0;
+    }
+    if (!data || !data->nbr_cycle) {
+        free_garbage();
+        return 84;
     }
     free_garbage();
     return 0;
