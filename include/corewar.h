@@ -20,6 +20,7 @@
 void display_usage(void);
 
 typedef struct program_data_s {
+    char *prog_file;
     char *prog_name;
     int prog_number;
     int prog_adress;

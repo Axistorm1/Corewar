@@ -6,6 +6,7 @@
 */
 
 #include "corewar.h"
+#include "errors.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -27,6 +28,7 @@ static corewar_data_t *initialize_data(
     corewar_data_t *data = my_calloc(1, sizeof(corewar_data_t));
     char *tmp;
 
+    data->nbr_cycle = 1;
     for (int i = 1; i < argc; i++) {
         if (!my_strcmp(argv[i], USAGE_ARG)) {
             data->usage = true;
@@ -37,9 +39,7 @@ static corewar_data_t *initialize_data(
             i++;
             continue;
         }
-        write(STDERR_FILENO, "Incorrect argument\n", 19);
-        display_usage();
-        return NULL;
+        return write_error(BAD_ARGUMENT, argv[i], -1);
     }
     data->graphical_env = is_graphical_env(env);
     return data;
@@ -52,14 +52,14 @@ int main(
 {
     corewar_data_t *data = initialize_data(argc, argv, env);
 
+    if (!data || !data->nbr_cycle) {
+        free_garbage();
+        return 84;
+    }
     if (data->usage) {
         display_usage();
         free_garbage();
         return 0;
-    }
-    if (!data || !data->nbr_cycle) {
-        free_garbage();
-        return 84;
     }
     free_garbage();
     return 0;
