@@ -13,10 +13,9 @@
 
 static bool is_graphical_env(char **env)
 {
-    for (size_t i = 0; env[i]; i++) {
+    for (size_t i = 0; env[i]; i++)
         if (!my_strncmp(env[i], "DISPLAY", 7))
             return true;
-    }
     return false;
 }
 
@@ -26,16 +25,12 @@ static corewar_data_t *initialize_data(
     char **env)
 {
     corewar_data_t *data = my_calloc(1, sizeof(corewar_data_t));
-    char *tmp;
 
     data->nbr_cycle = 1;
     for (int i = 1; i < argc; i++) {
-        if (!my_strcmp(argv[i], USAGE_ARG)) {
-            data->usage = true;
-            return data;
-        }
-        if (!my_strcmp(argv[i], DUMP_ARG) && i + 1 < argc) {
-            data->nbr_cycle = my_strtol(argv[i + 1], &tmp, 16);
+        if (is_usage(argv[i], data))
+            break;
+        if (i + 1 < argc && is_dump(argv[i], argv[i + 1], data)) {
             i++;
             continue;
         }

@@ -34,4 +34,7 @@ typedef struct corewar_data_s {
     char padding[2];
 } corewar_data_t;
 
+bool is_usage(char *arg, corewar_data_t *data);
+bool is_dump(char *arg, char *arg_next, corewar_data_t *data);
+
 #endif /* COREWAR_H_ */
