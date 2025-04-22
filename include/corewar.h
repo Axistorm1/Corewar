@@ -9,6 +9,7 @@
     #define COREWAR_H_
 
     #include <stdbool.h>
+#include <stdint.h>
     #include "my_string.h"
     #include "my_stype.h"
     #include "my_stdlib.h"
@@ -18,6 +19,20 @@
     #define DUMP_ARG "-dump"
 
 void display_usage(void);
+
+typedef union parameter_type_u {
+    uint8_t reg;
+    int dir;
+    uint16_t ind;
+} parameter_type_t;
+
+typedef struct instruction_s {
+    parameter_type_t params[3];
+    uint8_t op_code;
+    uint8_t coding_byte;
+    char padding[2];
+    int bytes_pos;
+} instruction_t;
 
 typedef struct program_data_s {
     char *prog_file;
