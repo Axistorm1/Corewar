@@ -6,10 +6,11 @@
 */
 
 #include "corewar.h"
+#include "errors.h"
 #include <stdbool.h>
 #include <stddef.h>
 
-bool is_usage(
+static bool is_usage(
     char *arg,
     corewar_data_t *data)
 {
@@ -20,7 +21,7 @@ bool is_usage(
     return false;
 }
 
-bool is_dump(
+static bool is_dump(
     char *arg,
     char *arg_next,
     corewar_data_t *data)
@@ -32,4 +33,21 @@ bool is_dump(
         return true;
     }
     return false;
+}
+
+corewar_data_t *check_args(
+    int argc,
+    char **argv,
+    corewar_data_t *data)
+{
+    for (int i = 1; i < argc; i++) {
+        if (is_usage(argv[i], data))
+            break;
+        if (i + 1 < argc && is_dump(argv[i], argv[i + 1], data)) {
+            i++;
+            continue;
+        }
+        return write_error(BAD_ARGUMENT, argv[i], -1);
+    }
+    return data;
 }

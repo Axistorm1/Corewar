@@ -6,7 +6,6 @@
 */
 
 #include "corewar.h"
-#include "errors.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -27,15 +26,8 @@ static corewar_data_t *initialize_data(
     corewar_data_t *data = my_calloc(1, sizeof(corewar_data_t));
 
     data->nbr_cycle = 1;
-    for (int i = 1; i < argc; i++) {
-        if (is_usage(argv[i], data))
-            break;
-        if (i + 1 < argc && is_dump(argv[i], argv[i + 1], data)) {
-            i++;
-            continue;
-        }
-        return write_error(BAD_ARGUMENT, argv[i], -1);
-    }
+    if (!check_args(argc, argv, data))
+        return NULL;
     data->graphical_env = is_graphical_env(env);
     return data;
 }
