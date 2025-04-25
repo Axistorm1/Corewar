@@ -17,7 +17,7 @@
     // Args handling
     #define USAGE_ARG "-h"
     #define DUMP_ARG "-dump"
-
+    #define PROG_SIZE 136;
 void display_usage(void);
 
 typedef union parameter_type_u {
@@ -49,6 +49,9 @@ typedef struct corewar_data_s {
     char padding[2];
 } corewar_data_t;
 
+typedef struct {
+    int prog_size;
+} parsing_data_t;
 corewar_data_t *check_args(int argc, char **argv, corewar_data_t *data);
-
+int parse_champions(parsing_data_t *parse_data);
 #endif /* COREWAR_H_ */

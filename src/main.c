@@ -6,6 +6,7 @@
 */
 
 #include "corewar.h"
+#include "../include/op.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -37,9 +38,10 @@ int main(
     char **argv,
     char **env)
 {
-    corewar_data_t *data = initialize_data(argc, argv, env);
+    //corewar_data_t *data = initialize_data(argc, argv, env);
+    parsing_data_t parse_data = {0};
 
-    if (!data || !data->nbr_cycle) {
+    /*if (!data || !data->nbr_cycle) {
         free_garbage();
         return 84;
     }
@@ -47,7 +49,8 @@ int main(
         display_usage();
         free_garbage();
         return 0;
-    }
-    free_garbage();
+    } */
+    parse_champions(&parse_data);
+    //free_garbage();
     return 0;
 }
