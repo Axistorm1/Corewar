@@ -33,7 +33,7 @@ void debug_info(
                     printf("params[%d] is ind: %u\n", j, parse_data->instruction[i]->params[j].ind);
                     break;
                 case PARAM_INDEX:
-                    printf("params[%d] is index: %u\n", j, parse_data->instruction[i]->params[j].index);
+                    printf("params[%d] is index: %d\n", j, parse_data->instruction[i]->params[j].index);
                     break;
             }
         }

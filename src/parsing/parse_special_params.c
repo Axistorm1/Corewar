@@ -9,7 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
-
+#include <stdio.h>
 int index_check(
     instruction_t *instruction)
 {
@@ -23,13 +23,34 @@ int index_check(
     return 0;
 }
 
+static void compute_index(
+    int value,
+    instruction_t *instruction)
+{
+    if (value & MSB) {
+        instruction->params[0].index = -((~value + 1) & 0xFFFF);
+    } else {
+        instruction->params[0].index = (int16_t)value;
+    }
+}
+
 int special_inst(
     instruction_t *instruction,
     char *bin)
 {
     index_check(instruction);
     if (instruction->op_code == 12) {
-        instruction->params[0].index = (uint16_t)(bin[0] + bin[1]);
+        compute_index(bin[0] + bin[1], instruction);
+        instruction->param_type[0] = PARAM_INDEX;
+        return 2;
+    }
+    if (instruction->op_code == 1) {
+        instruction->params[0].dir = bin[0] + bin[1] + bin[2] + bin[3];
+        instruction->param_type[0] = PARAM_DIR;
+        return 4;
+    }
+    if (instruction->op_code == 9) {
+        compute_index(bin[0] + bin[1], instruction);
         instruction->param_type[0] = PARAM_INDEX;
         return 2;
     }

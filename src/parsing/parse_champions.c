@@ -44,15 +44,15 @@ static int analyse_instructions(
     int i = PROG_START;
     int inst_idx = 0;
 
-    while (inst_idx != 4) {
+    while (1) {
         parse_data->instruction[inst_idx] = my_malloc(sizeof(instruction_t));
         parse_data->instruction[inst_idx]->op_code = (u_int8_t)buffer[i];
         parse_data->instruction[inst_idx]->coding_byte =
             (u_int8_t)buffer[i + 1];
         i += verify_edge_case(parse_data->instruction[inst_idx]);
         i += parse_params(parse_data->instruction[inst_idx], &buffer[i]);
-        if (i == -1)
-            return -1;
+        if (i - PROG_START >= parse_data->prog_size)
+            return 1;
         inst_idx++;
     }
     return 1;
