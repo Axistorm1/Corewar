@@ -9,7 +9,7 @@
     #define COREWAR_H_
 
     #include <stdbool.h>
-#include <stdint.h>
+    #include <stdint.h>
     #include "my_string.h"
     #include "my_stype.h"
     #include "my_stdlib.h"
@@ -17,7 +17,6 @@
     // Args handling
     #define USAGE_ARG "-h"
     #define DUMP_ARG "-dump"
-    #define PROG_SIZE 136;
 void display_usage(void);
 
 typedef union parameter_type_u {
@@ -26,8 +25,16 @@ typedef union parameter_type_u {
     uint16_t ind;
 } parameter_type_t;
 
+
+typedef enum {
+    PARAM_REG,
+    PARAM_DIR,
+    PARAM_IND
+} param_type_t;
+
 typedef struct instruction_s {
     parameter_type_t params[3];
+    param_type_t param_type[3];
     uint8_t op_code;
     uint8_t coding_byte;
     char padding[2];
@@ -49,9 +56,5 @@ typedef struct corewar_data_s {
     char padding[2];
 } corewar_data_t;
 
-typedef struct {
-    int prog_size;
-} parsing_data_t;
 corewar_data_t *check_args(int argc, char **argv, corewar_data_t *data);
-int parse_champions(parsing_data_t *parse_data);
 #endif /* COREWAR_H_ */
