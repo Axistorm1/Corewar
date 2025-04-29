@@ -6,18 +6,61 @@
 */
 #include "../../include/op.h"
 #include "../../include/corewar.h"
+#include "../../include/parsing.h"
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+
+
+static void save_proc_size(
+    parsing_data_t *parse_data,
+    char *program)
+{
+    int i = PROG_SIZE;
+
+    for (; i != PROG_SIZE_END; i++)
+        parse_data->prog_size += program[i];
+}
+
+static int analyse_instructions(
+    parsing_data_t *parse_data,
+    char *buffer)
+{
+    int i = PROG_START;
+    int inst_idx = 0;
+
+    while (inst_idx < 1) {
+        parse_data->instruction[inst_idx] = my_malloc(sizeof(instruction_t));
+        parse_data->instruction[inst_idx]->op_code = (u_int8_t)buffer[i];
+        parse_data->instruction[inst_idx]->coding_byte =
+            (u_int8_t)buffer[i + 1];
+        i += 2;
+        i = parse_params(parse_data->instruction[inst_idx], &buffer[i]);
+        if (i == -1)
+            return -1;
+        inst_idx++;
+    }
+    return 1;
+}
+
 int parse_champions(
-      parsing_data_t *parse_data)
+    parsing_data_t *parse_data)
 {
     FILE *fptr = fopen("abel.cor", "r");
-    char *buffer;
+    char *buffer = NULL;
     size_t size = 0;
-    ssize_t bytes_read = 0;
 
-    bytes_read = getline(&buffer, &size, fptr);
-    printf("oui %d\n", buffer[136]);
-   
+    getline(&buffer, &size, fptr);
+    save_proc_size(parse_data, buffer);
+    parse_data->instruction = my_malloc(sizeof(instruction_t *) *
+        (unsigned int)parse_data->prog_size / 3);
+    printf("DEBUG : Proc size %d\n", parse_data->prog_size);
+    if (analyse_instructions(parse_data, buffer) == -1) {
+        free(buffer);
+        return -1;
+    }
+    debug_info(parse_data);
+    free(buffer);
     return 0;
 }
