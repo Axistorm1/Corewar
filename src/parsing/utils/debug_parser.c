@@ -21,7 +21,7 @@ void debug_info(
         for (int j = 0; j != 3; j++) {
             switch (parse_data->instruction[i]->param_type[j]) {
                 case PARAM_NOTHING:
-                    printf("params[%d] has no parameter\n", j, parse_data->instruction[i]->params[j].reg);
+                    printf("params[%d] has no parameter\n", j);
                     break;
                 case PARAM_REG:
                     printf("params[%d] is reg: %u\n", j, parse_data->instruction[i]->params[j].reg);
