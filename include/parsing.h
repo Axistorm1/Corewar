@@ -19,6 +19,7 @@
     #define P_INDIRECT 11
     #define NOTHING 0
     #define INDEX_NBR 1
+    #define MSB 0x8000
     #define MAX_ARGS 3
     #define IGNORE __attribute__((unused))
 typedef struct {

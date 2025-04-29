@@ -23,7 +23,7 @@ typedef union parameter_type_u {
     uint8_t reg;
     int dir;
     uint16_t ind;
-    uint16_t index;
+    int16_t index;
 } parameter_type_t;
 
 
