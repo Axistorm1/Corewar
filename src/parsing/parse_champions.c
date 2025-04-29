@@ -44,7 +44,7 @@ static int analyse_instructions(
     int i = PROG_START;
     int inst_idx = 0;
 
-    while (inst_idx < 2) {
+    while (inst_idx != 4) {
         parse_data->instruction[inst_idx] = my_malloc(sizeof(instruction_t));
         parse_data->instruction[inst_idx]->op_code = (u_int8_t)buffer[i];
         parse_data->instruction[inst_idx]->coding_byte =
