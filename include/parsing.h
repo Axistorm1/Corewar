@@ -23,6 +23,7 @@ typedef struct {
     struct instruction_s **instruction;
 } parsing_data_t;
 
+int special_inst(instruction_t *instruction, char *bin);
 void debug_info(parsing_data_t *parse_data);
 void int_to_bin(int n, char output[9]);
 int parse_params(instruction_t *parse_params, char *bin);

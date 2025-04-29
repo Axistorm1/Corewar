@@ -23,13 +23,15 @@ typedef union parameter_type_u {
     uint8_t reg;
     int dir;
     uint16_t ind;
+    uint16_t index;
 } parameter_type_t;
 
 
 typedef enum {
     PARAM_REG,
     PARAM_DIR,
-    PARAM_IND
+    PARAM_IND,
+    PARAM_INDEX
 } param_type_t;
 
 typedef struct instruction_s {
