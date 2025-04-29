@@ -23,6 +23,20 @@ static void save_proc_size(
         parse_data->prog_size += program[i];
 }
 
+static int verify_edge_case(
+    instruction_t *instruction)
+{
+    int edging[] = {1, 12};
+
+    for (int i = 0; i != 2; i++) {
+        if (instruction->op_code == edging[i]) {
+            instruction->coding_byte = 0;
+            return 1;
+        }
+    }
+    return 2;
+}
+
 static int analyse_instructions(
     parsing_data_t *parse_data,
     char *buffer)
@@ -30,13 +44,13 @@ static int analyse_instructions(
     int i = PROG_START;
     int inst_idx = 0;
 
-    while (inst_idx < 1) {
+    while (inst_idx < 2) {
         parse_data->instruction[inst_idx] = my_malloc(sizeof(instruction_t));
         parse_data->instruction[inst_idx]->op_code = (u_int8_t)buffer[i];
         parse_data->instruction[inst_idx]->coding_byte =
             (u_int8_t)buffer[i + 1];
-        i += 2;
-        i = parse_params(parse_data->instruction[inst_idx], &buffer[i]);
+        i += verify_edge_case(parse_data->instruction[inst_idx]);
+        i += parse_params(parse_data->instruction[inst_idx], &buffer[i]);
         if (i == -1)
             return -1;
         inst_idx++;
@@ -47,7 +61,7 @@ static int analyse_instructions(
 int parse_champions(
     parsing_data_t *parse_data)
 {
-    FILE *fptr = fopen("abel.cor", "r");
+    FILE *fptr = fopen("bill.cor", "r");
     char *buffer = NULL;
     size_t size = 0;
 

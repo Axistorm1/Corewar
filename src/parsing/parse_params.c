@@ -4,9 +4,9 @@
 ** File description:
 ** header
 */
-#include "../../../include/op.h"
-#include "../../../include/corewar.h"
-#include "../../../include/parsing.h"
+#include "../../include/op.h"
+#include "../../include/corewar.h"
+#include "../../include/parsing.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,8 +72,10 @@ int parse_params(
     unsigned int value;
     int i = 0;
     unsigned int value_arr[3] = {0};
-    int bytes_read = 0;
+    int bytes_read = special_inst(instruction, bin);
 
+    if (bytes_read != 0)
+        return bytes_read;
     int_to_bin(instruction->coding_byte, buffer);
     while (1) {
         value = get_param(&buffer[i]);
