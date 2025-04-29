@@ -28,6 +28,7 @@ typedef union parameter_type_u {
 
 
 typedef enum {
+    PARAM_NOTHING,
     PARAM_REG,
     PARAM_DIR,
     PARAM_IND,
