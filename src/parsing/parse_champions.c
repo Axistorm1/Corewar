@@ -59,9 +59,10 @@ static int analyse_instructions(
 }
 
 int parse_champions(
-    parsing_data_t *parse_data)
+    parsing_data_t *parse_data,
+    program_data_t *program_data)
 {
-    FILE *fptr = fopen("bill.cor", "r");
+    FILE *fptr = fopen(program_data->filename, "r");
     char *buffer = NULL;
     size_t size = 0;
 
@@ -72,8 +73,10 @@ int parse_champions(
     printf("DEBUG : Proc size %d\n", parse_data->prog_size);
     if (analyse_instructions(parse_data, buffer) == -1) {
         free(buffer);
+        fclose(fptr);
         return -1;
     }
+    fclose(fptr);
     debug_info(parse_data);
     free(buffer);
     return 0;
