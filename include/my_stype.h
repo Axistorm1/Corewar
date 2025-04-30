@@ -23,7 +23,7 @@ int my_str_isblank(char *str)
 __attribute__((nonnull(1)));
 int my_str_iscntrl(char *str)
 __attribute__((nonnull(1)));
-int my_str_isdigit(char *str)
+int my_str_isdigit(const char *str)
 __attribute__((nonnull(1)));
 int my_str_isgraph(char *str)
 __attribute__((nonnull(1)));

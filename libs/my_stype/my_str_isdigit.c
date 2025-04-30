@@ -9,7 +9,7 @@
 #include "../my_ctype/my_ctype.h"
 #include "../my_string/my_string.h"
 
-int my_str_isdigit(char *str)
+int my_str_isdigit(const char *str)
 {
     my_size_t len = my_strlen(str);
 

@@ -8,6 +8,7 @@
 #include "corewar.h"
 #include "../include/op.h"
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -21,12 +22,13 @@ static bool is_graphical_env(char **env)
 
 static corewar_data_t *initialize_data(
     int argc,
-    char **argv,
+    const char **argv,
     char **env)
 {
     corewar_data_t *data = my_calloc(1, sizeof(corewar_data_t));
 
-    data->nbr_cycle = 1;
+    data->nbr_cycle = -1;
+    data->programs = my_calloc((my_size_t)argc, sizeof(program_data_t *));
     if (!check_args(argc, argv, data))
         return NULL;
     data->graphical_env = is_graphical_env(env);
@@ -35,13 +37,12 @@ static corewar_data_t *initialize_data(
 
 int main(
     int argc,
-    char **argv,
+    const char **argv,
     char **env)
 {
-    //corewar_data_t *data = initialize_data(argc, argv, env);
-    parsing_data_t parse_data = {0};
+    corewar_data_t *data = initialize_data(argc, argv, env);
 
-    /*if (!data || !data->nbr_cycle) {
+    if (!data || !data->nbr_cycle) {
         free_garbage();
         return 84;
     }
@@ -49,8 +50,9 @@ int main(
         display_usage();
         free_garbage();
         return 0;
-    } */
-    parse_champions(&parse_data);
-    //free_garbage();
+
+    }
+    print_programs_data(data->programs, data->robot_count);
+    free_garbage();
     return 0;
 }

@@ -11,7 +11,11 @@
     #include <stdio.h>
 
 enum error_codes {
-    BAD_ARGUMENT
+    BAD_ARGUMENT,
+    BAD_VALUE,
+    MISSING_CHAMPION,
+    FILE_NOT_FOUND,
+    EMPTY_FILE,
 };
 
     #define WARNINGS_START 100

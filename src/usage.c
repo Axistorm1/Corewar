@@ -6,10 +6,11 @@
 */
 
 #include <unistd.h>
+#include "corewar.h"
 
 // This is the default usage as given in the subject,
 // We NEED to make an actual good one
-const char usage_text[] = "USAGE\n"
+static const char usage_text[] = "USAGE\n"
     "./corewar [-dump nbr_cycle] [[-n prog_number] [-a load_address]"
     " prog_name] ...\n"
     "DESCRIPTION\n"
