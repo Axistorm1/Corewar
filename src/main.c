@@ -6,6 +6,7 @@
 */
 
 #include "corewar.h"
+#include "arena.h"
 #include "parsing.h"
 #include "structures.h"
 #include <stddef.h>
@@ -62,7 +63,8 @@ int main(
         return 0;
     }
     load_instructions(data);
-    run_arena(data);
+    print_programs_data(data->programs, data->robot_count);
+    load_arena(data);
     free_garbage();
     return 0;
 }

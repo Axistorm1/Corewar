@@ -11,7 +11,9 @@
     #include "op.h"
     #include <inttypes.h>
     #include <stdbool.h>
+#include <stdint.h>
     #include <stdio.h>
+#include <sys/types.h>
 
     #define PACKED [[gnu::packed]]
 
@@ -63,5 +65,24 @@ PACKED corewar_data_s {
     bool usage;
     bool graphical_env;
 } corewar_data_t;
+
+typedef struct
+PACKED process_data_s {
+    uint32_t parent_process;
+    uint32_t registers[REG_NUMBER];
+    uint16_t program_counter;
+    uint16_t lifetime;
+    uint16_t remaining_cycles;
+    bool alive;
+    bool carry;
+} process_data_t;
+
+typedef struct arena_s {
+    u_char arena[MEM_SIZE];
+    uint process_count;
+    process_data_t **processes;
+    int current_cycle;
+    int cycle_to_die;
+} arena_t;
 
 #endif /* STRUCTURES_H_ */

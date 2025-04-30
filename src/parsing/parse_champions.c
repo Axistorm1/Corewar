@@ -62,13 +62,13 @@ int parse_champions(
     parsing_data_t *parse_data,
     program_data_t *program_data)
 {
-    FILE *fptr = fopen(program_data->filename, "r");
+    FILE *fptr = program_data->stream;
     char *buffer = NULL;
     size_t size = 0;
     header_t *header = my_calloc(1, sizeof(header_t));
 
     fread(header, sizeof(header_t), 1, fptr);
-    header->prog_size = swap_endian(header->prog_size);
+    header->prog_size = (int)swap_endian((unsigned int)header->prog_size);
     parse_data->header = header;
     return 0;
     getline(&buffer, &size, fptr);
