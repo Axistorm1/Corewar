@@ -13,6 +13,9 @@ LDFLAGS = -Llibs -lmystd
 
 MAKEFLAGS += --no-print-directory
 
+CMAKE_DEBUG_FLAGS := -fsanitize=address -Weverything -Wno-unsafe-buffer-usage	\
+	-Wno-pre-c23-compat -Wno-cast-qual -Wno-vla
+
 .PHONY: all
 all: $(NAME)
 
@@ -33,8 +36,9 @@ lib:
 .PHONY: debug
 debug:
 	@mkdir -p build
-	@cd build && CC=gcc cmake -DCMAKE_BUILD_TYPE=Debug \
+	@cd build && CC=clang cmake -DCMAKE_BUILD_TYPE=Debug \
 	        -DCMAKE_CXX_FLAGS="-fsanitize=address" \
+			-DCMAKE_C_FLAGS="$(CMAKE_DEBUG_FLAGS)" \
  			-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address" ..
 	@cmake --build build --parallel 12
 	@cp build/$(NAME) .

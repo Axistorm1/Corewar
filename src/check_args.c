@@ -9,7 +9,6 @@
 #include "errors.h"
 #include <stdint.h>
 #include <stdio.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 
 static int identify_arg(const char *arg)
@@ -106,6 +105,7 @@ static bool handle_unknown(
     return true;
 }
 
+// add a check for corewar magic num
 static bool check_program_file(const program_data_t *program)
 {
     struct stat sb;
@@ -147,6 +147,10 @@ corewar_data_t *check_args(
 
     for (int i = 1; i < argc; i++) {
         arg_type = identify_arg(argv[i]);
+        if (arg_type == -1) {
+            data->usage = true;
+            return data;
+        }
         if (!funcs[arg_type](data, argv, &i, -1)) {
             close_open_programs(data->programs, data->robot_count);
             return NULL;
