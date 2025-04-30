@@ -18,6 +18,7 @@
 typedef struct
 PACKED parsing_data_s {
     struct instruction_s **instruction;
+    int prog_size;
     header_t *header;
 } parsing_data_t;
 

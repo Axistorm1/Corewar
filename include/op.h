@@ -74,8 +74,8 @@ extern const op_t op_tab[];
 typedef struct
 PACKED_ATTR header_s {
     int magic;
-    int prog_size;
     char prog_name[PROG_NAME_LENGTH + 1];
+    int prog_size;
     char comment[COMMENT_LENGTH + 1];
 } header_t;
 
