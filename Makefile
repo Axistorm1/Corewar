@@ -13,8 +13,9 @@ LDFLAGS = -Llibs -lmystd
 
 MAKEFLAGS += --no-print-directory
 
-CMAKE_DEBUG_FLAGS := -fsanitize=address -Weverything -Wno-unsafe-buffer-usage	\
-	-Wno-pre-c23-compat -Wno-cast-qual -Wno-vla
+CMAKE_DEBUG_FLAGS := -fsanitize=address -Weverything	\
+	-Wno-unsafe-buffer-usage	\
+	-Wno-pre-c23-compat -Wno-cast-qual -Wno-vla	\
 
 .PHONY: all
 all: $(NAME)
