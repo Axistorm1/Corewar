@@ -8,15 +8,17 @@
 #ifndef STRUCTURES_H_
     #define STRUCTURES_H_
 
+    #include "op.h"
     #include <inttypes.h>
     #include <stdbool.h>
     #include <stdio.h>
 
     #define PACKED [[gnu::packed]]
 
-typedef struct {
-    int prog_size;
+typedef struct
+PACKED parsing_data_s {
     struct instruction_s **instruction;
+    header_t *header;
 } parsing_data_t;
 
 typedef union parameter_type_u {
