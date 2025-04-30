@@ -10,6 +10,7 @@ assets/
 *.o
 *.a
 *.log
+*.cor
 
 # Binaries
 corewar

@@ -6,7 +6,6 @@
 */
 
 #include "corewar.h"
-#include "../include/op.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -42,7 +41,7 @@ int main(
 {
     corewar_data_t *data = initialize_data(argc, argv, env);
 
-    if (!data || !data->nbr_cycle) {
+    if (!data) {
         free_garbage();
         return 84;
     }
@@ -50,7 +49,6 @@ int main(
         display_usage();
         free_garbage();
         return 0;
-
     }
     print_programs_data(data->programs, data->robot_count);
     free_garbage();

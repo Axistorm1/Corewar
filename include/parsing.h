@@ -21,7 +21,7 @@
     #define INDEX_NBR 1
     #define MSB 0x8000
     #define MAX_ARGS 3
-    #define IGNORE __attribute__((unused))
+
 typedef struct {
     int prog_size;
     struct instruction_s **instruction;
@@ -32,5 +32,7 @@ int special_inst(instruction_t *instruction, char *bin);
 void debug_info(parsing_data_t *parse_data);
 void int_to_bin(int n, char output[9]);
 int parse_params(instruction_t *parse_params, char *bin);
-int parse_champions(parsing_data_t *parse_data);
+int parse_champions(
+    parsing_data_t *parse_data,
+    program_data_t *program_data);
 #endif /* PARSING_H_ */

@@ -4,9 +4,8 @@
 ** File description:
 ** header
 */
-#include "../../include/op.h"
-#include "../../include/corewar.h"
-#include "../../include/parsing.h"
+#include "corewar.h"
+#include "parsing.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
