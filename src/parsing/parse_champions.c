@@ -5,6 +5,7 @@
 ** header
 */
 #include "corewar.h"
+#include "op.h"
 #include "parsing.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -64,7 +65,12 @@ int parse_champions(
     FILE *fptr = fopen(program_data->filename, "r");
     char *buffer = NULL;
     size_t size = 0;
+    header_t *header = my_calloc(1, sizeof(header_t));
 
+    fread(header, sizeof(header_t), 1, fptr);
+    header->prog_size = swap_endian(header->prog_size);
+    parse_data->header = header;
+    return 0;
     getline(&buffer, &size, fptr);
     save_proc_size(parse_data, buffer);
     parse_data->instruction = my_calloc(sizeof(instruction_t *),

@@ -61,8 +61,8 @@ int main(
         free_garbage();
         return 0;
     }
-    print_programs_data(data->programs, data->robot_count);
     load_instructions(data);
+    run_arena(data);
     free_garbage();
     return 0;
 }

@@ -31,4 +31,8 @@ bool handle_a(corewar_data_t *data, const char **argv, int *i, int tmp);
 // debugging
 void print_programs_data(program_data_t **progs, uint8_t robot_count);
 
+int run_arena(corewar_data_t *data);
+unsigned int swap_endian(
+    unsigned int num);
+
 #endif /* COREWAR_H_ */

@@ -72,7 +72,7 @@ extern const op_t op_tab[];
     #define COREWAR_EXEC_MAGIC 0xea83f3
 
 typedef struct
-PACKED_ATTR header_s {
+header_s {
     int magic;
     char prog_name[PROG_NAME_LENGTH + 1];
     int prog_size;
