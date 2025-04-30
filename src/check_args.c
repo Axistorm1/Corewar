@@ -7,9 +7,12 @@
 
 #include "corewar.h"
 #include "errors.h"
+#include <stdint.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
-static int identify_arg(char *arg)
+static int identify_arg(const char *arg)
 {
     if (!my_strcmp(arg, "-h"))
         return -1;
@@ -24,7 +27,7 @@ static int identify_arg(char *arg)
 
 static bool handle_dump(
     corewar_data_t *data,
-    char **argv,
+    const char **argv,
     int *i,
     UNUSED int tmp)
 {
@@ -36,12 +39,13 @@ static bool handle_dump(
 }
 
 static program_data_t *init_program(
-    char *name,
+    const char *name,
     int prog_number,
     int prog_adress)
 {
     program_data_t *data = my_calloc(1, sizeof(program_data_t));
 
+    data->filename = my_strdup(name);
     data->stream = fopen(name, "r");
     data->prog_number = prog_number;
     data->prog_adress = prog_adress;
@@ -50,7 +54,7 @@ static program_data_t *init_program(
 
 static bool handle_n(
     corewar_data_t *data,
-    char **argv,
+    const char **argv,
     int *i,
     int tmp)
 {
@@ -71,7 +75,7 @@ static bool handle_n(
 
 bool handle_a(
     corewar_data_t *data,
-    char **argv,
+    const char **argv,
     int *i,
     int tmp)
 {
@@ -93,7 +97,7 @@ bool handle_a(
 // assume all unknown are standalone champion files
 static bool handle_unknown(
     corewar_data_t *data,
-    char **argv,
+    const char **argv,
     int *i,
     int tmp)
 {
@@ -102,19 +106,53 @@ static bool handle_unknown(
     return true;
 }
 
+static bool check_program_file(const program_data_t *program)
+{
+    struct stat sb;
+
+    if (!program->stream || stat(program->filename, &sb) == -1)
+        return write_error(FILE_NOT_FOUND, program->filename, -1) != NULL;
+    if (sb.st_size < 1)
+        return write_error(EMPTY_FILE, program->filename, -1);
+    return true;
+}
+
+static bool check_corewar_data(corewar_data_t *data)
+{
+    if (data->robot_count == 0)
+        return false;
+    for (uint8_t i = 0; i < data->robot_count; i++)
+        if (!check_program_file(data->programs[i]))
+            return false;
+    return true;
+}
+
+static void close_open_programs(
+    program_data_t **programs,
+    uint8_t robot_count)
+{
+    for (uint8_t i = 0; i < robot_count; i++)
+        if (programs[i]->stream)
+            fclose(programs[i]->stream);
+}
+
 corewar_data_t *check_args(
     int argc,
-    char **argv,
+    const char **argv,
     corewar_data_t *data)
 {
     int arg_type = 0;
-    bool (*funcs[4])(corewar_data_t *, char **, int *, int) = {
+    bool (*funcs[4])(corewar_data_t *, const char **, int *, int) = {
         handle_dump, handle_n, handle_a, handle_unknown};
 
     for (int i = 1; i < argc; i++) {
         arg_type = identify_arg(argv[i]);
-        if (!funcs[arg_type](data, argv, &i, -1))
+        if (!funcs[arg_type](data, argv, &i, -1)) {
+            close_open_programs(data->programs, data->robot_count);
             return NULL;
+        }
     }
+    if (!check_corewar_data(data))
+        return NULL;
     return data;
 }

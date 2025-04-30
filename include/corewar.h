@@ -41,21 +41,25 @@ PACKED instruction_s {
 typedef struct
 PACKED program_data_s {
     FILE *stream;
+    char *filename;
     int prog_number;
     int prog_adress;
 } program_data_t;
 
 typedef struct
 PACKED corewar_data_s {
-    program_data_t *programs[4];
+    program_data_t **programs;
     long nbr_cycle;
     uint8_t robot_count;
     bool usage;
     bool graphical_env;
 } corewar_data_t;
 
-corewar_data_t *check_args(int argc, char **argv, corewar_data_t *data);
+corewar_data_t *check_args(int argc, const char **argv, corewar_data_t *data);
 // handle_a isn't static as it wouldn't be able to get called from handle_n
-bool handle_a(corewar_data_t *data, char **argv, int *i, int tmp);
+bool handle_a(corewar_data_t *data, const char **argv, int *i, int tmp);
+
+// debugging
+void print_programs_data(program_data_t **progs, uint8_t robot_count);
 
 #endif /* COREWAR_H_ */

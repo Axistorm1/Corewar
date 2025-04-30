@@ -21,12 +21,13 @@ static bool is_graphical_env(char **env)
 
 static corewar_data_t *initialize_data(
     int argc,
-    char **argv,
+    const char **argv,
     char **env)
 {
     corewar_data_t *data = my_calloc(1, sizeof(corewar_data_t));
 
     data->nbr_cycle = -1;
+    data->programs = my_calloc((my_size_t)argc, sizeof(program_data_t *));
     if (!check_args(argc, argv, data))
         return NULL;
     data->graphical_env = is_graphical_env(env);
@@ -35,7 +36,7 @@ static corewar_data_t *initialize_data(
 
 int main(
     int argc,
-    char **argv,
+    const char **argv,
     char **env)
 {
     corewar_data_t *data = initialize_data(argc, argv, env);
@@ -49,6 +50,7 @@ int main(
         free_garbage();
         return 0;
     }
+    print_programs_data(data->programs, data->robot_count);
     free_garbage();
     return 0;
 }
