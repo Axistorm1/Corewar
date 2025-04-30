@@ -121,6 +121,8 @@ static bool check_corewar_data(corewar_data_t *data)
 {
     if (data->robot_count == 0)
         return false;
+    if (data->robot_count == 1)
+        write_error(ONE_ROBOT, data->programs[0]->filename, -1);
     for (uint8_t i = 0; i < data->robot_count; i++)
         if (!check_program_file(data->programs[i]))
             return false;

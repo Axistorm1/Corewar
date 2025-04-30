@@ -67,7 +67,7 @@ int parse_champions(
 
     getline(&buffer, &size, fptr);
     save_proc_size(parse_data, buffer);
-    parse_data->instruction = my_malloc(sizeof(instruction_t *) *
+    parse_data->instruction = my_calloc(sizeof(instruction_t *),
         (unsigned int)parse_data->prog_size / 3);
     printf("DEBUG : Proc size %d\n", parse_data->prog_size);
     if (analyse_instructions(parse_data, buffer) == -1) {

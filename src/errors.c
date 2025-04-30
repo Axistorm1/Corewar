@@ -20,7 +20,7 @@ static const char *const error_strings[] = {
 };
 
 static const char *const warning_strings[] = {
-    "NO"};
+    "is lonely in the arena :( Consider finding him some friends"};
 
 static void write_auxiliary(
     const char *before,

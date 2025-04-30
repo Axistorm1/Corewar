@@ -21,7 +21,7 @@ enum error_codes {
     #define WARNINGS_START 100
 
 enum warning_codes {
-    NO,
+    ONE_ROBOT = WARNINGS_START,
 };
 
 void *write_error(
