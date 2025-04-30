@@ -9,17 +9,22 @@
 #include "my_string.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include "utils.h"
 
 ssize_t my_puts(char *str)
 {
     size_t len = my_strlen(str);
-    char new[len + 2];
+    char *new = malloc(sizeof(char) * (len + 2));
+    ssize_t written_bytes = 0;
 
     my_memcpy(new, str, len);
     new[len] = '\n';
     new[len + 1] = '\0';
-    return write(STDOUT_FILENO, new, len + 1);
+    written_bytes = write(STDOUT_FILENO, new, len + 1);
+    free(new);
+    return written_bytes;
 }
 
 ssize_t my_puts_nb(ssize_t nb)
