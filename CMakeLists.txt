@@ -18,3 +18,5 @@ add_subdirectory(libs)
 target_link_libraries(corewar PRIVATE mystd)
 
 target_include_directories(corewar PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/libs")
+
+set_property(TARGET corewar PROPERTY C_STANDARD 23)

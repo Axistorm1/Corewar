@@ -7,6 +7,7 @@
 
 #include "corewar.h"
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -25,7 +26,7 @@ static corewar_data_t *initialize_data(
 {
     corewar_data_t *data = my_calloc(1, sizeof(corewar_data_t));
 
-    data->nbr_cycle = 1;
+    data->nbr_cycle = -1;
     if (!check_args(argc, argv, data))
         return NULL;
     data->graphical_env = is_graphical_env(env);

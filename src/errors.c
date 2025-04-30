@@ -12,7 +12,9 @@
 #include <unistd.h>
 
 static const char *const error_strings[] = {
-    "Incorrect argument"
+    "Incorrect argument",
+    "Incorrect value",
+    "Champion file is missing"
 };
 
 static const char *const warning_strings[] = {
