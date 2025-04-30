@@ -28,11 +28,22 @@ typedef union parameter_type_u {
     uint8_t reg;
     int dir;
     uint16_t ind;
+    int16_t index;
 } parameter_type_t;
+
+
+typedef enum {
+    PARAM_NOTHING,
+    PARAM_REG,
+    PARAM_DIR,
+    PARAM_IND,
+    PARAM_INDEX
+} param_type_t;
 
 typedef struct
 PACKED instruction_s {
     parameter_type_t params[3];
+    param_type_t param_type[3];
     uint8_t op_code;
     uint8_t coding_byte;
     int bytes_pos;

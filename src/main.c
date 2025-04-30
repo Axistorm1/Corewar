@@ -6,6 +6,7 @@
 */
 
 #include "corewar.h"
+#include "../include/op.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -49,6 +50,7 @@ int main(
         display_usage();
         free_garbage();
         return 0;
+
     }
     print_programs_data(data->programs, data->robot_count);
     free_garbage();

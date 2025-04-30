@@ -7,7 +7,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-Wall -Wextra -Wconversion -Wpedantic)
 
 file(GLOB SOURCES
-    src/*.c)
+    src/*.c
+    src/parsing/*.c
+    src/parsing/utils/*.c)
 
 add_executable(corewar ${SOURCES})
 
