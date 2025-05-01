@@ -5,6 +5,8 @@
 ** transform little endian to big endian
 */
 
+#include "utils.h"
+
 unsigned int swap_endian(unsigned int num)
 {
     return ((num >> 24) & 0xFF) |

@@ -5,6 +5,7 @@
 ** usage.c
 */
 
+#include "utils.h"
 #include <unistd.h>
 
 // This is the default usage as given in the subject,

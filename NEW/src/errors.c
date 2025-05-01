@@ -17,7 +17,9 @@ static const char *const error_strings[] = {
     "Champion file is missing",
     "No such file",
     "File is empty",
-    "There must be at least one robot"
+    "There must be at least one robot",
+    "File is incorrect",
+    "The file must be a .cor file and have a magic number"
 };
 
 static const char *const warning_strings[] = {

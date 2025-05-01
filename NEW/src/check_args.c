@@ -15,6 +15,7 @@
 #include "utils.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -41,7 +42,7 @@ static bool handle_dump(
         return write_error(BAD_VALUE, argv[*i], -1) != NULL;
     *i += 1;
     data->dump_cycle = (uint32_t)my_atol(argv[*i]);
-    if (data->dump_cycle > MAX_CYCLES || data->dump_cycle < 0)
+    if (data->dump_cycle > MAX_CYCLES)
         write_error(MAX_CYCLE, NULL, data->dump_cycle);
     return true;
 }
@@ -50,12 +51,20 @@ static FILE *open_file(const char *filename, char *mode)
 {
     struct stat sb;
     FILE *fptr = NULL;
+    int buffer = 0;
 
     if (stat(filename, &sb) == -1)
         return write_error(FILE_NOT_FOUND, filename, -1);
     if (sb.st_size < 1)
         return write_error(EMPTY_FILE, filename, -1);
     fptr = fopen(filename, mode);
+    fread(&buffer, sizeof(byte4_t), 1, fptr);
+    if (my_strcmp(my_strrchr(filename, '.'), ".cor") ||
+        swap_endian((u_int)(buffer)) != COREWAR_EXEC_MAGIC) {
+        fclose(fptr);
+        return write_error(NOT_COR_FILE, filename, -1);
+    }
+    fseek(fptr, 0, 0);
     return fptr;
 }
 
@@ -67,28 +76,20 @@ static robot_info_t *init_robot(
     FILE *fptr = open_file(filename, "r");
     robot_info_t *info = my_calloc(1, sizeof(robot_info_t));
     header_t *header = my_calloc(1, sizeof(header_t));
-    byte1_t *memory = NULL;
 
     if (!fptr)
         return NULL;
     fread(header, sizeof(header_t), 1, fptr);
-    header->prog_size = (int)swap_endian((unsigned int)header->prog_size);
-    if (!header || !header->prog_size || swap_endian((u_int)header->magic)
-        != COREWAR_EXEC_MAGIC) {
-        fclose(fptr);
-        return NULL;
-    }
-    memory = my_calloc((unsigned long)header->prog_size, sizeof(byte1_t));
-    fread(memory, sizeof(byte1_t), (unsigned long)header->prog_size, fptr);
-    if (!memory) {
-        fclose(fptr);
-        return NULL;
-    }
+    header->prog_size = (int)swap_endian((uint)header->prog_size);
+    info->memory = my_calloc((ulong)header->prog_size, sizeof(byte1_t));
+    fread(info->memory, sizeof(byte1_t), (ulong)header->prog_size, fptr);
+    fclose(fptr);
+    if (!header || !info->memory)
+        return write_error(INCORRECT_FILE, filename, -1);
     info->filename = my_strdup(filename);
     info->header = header;
     info->prog_num = (byte2_t)prog_number;
     info->mem_adr = (byte2_t)prog_adress;
-    fclose(fptr);
     return info;
 }
 
