@@ -46,15 +46,16 @@ static char *type_to_str(param_type_t type)
 
 void print_instruction_data(instruction_t *instruction)
 {
-    printf("/-------------------------\\\n"
-        "| OP CODE: %-14d |\n"
-        "| CODING BYTE: %-10d |\n"
-        "| TYPE: %-8s -> %-5u |\n"
-        "| TYPE: %-8s -> %-5u |\n"
-        "| TYPE: %-8s -> %-5u |\n"
-        "\\-------------------------/\n",
+    printf("/-----------------------------\\\n"
+        "| OP CODE: %-13d      |\n"
+        "| CODING BYTE: %-13d  |\n"
+        "| PARAM 1: %-8s ->  %-5u |\n"
+        "| PARAM 2: %-8s ->  %-5u |\n"
+        "| PARAM 3: %-8s ->  %-5u |\n"
+        "\\-----------------------------/\n",
         instruction->op_code, instruction->coding_byte,
         type_to_str(instruction->param_types[0]), instruction->params[0].reg,
         type_to_str(instruction->param_types[1]), instruction->params[1].index,
-        type_to_str(instruction->param_types[2]), instruction->params[2].index);
+        type_to_str(instruction->param_types[2]),
+        instruction->params[2].index);
 }

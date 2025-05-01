@@ -5,7 +5,6 @@
 ** structures.h
 */
 
-
 #ifndef STRUCTURES_H_
     #define STRUCTURES_H_
 
@@ -67,6 +66,7 @@ PACKED instruction_s {
     byte1_t coding_byte;
     param_type_t param_types[3];
     parameter_t params[3];
+    byte1_t size;
 } instruction_t;
 
 typedef struct
@@ -74,8 +74,10 @@ PACKED robot_info_s {
     char *filename;
     header_t *header;
     byte1_t *memory;
+    byte4_t process_count;
     byte2_t prog_num;
     byte2_t mem_adr;
+    bool alive;
 } robot_info_t;
 
 typedef struct
@@ -92,14 +94,14 @@ typedef struct
 PACKED process_data_s {
     struct process_data_s *parent;
     robot_info_t *robot;
-    byte4_t registers[REG_NUMBER];
+    sbyte4_t registers[REG_NUMBER];
     byte4_t remaining_cycles;
-    byte4_t lifetime;
+    byte4_t cycle_born;
     byte2_t program_counter;
     byte2_t child_count;
-    op_code_t current_instruction;
-    bool alive;
+    instruction_t *current_instruction;
     bool carry;
+    bool alive;
 } process_data_t;
 
 typedef struct
@@ -108,6 +110,7 @@ PACKED arena_s {
     byte1_t memory[MEM_SIZE];
     process_data_t **processes;
     byte4_t process_count;
+    byte4_t total_cycles;
     sbyte2_t current_cycle;
     sbyte2_t cycle_to_die;
     byte2_t robots_alive;

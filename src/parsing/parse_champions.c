@@ -1,9 +1,9 @@
-// /*
-// ** EPITECH PROJECT, 2025
-// ** header
-// ** File description:
-// ** header
-// */
+/*
+** EPITECH PROJECT, 2025
+** header
+** File description:
+** header
+*/
 
 // #include "corewar.h"
 // #include "parsing.h"
@@ -24,7 +24,7 @@
 //     fseek(fptr, 1, prog_size);
 //     fread(buffer, (size_t)prog_size, 1, fptr);
 //     while (i < prog_size) {
-//         parse_data->instruction[inst_idx] = my_malloc(sizeof(instruction_t));
+//     parse_data->instruction[inst_idx] = my_malloc(sizeof(instruction_t));
 //         parse_data->instruction[inst_idx]->op_code = (u_int8_t)buffer[i];
 //         parse_data->instruction[inst_idx]->coding_byte =
 //             (u_int8_t)buffer[i + 1];

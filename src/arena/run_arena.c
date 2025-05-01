@@ -6,26 +6,15 @@
 */
 
 #include "op.h"
-#include "parsing.h"
 #include "structures.h"
 #include "my_stdlib.h"
 #include "my_string.h"
 #include "arena.h"
-#include "utils.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-
-// not too sure of saying that the original is itself when it's the first
-process_data_t *create_new_process(
-    process_data_t *parent,
-    robot_info_t *robot)
-{
-    process_data_t *process = my_calloc(1, sizeof(process_data_t));
-
-    process->parent = parent;
-    process->robot = robot;
-    return process;
-}
+#include <time.h>
+#include <unistd.h>
 
 // handle robots that wrap around memory
 static arena_t *load_robots_to_arena(
@@ -43,38 +32,45 @@ static arena_t *load_robots_to_arena(
         arena->processes = realloc(arena->processes, sizeof(process_data_t *)
             * (arena->process_count + 2));
         arena->processes[arena->process_count] =
-            create_new_process(NULL, robots[i]);
+            create_new_process(NULL, robots[i], 0);
         arena->processes[arena->process_count + 1] = NULL;
         arena->process_count++;
     }
+    arena->robots_alive = robot_count;
     return arena;
+}
+
+static void kill_non_alive_processes(arena_t *arena)
+{
+    for (byte4_t i = 0; i < arena->process_count; i++) {
+        if (!arena->processes[i]->alive) {
+            arena->processes[i]->robot->process_count--;
+            arena->processes[i] = arena->processes[arena->process_count];
+            arena->process_count--;
+        } else
+            arena->processes[i]->alive = false;
+    }
 }
 
 static bool keep_running(arena_t *arena)
 {
     arena->current_cycle++;
+    arena->total_cycles++;
     if (arena->current_cycle > arena->cycle_to_die) {
         arena->cycle_to_die -= CYCLE_DELTA;
         arena->current_cycle = 0;
-    if (arena->cycle_to_die <= 0 || arena->robots_alive == 0)
-        return false;
+        kill_non_alive_processes(arena);
     }
+    if (arena->cycle_to_die <= 0 || arena->robots_alive <= 1
+        || arena->process_count <= 1)
+        return false;
     return true;
-}
-
-static void run_processes(arena_t *arena)
-{
-    for (byte4_t i = 0; i < arena->process_count; i++);
 }
 
 static void run_arena(arena_t *arena)
 {
-    instruction_t *tmp = analyze_memory(arena->memory);
-
-    print_instruction_data(tmp);
     while (keep_running(arena)) {
         run_processes(arena);
-        //print_arena(arena);
     }
 }
 
@@ -83,9 +79,9 @@ arena_t *create_arena(corewar_data_t *data)
     arena_t *arena = my_calloc(1, sizeof(arena_t));
 
     arena->cycle_to_die = CYCLE_TO_DIE;
-    arena->robots_alive = 1; // remove this once executions start running
     load_robots_to_arena(data->robots, data->robot_count, arena);
     run_arena(arena);
+    free_processes(arena->processes, arena->process_count);
     return arena;
 }
 

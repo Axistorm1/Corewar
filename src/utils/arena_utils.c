@@ -24,6 +24,10 @@ void print_arena(arena_t *arena)
     byte1_t tmp = 0;
 
     for (int i = 0; i < MEM_SIZE; i++) {
+        if (i == arena->processes[0]->program_counter)
+            write(STDOUT_FILENO, "\033[41m", 5);
+        else
+            write(STDOUT_FILENO, "\033[0m", 4);
         tmp = arena->memory[i];
         write(STDOUT_FILENO, "\033[38;5;", 7);
         my_puts_nb(arena->ownership_map[i] % 256);

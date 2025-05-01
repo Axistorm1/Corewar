@@ -11,12 +11,13 @@
 
 instruction_t *analyze_memory(byte1_t *buffer)
 {
-    int offset = 1;
+    byte1_t offset = 0;
     instruction_t *instruction = my_calloc(1, sizeof(instruction_t));
 
     instruction->op_code = buffer[0];
-    instruction->coding_byte = buffer[offset];
+    instruction->coding_byte = buffer[1];
     offset += verify_coding_byte(instruction);
-    parse_params(instruction, (char *)&buffer[offset]);
+    offset += parse_params(instruction, (char *)&buffer[offset]);
+    instruction->size = offset;
     return instruction;
 }
