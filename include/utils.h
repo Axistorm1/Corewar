@@ -2,16 +2,22 @@
 ** EPITECH PROJECT, 2025
 ** corewar
 ** File description:
-** corewar.h
+** utils.h
 */
 
-#ifndef COREWAR_UTILS_H_
-    #define COREWAR_UTILS_H_
 
+#ifndef UTILS_H_
+    #define UTILS_H_
+
+    #include "structures.h"
     #include <stdio.h>
 
 ssize_t my_puts(char *str);
 ssize_t my_puts_nb(ssize_t nb);
 ssize_t my_puts_multiple(size_t n, ...);
+unsigned int swap_endian(unsigned int num);
+bool handle_a(corewar_data_t *data, const char **argv, int *i, int tmp);
+void display_usage(void);
+void print_robots_data(robot_info_t **robots, byte2_t robot_count);
 
-#endif /* COREWAR_UTILS_H_ */
+#endif /* UTILS_H_ */

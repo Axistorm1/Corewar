@@ -6,9 +6,11 @@
 */
 
 #include "corewar.h"
-#include "arena.h"
-#include "parsing.h"
 #include "structures.h"
+#include "my_string.h"
+#include "my_stdlib.h"
+#include "utils.h"
+#include "arena.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -29,20 +31,11 @@ static corewar_data_t *initialize_data(
 {
     corewar_data_t *data = my_calloc(1, sizeof(corewar_data_t));
 
-    data->nbr_cycle = -1;
-    data->programs = my_calloc((my_size_t)argc, sizeof(program_data_t *));
+    data->dump_cycle = MAX_CYCLES + 1;
+    data->robots = my_calloc((my_size_t)argc, sizeof(robot_info_t *));
     if (!check_args(argc, argv, data))
         return NULL;
-    data->graphical_env = is_graphical_env(env);
-    return data;
-}
-
-static corewar_data_t *load_instructions(corewar_data_t *data)
-{
-    for (uint8_t i = 0; i < data->robot_count; i++) {
-        data->programs[i]->data = my_calloc(1, sizeof(parsing_data_t));
-        parse_champions(data->programs[i]->data, data->programs[i]);
-    }
+    data->grapical_env = is_graphical_env(env);
     return data;
 }
 
@@ -62,9 +55,8 @@ int main(
         free_garbage();
         return 0;
     }
-    load_instructions(data);
-    print_programs_data(data->programs, data->robot_count);
-    load_arena(data);
+    print_robots_data(data->robots, data->robot_count);
+    create_arena(data);
     free_garbage();
     return 0;
 }

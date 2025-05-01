@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 static void **add_to_garbage_array(
     void **array,
@@ -74,6 +75,10 @@ void *my_malloc(my_size_t bytes)
 {
     void *ptr = malloc(bytes);
 
+    if (!ptr) {
+        write(STDERR_FILENO, "Malloc failed. Expect a core dump\n", 34);
+        return NULL;
+    }
     collect_garbage(ptr, NULL, ADD_MODE);
     return ptr;
 }

@@ -2,18 +2,15 @@
 ** EPITECH PROJECT, 2025
 ** corewar
 ** File description:
-** arena.h
+** corewar.h
 */
+
 
 #ifndef ARENA_H_
     #define ARENA_H_
 
-    #include "corewar.h"
-    #include <sys/types.h>
+    #include "structures.h"
 
-    #define PACKED [[gnu::packed]]
-    #define UNUSED [[gnu::unused]]
-
-uint load_arena(corewar_data_t *data);
+arena_t *create_arena(corewar_data_t *data);
 
 #endif /* ARENA_H_ */

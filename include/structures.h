@@ -2,87 +2,112 @@
 ** EPITECH PROJECT, 2025
 ** corewar
 ** File description:
-** parsing.h
+** structures.h
 */
+
 
 #ifndef STRUCTURES_H_
     #define STRUCTURES_H_
 
-    #include "op.h"
-    #include <inttypes.h>
+    #include <stdint.h>
     #include <stdbool.h>
-#include <stdint.h>
-    #include <stdio.h>
-#include <sys/types.h>
+    #include "op.h"
 
     #define PACKED [[gnu::packed]]
 
-typedef struct
-PACKED parsing_data_s {
-    struct instruction_s **instruction;
-    int prog_size;
-    header_t *header;
-} parsing_data_t;
+typedef uint8_t byte1_t;
+typedef uint16_t byte2_t;
+typedef uint32_t byte4_t;
+typedef uint64_t byte8_t;
+typedef int8_t sbyte1_t;
+typedef int16_t sbyte2_t;
+typedef int32_t sbyte4_t;
+typedef int64_t sbyte8_t;
 
-typedef union parameter_type_u {
-    uint8_t reg;
-    int dir;
-    uint16_t ind;
-    int16_t index;
-} parameter_type_t;
+typedef enum
+PACKED op_codes_e {
+    LIVE,
+    LD,
+    ST,
+    ADD,
+    SUB,
+    AND,
+    OR,
+    XOR,
+    ZJMP,
+    LDI,
+    STI,
+    FORK,
+    LLD,
+    LLDI,
+    LFORK,
+    AFF
+} op_code_t;
 
-typedef enum {
+typedef enum
+PACKED param_type_e {
     PARAM_NOTHING,
-    PARAM_REG,
     PARAM_DIR,
+    PARAM_INDEX,
     PARAM_IND,
-    PARAM_INDEX
+    PARAM_REG
 } param_type_t;
+
+typedef union
+PACKED parameter_u {
+    byte4_t dir;
+    byte2_t index;
+    byte2_t ind;
+    byte1_t reg;
+} parameter_t;
 
 typedef struct
 PACKED instruction_s {
-    parameter_type_t params[3];
-    param_type_t param_type[3];
-    uint8_t op_code;
-    uint8_t coding_byte;
-    int bytes_pos;
+    op_code_t op_code;
+    byte1_t coding_byte;
+    param_type_t param_types[3];
+    parameter_t params[3];
 } instruction_t;
 
 typedef struct
-PACKED program_data_s {
-    FILE *stream;
+PACKED robot_info_s {
     char *filename;
-    int prog_number;
-    int prog_adress;
-    parsing_data_t *data;
-} program_data_t;
+    header_t *header;
+    byte1_t *memory;
+    byte2_t prog_num;
+    byte2_t mem_adr;
+} robot_info_t;
 
 typedef struct
 PACKED corewar_data_s {
-    program_data_t **programs;
-    long nbr_cycle;
-    uint8_t robot_count;
+    robot_info_t **robots;
+    byte4_t dump_cycle;
+    byte2_t robot_count;
     bool usage;
-    bool graphical_env;
+    bool grapical_env;
 } corewar_data_t;
 
+// also update original->alive on live instruction
 typedef struct
 PACKED process_data_s {
-    uint32_t parent_process;
-    uint32_t registers[REG_NUMBER];
-    uint16_t program_counter;
-    uint16_t lifetime;
-    uint16_t remaining_cycles;
+    struct process_data_s *parent;
+    struct process_data_s *original;
+    byte4_t registers[REG_NUMBER];
+    byte4_t remaining_cycles;
+    byte4_t lifetime;
+    byte2_t program_counter;
+    byte2_t child_count;
     bool alive;
     bool carry;
 } process_data_t;
 
-typedef struct arena_s {
-    u_char arena[MEM_SIZE];
-    uint process_count;
-    process_data_t **processes;
-    int current_cycle;
-    int cycle_to_die;
+typedef struct
+PACKED arena_s {
+    byte4_t ownership_map[MEM_SIZE];
+    byte1_t memory[MEM_SIZE];
+    sbyte2_t current_cycle;
+    sbyte2_t cycle_to_die;
+    byte1_t robots_alive;
 } arena_t;
 
 #endif /* STRUCTURES_H_ */

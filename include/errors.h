@@ -16,12 +16,17 @@ enum error_codes {
     MISSING_CHAMPION,
     FILE_NOT_FOUND,
     EMPTY_FILE,
+    NOT_ENOUGH_ROBOTS,
+    INCORRECT_FILE,
+    NOT_COR_FILE,
+    ROBOT_TOO_BIG,
 };
 
     #define WARNINGS_START 100
 
 enum warning_codes {
     ONE_ROBOT = WARNINGS_START,
+    MAX_CYCLE,
 };
 
 void *write_error(
