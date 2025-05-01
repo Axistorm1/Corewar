@@ -7,13 +7,16 @@
 
 #include "corewar.h"
 #include "errors.h"
+#include "op.h"
 #include "structures.h"
 #include "my_string.h"
 #include "my_stype.h"
 #include "my_stdlib.h"
+#include "utils.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 static int identify_arg(const char *arg)
 {
@@ -38,23 +41,55 @@ static bool handle_dump(
         return write_error(BAD_VALUE, argv[*i], -1) != NULL;
     *i += 1;
     data->dump_cycle = (uint32_t)my_atol(argv[*i]);
-    if (data->nbr_cycle > MAX_CYCLES)
-        write_error(MAX_CYCLE, NULL, data->nbr_cycle);
+    if (data->dump_cycle > MAX_CYCLES || data->dump_cycle < 0)
+        write_error(MAX_CYCLE, NULL, data->dump_cycle);
     return true;
 }
 
-static program_data_t *init_program(
-    const char *name,
+static FILE *open_file(const char *filename, char *mode)
+{
+    struct stat sb;
+    FILE *fptr = NULL;
+
+    if (stat(filename, &sb) == -1)
+        return write_error(FILE_NOT_FOUND, filename, -1);
+    if (sb.st_size < 1)
+        return write_error(EMPTY_FILE, filename, -1);
+    fptr = fopen(filename, mode);
+    return fptr;
+}
+
+static robot_info_t *init_robot(
+    const char *filename,
     int prog_number,
     int prog_adress)
 {
-    program_data_t *data = my_calloc(1, sizeof(program_data_t));
+    FILE *fptr = open_file(filename, "r");
+    robot_info_t *info = my_calloc(1, sizeof(robot_info_t));
+    header_t *header = my_calloc(1, sizeof(header_t));
+    byte1_t *memory = NULL;
 
-    data->filename = my_strdup(name);
-    data->stream = fopen(name, "r");
-    data->prog_number = prog_number;
-    data->prog_adress = prog_adress;
-    return data;
+    if (!fptr)
+        return NULL;
+    fread(header, sizeof(header_t), 1, fptr);
+    header->prog_size = (int)swap_endian((unsigned int)header->prog_size);
+    if (!header || !header->prog_size || swap_endian((u_int)header->magic)
+        != COREWAR_EXEC_MAGIC) {
+        fclose(fptr);
+        return NULL;
+    }
+    memory = my_calloc((unsigned long)header->prog_size, sizeof(byte1_t));
+    fread(memory, sizeof(byte1_t), (unsigned long)header->prog_size, fptr);
+    if (!memory) {
+        fclose(fptr);
+        return NULL;
+    }
+    info->filename = my_strdup(filename);
+    info->header = header;
+    info->prog_num = (byte2_t)prog_number;
+    info->mem_adr = (byte2_t)prog_adress;
+    fclose(fptr);
+    return info;
 }
 
 static bool handle_n(
@@ -73,8 +108,9 @@ static bool handle_n(
     *i += 2;
     if (identify_arg(argv[*i]) == 2 && tmp == -1)
         return handle_a(data, argv, i, prog_num);
-    data->programs[data->robot_count] = init_program(argv[*i], prog_num, tmp);
-    data->robot_count++;
+    data->robots[data->robot_count] = init_robot(argv[*i], prog_num, tmp);
+    if (data->robots[data->robot_count])
+        data->robot_count++;
     return true;
 }
 
@@ -94,32 +130,22 @@ bool handle_a(
     *i += 2;
     if (identify_arg(argv[*i]) == 1 && tmp == -1)
         return handle_n(data, argv, i, prog_adr);
-    data->programs[data->robot_count] = init_program(argv[*i], tmp, prog_adr);
-    data->robot_count++;
+    data->robots[data->robot_count] = init_robot(argv[*i], tmp, prog_adr);
+    if (data->robots[data->robot_count])
+        data->robot_count++;
     return true;
 }
 
-// assume all unknown are standalone champion files
+// assume all unknown values are standalone champion files
 static bool handle_unknown(
     corewar_data_t *data,
     const char **argv,
     int *i,
     int tmp)
 {
-    data->programs[data->robot_count] = init_program(argv[*i], tmp, tmp);
-    data->robot_count++;
-    return true;
-}
-
-// add a check for corewar magic num
-static bool check_program_file(const program_data_t *program)
-{
-    struct stat sb;
-
-    if (!program->stream || stat(program->filename, &sb) == -1)
-        return write_error(FILE_NOT_FOUND, program->filename, -1) != NULL;
-    if (sb.st_size < 1)
-        return write_error(EMPTY_FILE, program->filename, -1) != NULL;
+    data->robots[data->robot_count] = init_robot(argv[*i], tmp, tmp);
+    if (data->robots[data->robot_count])
+        data->robot_count++;
     return true;
 }
 
@@ -128,10 +154,7 @@ static bool check_corewar_data(corewar_data_t *data)
     if (data->robot_count == 0)
         return write_error(NOT_ENOUGH_ROBOTS, NULL, -1) != NULL;
     if (data->robot_count == 1)
-        write_error(ONE_ROBOT, data->programs[0]->filename, -1);
-    for (uint8_t i = 0; i < data->robot_count; i++)
-        if (!check_program_file(data->programs[i]))
-            return false;
+        write_error(ONE_ROBOT, data->robots[0]->filename, -1);
     return true;
 }
 

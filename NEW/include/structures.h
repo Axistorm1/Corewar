@@ -67,6 +67,7 @@ PACKED instruction_s {
 
 typedef struct
 PACKED robot_info_s {
+    char *filename;
     header_t *header;
     byte1_t *memory;
     byte2_t mem_adr;
@@ -75,6 +76,7 @@ PACKED robot_info_s {
 
 typedef struct
 PACKED corewar_data_s {
+    robot_info_t **robots;
     uint32_t dump_cycle;
     uint16_t robot_count;
     bool usage;

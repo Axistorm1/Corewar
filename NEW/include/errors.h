@@ -17,6 +17,7 @@ enum error_codes {
     FILE_NOT_FOUND,
     EMPTY_FILE,
     NOT_ENOUGH_ROBOTS,
+    INCORRECT_FILE,
 };
 
     #define WARNINGS_START 100
