@@ -10,6 +10,7 @@
 #include "my_string.h"
 #include "my_stdlib.h"
 #include "utils.h"
+#include "arena.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -54,8 +55,8 @@ int main(
         free_garbage();
         return 0;
     }
-    //print_programs_data(data->programs, data->robot_count);
-    //load_arena(data);
+    print_robots_data(data->robots, data->robot_count);
+    create_arena(data);
     free_garbage();
     return 0;
 }

@@ -152,10 +152,17 @@ static bool handle_unknown(
 
 static bool check_corewar_data(corewar_data_t *data)
 {
+    robot_info_t *robot = data->robots[0];
+
     if (data->robot_count == 0)
         return write_error(NOT_ENOUGH_ROBOTS, NULL, -1) != NULL;
     if (data->robot_count == 1)
-        write_error(ONE_ROBOT, data->robots[0]->filename, -1);
+        write_error(ONE_ROBOT, robot->header->prog_name, -1);
+    for (byte2_t i = 0; i < data->robot_count; i++) {
+        robot = data->robots[i];
+        if (robot->header->prog_size > MEM_SIZE)
+            return write_error(ROBOT_TOO_BIG, robot->header->prog_name, -1) != NULL;
+    }
     return true;
 }
 

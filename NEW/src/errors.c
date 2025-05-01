@@ -19,12 +19,13 @@ static const char *const error_strings[] = {
     "File is empty",
     "There must be at least one robot",
     "File is incorrect",
-    "The file must be a .cor file and have a magic number"
+    "The file must be a .cor file and have a magic number",
+    "Robot too big for the arena"
 };
 
 static const char *const warning_strings[] = {
     "is lonely in the arena :( Consider finding him some friends",
-    "cycle will never be reached (MIN: 0, MAX: 236,698)"
+    "cycle will never be reached (MAX: 236,698)"
 };
 
 static void write_auxiliary(

@@ -19,6 +19,10 @@ typedef uint8_t byte1_t;
 typedef uint16_t byte2_t;
 typedef uint32_t byte4_t;
 typedef uint64_t byte8_t;
+typedef int8_t sbyte1_t;
+typedef int16_t sbyte2_t;
+typedef int32_t sbyte4_t;
+typedef int64_t sbyte8_t;
 
 typedef enum
 PACKED op_codes_e {
@@ -70,15 +74,15 @@ PACKED robot_info_s {
     char *filename;
     header_t *header;
     byte1_t *memory;
-    byte2_t mem_adr;
     byte2_t prog_num;
+    byte2_t mem_adr;
 } robot_info_t;
 
 typedef struct
 PACKED corewar_data_s {
     robot_info_t **robots;
-    uint32_t dump_cycle;
-    uint16_t robot_count;
+    byte4_t dump_cycle;
+    byte2_t robot_count;
     bool usage;
     bool grapical_env;
 } corewar_data_t;
@@ -99,10 +103,11 @@ PACKED process_data_s {
 
 typedef struct
 PACKED arena_s {
-    byte2_t ownership_map[MEM_SIZE];
+    byte4_t ownership_map[MEM_SIZE];
     byte1_t memory[MEM_SIZE];
-    byte2_t current_cycle;
-    byte2_t cycle_to_die;
+    sbyte2_t current_cycle;
+    sbyte2_t cycle_to_die;
+    byte1_t robots_alive;
 } arena_t;
 
 #endif /* STRUCTURES_H_ */

@@ -8,7 +8,8 @@ add_compile_options(-Wall -Wextra -Wconversion -Wpedantic)
 
 file(GLOB SOURCES
     src/*.c
-    src/utils/*.c)
+    src/utils/*.c
+    src/arena/*.c)
 
 add_executable(corewar ${SOURCES})
 
