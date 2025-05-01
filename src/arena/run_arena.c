@@ -41,10 +41,11 @@ static arena_t *load_robots_to_arena(
         for (int j = 0; j < robots[i]->header->prog_size; j++)
             arena->ownership_map[robots[i]->mem_adr + j] = robots[i]->prog_num;
         arena->processes = realloc(arena->processes, sizeof(process_data_t *)
-            * arena->process_count + 2);
+            * (arena->process_count + 2));
         arena->processes[arena->process_count] =
             create_new_process(NULL, robots[i]);
         arena->processes[arena->process_count + 1] = NULL;
+        arena->process_count++;
     }
     return arena;
 }
