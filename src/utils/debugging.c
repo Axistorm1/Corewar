@@ -24,6 +24,37 @@ void print_robots_data(
             "| ADRESS: %-30d |\n"
             "| SIZE: %-32d |\n"
             "\\----------------------------------------/\n",
-            ptr->header->prog_name, ptr->prog_num, ptr->mem_adr, ptr->header->prog_size);
+            ptr->header->prog_name, ptr->prog_num, ptr->mem_adr,
+            ptr->header->prog_size);
     }
+}
+
+static char *type_to_str(param_type_t type)
+{
+    if (type == PARAM_NOTHING)
+        return "Nothing";
+    if (type == PARAM_DIR)
+        return "Direct";
+    if (type == PARAM_INDEX)
+        return "Index";
+    if (type == PARAM_IND)
+        return "Indirect";
+    if (type == PARAM_REG)
+        return "Register";
+    return "Nothing";
+}
+
+void print_instruction_data(instruction_t *instruction)
+{
+    printf("/-------------------------\\\n"
+        "| OP CODE: %-14d |\n"
+        "| CODING BYTE: %-10d |\n"
+        "| TYPE: %-8s -> %-5u |\n"
+        "| TYPE: %-8s -> %-5u |\n"
+        "| TYPE: %-8s -> %-5u |\n"
+        "\\-------------------------/\n",
+        instruction->op_code, instruction->coding_byte,
+        type_to_str(instruction->param_types[0]), instruction->params[0].reg,
+        type_to_str(instruction->param_types[1]), instruction->params[1].index,
+        type_to_str(instruction->param_types[2]), instruction->params[2].index);
 }

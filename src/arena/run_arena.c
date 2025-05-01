@@ -6,35 +6,25 @@
 */
 
 #include "op.h"
+#include "parsing.h"
 #include "structures.h"
 #include "my_stdlib.h"
 #include "my_string.h"
 #include "arena.h"
-#include <stdio.h>
+#include "utils.h"
 #include <stdlib.h>
 #include <sys/types.h>
 
-// make a set of predefined colors (from 0 to 1023)
-static void print_arena(arena_t *arena)
+// not too sure of saying that the original is itself when it's the first
+process_data_t *create_new_process(
+    process_data_t *parent,
+    robot_info_t *robot)
 {
-    byte1_t tmp = 0;
+    process_data_t *process = my_calloc(1, sizeof(process_data_t));
 
-    for (int i = 0; i < MEM_SIZE; i++) {
-        tmp = arena->memory[i];
-        printf("\033[3%um", arena->ownership_map[i]);
-        printf("%02x\033[0m", tmp);
-        fflush(stdout);
-    }
-}
-
-static void write_to_arena(
-    arena_t *arena,
-    byte2_t adress,
-    byte1_t data,
-    byte4_t prog_number)
-{
-    arena->memory[adress] = data;
-    arena->ownership_map[adress] = prog_number;
+    process->parent = parent;
+    process->robot = robot;
+    return process;
 }
 
 // handle robots that wrap around memory
@@ -43,25 +33,47 @@ static arena_t *load_robots_to_arena(
     byte2_t robot_count,
     arena_t *arena)
 {
+    arena->processes = malloc(sizeof(process_data_t *) * 1);
+    arena->processes[0] = NULL;
     for (byte2_t i = 0; i < robot_count; i++) {
         my_memcpy(&arena->memory[robots[i]->mem_adr], robots[i]->memory,
             (ulong)robots[i]->header->prog_size);
         for (int j = 0; j < robots[i]->header->prog_size; j++)
             arena->ownership_map[robots[i]->mem_adr + j] = robots[i]->prog_num;
+        arena->processes = realloc(arena->processes, sizeof(process_data_t *)
+            * arena->process_count + 2);
+        arena->processes[arena->process_count] =
+            create_new_process(NULL, robots[i]);
+        arena->processes[arena->process_count + 1] = NULL;
     }
     return arena;
 }
 
+static bool keep_running(arena_t *arena)
+{
+    arena->current_cycle++;
+    if (arena->current_cycle > arena->cycle_to_die) {
+        arena->cycle_to_die -= CYCLE_DELTA;
+        arena->current_cycle = 0;
+    if (arena->cycle_to_die <= 0 || arena->robots_alive == 0)
+        return false;
+    }
+    return true;
+}
+
+static void run_processes(arena_t *arena)
+{
+    for (byte4_t i = 0; i < arena->process_count; i++);
+}
+
 static void run_arena(arena_t *arena)
 {
-    while (1) {
-        arena->current_cycle++;
-        if (arena->current_cycle > arena->cycle_to_die) {
-            arena->cycle_to_die -= CYCLE_DELTA;
-            arena->current_cycle = 0;
-        if (arena->cycle_to_die <= 0 || arena->robots_alive == 0)
-            break;
-        }
+    instruction_t *tmp = analyze_memory(arena->memory);
+
+    print_instruction_data(tmp);
+    while (keep_running(arena)) {
+        run_processes(arena);
+        //print_arena(arena);
     }
 }
 

@@ -55,8 +55,8 @@ PACKED param_type_e {
 
 typedef union
 PACKED parameter_u {
-    byte4_t dir;
-    byte2_t index;
+    sbyte4_t dir;
+    sbyte2_t index;
     byte2_t ind;
     byte1_t reg;
 } parameter_t;
@@ -91,12 +91,13 @@ PACKED corewar_data_s {
 typedef struct
 PACKED process_data_s {
     struct process_data_s *parent;
-    struct process_data_s *original;
+    robot_info_t *robot;
     byte4_t registers[REG_NUMBER];
     byte4_t remaining_cycles;
     byte4_t lifetime;
     byte2_t program_counter;
     byte2_t child_count;
+    op_code_t current_instruction;
     bool alive;
     bool carry;
 } process_data_t;
@@ -105,9 +106,11 @@ typedef struct
 PACKED arena_s {
     byte4_t ownership_map[MEM_SIZE];
     byte1_t memory[MEM_SIZE];
+    process_data_t **processes;
+    byte4_t process_count;
     sbyte2_t current_cycle;
     sbyte2_t cycle_to_die;
-    byte1_t robots_alive;
+    byte2_t robots_alive;
 } arena_t;
 
 #endif /* STRUCTURES_H_ */
