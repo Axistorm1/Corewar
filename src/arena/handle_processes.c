@@ -9,13 +9,20 @@
 #include "parsing.h"
 #include "structures.h"
 #include "my_string.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <arena.h>
 
 static int (* const instruction_array[])
     (arena_t *, process_data_t *, instruction_t *) = {
-    NULL, execute_live_instruction};
+    execute_not_instruction, execute_live_instruction,
+    execute_ld_instruction, execute_st_instruction,
+    execute_add_instruction, execute_sub_instruction,
+    execute_and_instruction, execute_or_instruction,
+    execute_xor_instruction, execute_zjmp_instruction,
+    execute_ldi_instruction, execute_sti_instruction,
+    execute_fork_instruction, execute_lld_instruction,
+    execute_lldi_instruction, execute_lfork_instruction,
+    execute_aff_instruction};
 
 process_data_t *create_new_process(
     process_data_t *parent,

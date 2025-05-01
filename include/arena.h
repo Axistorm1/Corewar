@@ -24,7 +24,71 @@ int run_processes(arena_t *arena);
 void *free_processes(process_data_t **processes, byte4_t process_count);
 
 // instructions
+int execute_add_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_aff_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_and_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_fork_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_ld_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_ldi_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
 int execute_live_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_lfork_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_lld_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_lldi_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_or_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_st_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_sti_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_sub_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_xor_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_zjmp_instruction(
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction);
+int execute_not_instruction(
     arena_t *arena,
     process_data_t *process,
     instruction_t *instruction);
