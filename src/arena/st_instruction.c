@@ -22,8 +22,7 @@ int execute_st_instruction(
         process->registers[instruction->params[1].reg] = value;
     else if (instruction->param_types[1] == PARAM_IND)
         write4_to_arena(arena,
-            update_program_counter(process->program_counter,
-                instruction->params[1].index),
+            update_program_counter(process->pc, instruction->params[1].index),
             (byte4_t)value, process->robot->prog_num);
     return 1;
 }

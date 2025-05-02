@@ -30,11 +30,9 @@ void index_check(
     int list_index[] = {10, 11, 15, 14};
     int is_index = 0;
 
-    for (int i = 0; i != INDEX_NBR; i++) {
-        if (instruction->op_code == list_index[i]) {
+    for (int i = 0; i != INDEX_NBR; i++)
+        if (instruction->op_code == list_index[i])
             is_index = 1;
-        }
-    }
     if (is_index == 0)
         return;
     for (int j = 0; j != MAX_ARGS; j++) {

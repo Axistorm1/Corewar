@@ -45,8 +45,8 @@ ssize_t my_puts_hexa(ssize_t nb, size_t leading_zeros)
     my_memset(buffer, 0, 20);
     my_ltoa(nb, buffer, 16);
     write(STDOUT_FILENO, zeros, leading_zeros - my_strlen(buffer));
-    return write(STDOUT_FILENO, buffer, my_strlen(buffer)) +
-        (ssize_t)leading_zeros;
+    write(STDOUT_FILENO, buffer, my_strlen(buffer));
+    return 0;
 }
 
 ssize_t my_puts_multiple(size_t n, ...)

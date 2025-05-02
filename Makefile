@@ -23,7 +23,10 @@ all: $(NAME)
 .PHONY: $(NAME)
 $(NAME):
 	@mkdir -p build
-	@cd build && CC=gcc cmake -DCMAKE_BUILD_TYPE=Debug ..
+	@cd build && CC=gcc cmake -DCMAKE_BUILD_TYPE=Debug \
+	        -DCMAKE_CXX_FLAGS="" \
+			-DCMAKE_C_FLAGS="" \
+ 			-DCMAKE_EXE_LINKER_FLAGS="" ..
 	@cmake --build build --parallel 12
 	@cp build/$(NAME) .
 

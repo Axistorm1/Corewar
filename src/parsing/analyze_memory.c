@@ -17,7 +17,7 @@ instruction_t *analyze_memory(byte1_t *buffer)
     instruction->op_code = buffer[0];
     instruction->coding_byte = buffer[1];
     offset += verify_coding_byte(instruction);
-    offset += parse_params(instruction, (char *)&buffer[offset]);
+    offset += parse_params(instruction, &buffer[offset]);
     instruction->size = offset;
     return instruction;
 }

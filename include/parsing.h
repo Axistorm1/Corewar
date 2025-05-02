@@ -10,6 +10,7 @@
     #define PARSING_H_
 
     #include "structures.h"
+    #include <sys/types.h>
 
     #define MAX_ARGS 3
     #define CODING_NBR 4
@@ -35,7 +36,7 @@ int verify_coding_byte(instruction_t *instruction);
 void index_check(
     instruction_t *instruction, unsigned int value_arr[MAX_ARGS]);
 int special_inst(instruction_t *instruction, char *bin);
-int parse_params(instruction_t *instruction, char *bin);
+int parse_params(instruction_t *instruction, u_char *bin);
 
 instruction_t *analyze_memory(byte1_t *buffer);
 

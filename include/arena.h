@@ -5,13 +5,13 @@
 ** arena.h
 */
 
-
 #ifndef ARENA_H_
     #define ARENA_H_
 
     #include "structures.h"
 
-    #define PROCESS_LIMIT 2e24
+    #define PROCESS_LIMIT 1e6
+    #define COLORS_COUNT 256
 
 arena_t *create_arena(corewar_data_t *data);
 void write1_to_arena(arena_t *arena, byte2_t adress,
@@ -20,10 +20,13 @@ void write4_to_arena(
     arena_t *arena, byte2_t adress,
     byte4_t data, byte4_t prog_number);
 void print_arena(arena_t *arena);
+void print_arena_fast(arena_t *arena);
+void print_arena_data(arena_t *arena);
 
 process_data_t *create_new_process(
-    process_data_t *parent, robot_info_t *robot, byte4_t current_cycle);
+    process_data_t *parent, robot_info_t *robot);
 int run_processes(arena_t *arena);
+void kill_non_alive_processes(arena_t *arena);
 void *free_processes(process_data_t **processes, byte4_t process_count);
 
 // instructions

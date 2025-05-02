@@ -9,6 +9,9 @@
 #include "op.h"
 #include "structures.h"
 #include "utils.h"
+#include "my_string.h"
+#include "my_stdlib.h"
+#include <stdio.h>
 #include <unistd.h>
 
 void write1_to_arena(
@@ -37,23 +40,37 @@ void write4_to_arena(
     arena->ownership_map[adress + 3] = prog_number;
 }
 
+static byte1_t background_color(arena_t *arena, byte2_t pc)
+{
+    for (byte4_t i = 0; i < arena->process_count; i++) {
+        if (pc == arena->processes[i]->pc)
+            return arena->processes[i]->robot->prog_num % 255;
+    }
+    return 255;
+}
+
 void print_arena(arena_t *arena)
 {
     byte1_t tmp = 0;
 
-    for (int i = 0; i < MEM_SIZE; i++) {
-        if (i == arena->processes[0]->program_counter)
-            write(STDOUT_FILENO, "\033[41m", 5);
+    for (byte2_t i = 0; i < MEM_SIZE; i++) {
+        tmp = background_color(arena, i);
+        if (tmp < 255)
+            printf("\033[48;5;%dm", tmp);
         else
-            write(STDOUT_FILENO, "\033[0m", 4);
+            printf("\033[0m");
         tmp = arena->memory[i];
-        write(STDOUT_FILENO, "\033[38;5;", 7);
-        my_puts_nb(arena->ownership_map[i] % 256);
-        write(STDOUT_FILENO, "m", 1);
-        my_puts_hexa(tmp, 2);
-        write(STDOUT_FILENO, " ", 0);
+        printf("\033[38;5;%dm%02x",
+            arena->ownership_map[i] % COLORS_COUNT, tmp);
     }
-    write(STDOUT_FILENO, "\n", 1);
+    printf("\033[0m\n");
+}
+
+void print_arena_data(arena_t *arena)
+{
+    printf("Cycle: %d/%d Live: %d/%d Process count: %d        \n",
+        arena->current_cycle, arena->cycle_to_die, arena->nbr_live,
+        NBR_LIVE, arena->process_count);
 }
 
 byte2_t update_program_counter(

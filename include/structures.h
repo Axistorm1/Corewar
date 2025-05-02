@@ -25,6 +25,7 @@ typedef int64_t sbyte8_t;
 
 typedef enum
 PACKED op_codes_e {
+    NONE,
     LIVE,
     LD,
     ST,
@@ -89,17 +90,14 @@ PACKED corewar_data_s {
     bool grapical_env;
 } corewar_data_t;
 
-// also update original->alive on live instruction
 typedef struct
 PACKED process_data_s {
     struct process_data_s *parent;
     robot_info_t *robot;
+    instruction_t *instruction;
     sbyte4_t registers[REG_NUMBER];
-    byte4_t remaining_cycles;
-    byte4_t cycle_born;
-    byte2_t program_counter;
-    byte2_t child_count;
-    instruction_t *current_instruction;
+    byte4_t wait_cycles;
+    byte2_t pc;
     bool carry;
     bool alive;
 } process_data_t;
@@ -114,6 +112,7 @@ PACKED arena_s {
     sbyte2_t current_cycle;
     sbyte2_t cycle_to_die;
     byte2_t robots_alive;
+    byte1_t nbr_live;
 } arena_t;
 
 #endif /* STRUCTURES_H_ */

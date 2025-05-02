@@ -32,7 +32,7 @@ static arena_t *load_robots_to_arena(
         arena->processes = realloc(arena->processes, sizeof(process_data_t *)
             * (arena->process_count + 2));
         arena->processes[arena->process_count] =
-            create_new_process(NULL, robots[i], 0);
+            create_new_process(NULL, robots[i]);
         arena->processes[arena->process_count + 1] = NULL;
         arena->process_count++;
     }
@@ -40,29 +40,20 @@ static arena_t *load_robots_to_arena(
     return arena;
 }
 
-static void kill_non_alive_processes(arena_t *arena)
-{
-    for (byte4_t i = 0; i < arena->process_count; i++) {
-        if (!arena->processes[i]->alive) {
-            arena->processes[i]->robot->process_count--;
-            arena->processes[i] = arena->processes[arena->process_count];
-            arena->process_count--;
-        } else
-            arena->processes[i]->alive = false;
-    }
-}
-
 static bool keep_running(arena_t *arena)
 {
     arena->current_cycle++;
     arena->total_cycles++;
     if (arena->current_cycle > arena->cycle_to_die) {
-        arena->cycle_to_die -= CYCLE_DELTA;
         arena->current_cycle = 0;
         kill_non_alive_processes(arena);
+        if (arena->nbr_live >= NBR_LIVE) {
+            arena->cycle_to_die -= CYCLE_DELTA;
+            arena->nbr_live = 0;
+        }
     }
     if (arena->cycle_to_die <= 0 || arena->robots_alive <= 1
-        || arena->process_count <= 1)
+        || arena->process_count <= 1 || arena->total_cycles > 25000)
         return false;
     return true;
 }
@@ -84,6 +75,3 @@ arena_t *create_arena(corewar_data_t *data)
     free_processes(arena->processes, arena->process_count);
     return arena;
 }
-
-// use standard malloc and free for processes
-// could create a memory bottleneck if not

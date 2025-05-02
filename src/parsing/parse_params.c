@@ -9,6 +9,8 @@
 #include "parsing.h"
 #include "structures.h"
 #include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <sys/types.h>
 
 static unsigned int get_param(
@@ -22,7 +24,7 @@ static unsigned int get_param(
 
 //Can be used to check if the param value is correct for error handling
 static void get_values(
-    char *bin,
+    u_char *bin,
     int type,
     instruction_t *instruction,
     int i)
@@ -48,11 +50,11 @@ static void get_values(
 static int store_params(
     instruction_t *instruction,
     unsigned int type_arr[MAX_ARGS],
-    char *bin)
+    u_char *bin)
 {
     int idx = 0;
 
-    for (int i = 0; i != MAX_ARGS || type_arr[i] != NOTHING; i++) {
+    for (int i = 0; i < MAX_ARGS; i++) {
         get_values(&bin[idx], (int)type_arr[i], instruction, i);
         if (type_arr[i] == P_REG)
             idx += REGIS_SIZE;
@@ -68,21 +70,19 @@ static int store_params(
 
 int parse_params(
     instruction_t *instruction,
-    char *bin)
+    u_char *bin)
 {
     char buffer[CHAR_CODING_B] = {0};
     unsigned int value;
-    int i = 0;
     unsigned int type_arr[MAX_ARGS] = {0};
-    int bytes_read = special_inst(instruction, bin);
+    int bytes_read = special_inst(instruction, (char *)bin);
 
     if (bytes_read != 0)
         return bytes_read;
     int_to_bin(instruction->coding_byte, buffer);
-    while (i <= 6) {
+    for (uint i = 0; i < 6; i += 2) {
         value = get_param(&buffer[i]);
         type_arr[i / 2] = value;
-        i += 2;
     }
     index_check(instruction, type_arr);
     bytes_read = store_params(instruction, type_arr, bin);

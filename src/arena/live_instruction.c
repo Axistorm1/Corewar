@@ -5,6 +5,7 @@
 ** live_instruction.c
 */
 
+#include "op.h"
 #include "structures.h"
 #include "utils.h"
 #include "my_string.h"
@@ -20,19 +21,27 @@ static void write_player_line(robot_info_t *robot)
     write(STDOUT_FILENO, ")is alive.\n", 11);
 }
 
-static int find_process(
+static void handle_alive(process_data_t *process, arena_t *arena)
+{
+    process->alive = true;
+    process->robot->alive = true;
+    if (arena->nbr_live < NBR_LIVE)
+        arena->nbr_live++;
+    write_player_line(process->robot);
+}
+
+static bool find_process(
     process_data_t **processes,
     byte4_t process_count,
-    sbyte4_t prog_num)
+    sbyte4_t prog_num,
+    arena_t *arena)
 {
     for (byte4_t i = 0; i < process_count; i++)
         if (processes[i]->robot->prog_num == prog_num) {
-            processes[i]->alive = true;
-            processes[i]->robot->alive = true;
-            write_player_line(processes[i]->robot);
-            return 0;
+            handle_alive(processes[i], arena);
+            return true;
         }
-    return 1;
+    return false;
 }
 
 int execute_live_instruction(
@@ -47,11 +56,10 @@ int execute_live_instruction(
     else
         return 1;
     if (process->robot->prog_num == value) {
-        process->alive = true;
-        process->robot->alive = true;
-        write_player_line(process->robot);
+        handle_alive(process, arena);
         return 1;
     }
-    find_process(arena->processes, arena->process_count, value);
+    if (!find_process(arena->processes, arena->process_count, value, arena))
+        return 1;
     return 1;
 }
