@@ -53,7 +53,7 @@ static bool keep_running(arena_t *arena)
         }
     }
     if (arena->cycle_to_die <= 0 || arena->robots_alive <= 1
-        || arena->process_count <= 1 || arena->total_cycles > 25000)
+        || arena->process_count <= 1)
         return false;
     return true;
 }
