@@ -10,19 +10,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-static void edge_case_index(
-    instruction_t *instruction,
-    unsigned int value_arr[MAX_ARGS],
-    int j)
-{
-    if (instruction->op_code == 11 && value_arr[j] == P_DIRECT)
-        value_arr[j] = P_INDEX;
-    if ((instruction->op_code == 10 || instruction->op_code == 14) &&
-        (value_arr[j] == P_INDIRECT || value_arr[j] == P_DIRECT)) {
-        value_arr[j] = P_INDEX;
-    }
-}
-
 void index_check(
     instruction_t *instruction,
     unsigned int value_arr[MAX_ARGS])
@@ -38,7 +25,8 @@ void index_check(
     for (int j = 0; j != MAX_ARGS; j++) {
         if (value_arr[j] == P_INDIRECT)
             value_arr[j] = P_INDEX;
-        edge_case_index(instruction, value_arr, j);
+        if (value_arr[j] == P_DIRECT)
+            value_arr[j] = P_DIRDEX;
     }
 }
 
@@ -56,20 +44,19 @@ int special_inst(
     instruction_t *instruction,
     char *bin)
 {
-    if (instruction->op_code == 12) {
-        compute_index(bin[0] + bin[1], instruction);
-        instruction->param_types[0] = PARAM_INDEX;
-        return 2;
+    int list_index[] = {9, 12, 15};
+
+    for (int i = 0; i != 3; i++) {
+        if (instruction->op_code == list_index[i]) {
+            compute_index(bin[0] + bin[1], instruction);
+            instruction->param_types[0] = PARAM_INDEX;
+            return 2;
+        }
     }
     if (instruction->op_code == 1) {
         instruction->params[0].dir = bin[0] + bin[1] + bin[2] + bin[3];
         instruction->param_types[0] = PARAM_DIR;
         return 4;
-    }
-    if (instruction->op_code == 9 || instruction->op_code == 15) {
-        compute_index(bin[0] + bin[1], instruction);
-        instruction->param_types[0] = PARAM_INDEX;
-        return 2;
     }
     return 0;
 }

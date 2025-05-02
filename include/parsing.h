@@ -20,6 +20,7 @@
 
     #define P_REG 1
     #define P_INDEX 2
+    #define P_DIRDEX 3
     #define P_DIRECT 10
     #define P_INDIRECT 11
 

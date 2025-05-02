@@ -37,6 +37,8 @@ static char *type_to_str(param_type_t type)
         return "Direct";
     if (type == PARAM_INDEX)
         return "Index";
+    if (type == PARAM_DIRDEX)
+        return "Dirdex";
     if (type == PARAM_IND)
         return "Indirect";
     if (type == PARAM_REG)

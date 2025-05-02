@@ -49,6 +49,7 @@ PACKED param_type_e {
     PARAM_NOTHING,
     PARAM_DIR,
     PARAM_INDEX,
+    PARAM_DIRDEX,
     PARAM_IND,
     PARAM_REG
 } param_type_t;

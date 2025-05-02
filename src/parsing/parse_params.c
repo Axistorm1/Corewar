@@ -10,7 +10,6 @@
 #include "structures.h"
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <sys/types.h>
 
 static unsigned int get_param(
@@ -29,13 +28,15 @@ static void get_values(
     instruction_t *instruction,
     int i)
 {
-    if (type == P_INDEX) {
+    if (type == P_INDEX || type == P_DIRDEX) {
         instruction->params[i].index = (int16_t)(bin[0] + bin[1]);
         instruction->param_types[i] = PARAM_INDEX;
+        if (type == P_DIRDEX)
+            instruction->param_types[i] = PARAM_DIRDEX;
     }
     if (type == P_REG) {
         instruction->params[i].reg = (u_int8_t)bin[0];
-            instruction->param_types[i] = PARAM_REG;
+        instruction->param_types[i] = PARAM_REG;
     }
     if (type == P_DIRECT) {
         instruction->param_types[i] = PARAM_DIR;
