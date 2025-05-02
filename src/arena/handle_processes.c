@@ -44,15 +44,17 @@ static void handle_new_instruction(
     process_data_t *process,
     arena_t *arena)
 {
-    if (process->current_instruction) {
-        instruction_array[process->current_instruction->op_code]
+    int update_pc = 0;
+
+    if (process->current_instruction)
+        update_pc = instruction_array[process->current_instruction->op_code]
             (arena, process, process->current_instruction);
+    if (update_pc == 1)
         process->program_counter += process->current_instruction->size;
-    }
     process->current_instruction =
         analyze_memory(&arena->memory[process->program_counter]);
     process->remaining_cycles =
-        (byte4_t)op_tab[process->current_instruction->op_code].nbr_cycles;
+        (byte4_t)op_tab[process->current_instruction->op_code - 1].nbr_cycles;
 }
 
 int run_processes(arena_t *arena)

@@ -50,8 +50,8 @@ int execute_live_instruction(
         process->alive = true;
         process->robot->alive = true;
         write_player_line(process->robot);
-        return 0;
+        return 1;
     }
     find_process(arena->processes, arena->process_count, value);
-    return 0;
+    return 1;
 }
