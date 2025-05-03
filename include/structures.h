@@ -46,13 +46,15 @@ PACKED op_codes_e {
 
 typedef enum
 PACKED param_type_e {
-    PARAM_NOTHING,
-    PARAM_DIR,
-    PARAM_INDEX,
-    PARAM_DIRDEX,
-    PARAM_IND,
-    PARAM_REG
+    PARAM_NOTHING = 0,
+    PARAM_REG = 1,
+    PARAM_DIR = 2,
+    PARAM_IND = 4,
+    PARAM_INDEX = 8,
+    PARAM_DIRDEX = 16,
 } param_type_t;
+
+    #define ALL_PARAMS 31
 
 typedef union
 PACKED parameter_u {
@@ -61,6 +63,12 @@ PACKED parameter_u {
     byte2_t ind;
     byte1_t reg;
 } parameter_t;
+
+typedef struct
+type_and_param_s {
+    param_type_t type;
+    parameter_t param;
+} type_and_param_t;
 
 typedef struct
 PACKED instruction_s {

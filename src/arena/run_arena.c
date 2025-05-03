@@ -69,6 +69,7 @@ static void run_arena(arena_t *arena)
         tim.tv_sec = 0;
         tim.tv_nsec = 20000000;
         nanosleep(&tim , &tim2);
+        //sleep(1);
     }
 }
 

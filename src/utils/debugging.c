@@ -57,7 +57,7 @@ void print_instruction_data(instruction_t *instruction)
         "\\-----------------------------/\n",
         instruction->op_code, instruction->coding_byte,
         type_to_str(instruction->param_types[0]), instruction->params[0].reg,
-        type_to_str(instruction->param_types[1]), instruction->params[1].ind,
+        type_to_str(instruction->param_types[1]), instruction->params[1].reg,
         type_to_str(instruction->param_types[2]),
-        instruction->params[2].index);
+        instruction->params[2].dir);
 }

@@ -99,4 +99,15 @@ int execute_not_instruction(
     process_data_t *process,
     instruction_t *instruction);
 
+sbyte8_t get_data_in_param(
+    type_and_param_t *type_and_param,
+    byte1_t params_value,
+    arena_t *arena,
+    process_data_t *process);
+sbyte8_t get_data_in_param_idx_mod(
+    type_and_param_t *type_and_param,
+    byte1_t params_value,
+    arena_t *arena,
+    process_data_t *process);
+
 #endif /* ARENA_H_ */

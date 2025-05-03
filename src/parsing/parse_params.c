@@ -29,7 +29,7 @@ static void get_values(
     int i)
 {
     if (type == P_INDEX || type == P_DIRDEX) {
-        instruction->params[i].index = (int16_t)(bin[0] + bin[1]);
+        instruction->params[i].index = (int16_t)((bin[0] << 8) + bin[1]);
         instruction->param_types[i] = PARAM_INDEX;
         if (type == P_DIRDEX)
             instruction->param_types[i] = PARAM_DIRDEX;
@@ -40,10 +40,10 @@ static void get_values(
     }
     if (type == P_DIRECT) {
         instruction->param_types[i] = PARAM_DIR;
-        instruction->params[i].dir = bin[0] + bin[1] + bin[2] + bin[3];
+        instruction->params[i].dir = (bin[0] << 24) + (bin[1] << 16) + (bin[2] << 8) + bin[3];
     }
     if (type == P_INDIRECT) {
-        instruction->params[i].ind = (u_int16_t)(bin[0] + bin[1]);
+        instruction->params[i].ind = (u_int16_t)((bin[0] << 8) + bin[1]);
         instruction->param_types[i] = PARAM_IND;
     }
 }

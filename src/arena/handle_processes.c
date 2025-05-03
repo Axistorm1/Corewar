@@ -9,6 +9,7 @@
 #include "parsing.h"
 #include "structures.h"
 #include "my_string.h"
+#include "utils.h"
 #include <stdlib.h>
 #include <arena.h>
 
@@ -52,6 +53,11 @@ static void handle_new_instruction(
         proc->pc += proc->instruction->size;
     // need to handle circular memory
     proc->instruction = analyze_memory(&arena->memory[proc->pc]);
+    print_instruction_data(proc->instruction);
+    if (!proc->instruction || proc->instruction->op_code > 16) {
+        proc->instruction = NULL;
+        return;
+    }
     proc->wait_cycles = (byte4_t)op_tab[proc->instruction->op_code].nbr_cycles;
 }
 
