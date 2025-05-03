@@ -62,12 +62,12 @@ static void run_arena(arena_t *arena)
 {
     while (keep_running(arena)) {
         run_processes(arena);
-        printf("\033[0J\033[H\n");
-        print_arena(arena);
+        //printf("\033[0J\033[H\n");
+        //print_arena(arena);
         print_arena_data(arena);
         struct timespec tim, tim2;
         tim.tv_sec = 0;
-        tim.tv_nsec = 20000000;
+        tim.tv_nsec = 10000000;
         nanosleep(&tim , &tim2);
         //sleep(1);
     }

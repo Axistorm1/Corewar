@@ -6,6 +6,7 @@
 */
 
 #include "parsing.h"
+#include "structures.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
@@ -31,7 +32,7 @@ void index_check(
 }
 
 static void compute_index(
-    int value,
+    sbyte2_t value,
     instruction_t *instruction)
 {
     if (value & MSB)
@@ -42,19 +43,21 @@ static void compute_index(
 
 int special_inst(
     instruction_t *instruction,
-    char *bin)
+    u_char *bin)
 {
-    int list_index[] = {9, 12, 15};
-
-    for (int i = 0; i != 3; i++) {
-        if (instruction->op_code == list_index[i]) {
-            compute_index(bin[0] + bin[1], instruction);
-            instruction->param_types[0] = PARAM_INDEX;
-            return 2;
-        }
+    if (instruction->op_code == 12 || instruction->op_code == 15) {
+        compute_index((sbyte2_t)(bin[0] << 8) + bin[1], instruction);
+        instruction->param_types[0] = PARAM_INDEX;
+        return 2;
+    }
+    if (instruction->op_code == 9) {
+        compute_index((sbyte2_t)(bin[0] << 8) + bin[1], instruction);
+        instruction->param_types[0] = PARAM_DIRDEX;
+        return 2;
     }
     if (instruction->op_code == 1) {
-        instruction->params[0].dir = bin[0] + bin[1] + bin[2] + bin[3];
+        instruction->params[0].dir = (bin[0] << 24) + (bin[1] << 16) +
+            (bin[2] << 8) + bin[3];
         instruction->param_types[0] = PARAM_DIR;
         return 4;
     }

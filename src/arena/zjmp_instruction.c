@@ -17,10 +17,11 @@ int execute_zjmp_instruction(
 {
     sbyte4_t value = 0;
 
+    //reverse this once carry works
     if (process->carry)
         return 1;
-    if (instruction->param_types[0] == PARAM_INDEX)
-        value = instruction->params[0].index;
+    if (instruction->param_types[0] == PARAM_DIRDEX)
+        value = instruction->params[0].dir;
     process->pc = update_program_counter(process->pc, value % IDX_MOD);
     return 0;
 }

@@ -53,7 +53,7 @@ static void handle_new_instruction(
         proc->pc += proc->instruction->size;
     // need to handle circular memory
     proc->instruction = analyze_memory(&arena->memory[proc->pc]);
-    print_instruction_data(proc->instruction);
+    //print_instruction_data(proc->instruction);
     if (!proc->instruction || proc->instruction->op_code > 16) {
         proc->instruction = NULL;
         return;
