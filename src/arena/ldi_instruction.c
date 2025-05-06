@@ -10,11 +10,11 @@
 #include "structures.h"
 #include "utils.h"
 
-/* takes 3 parameters. The first two must be indexes or registers, the third one
-must be a register. This operation modifies the carry. ldi 3, %4, r1 reads
-IND_SIZE bytes from the address PC + 3 % IDX_MOD, adds 4 to this value. The sum is
-named S. REG_SIZE bytes are read from the address PC + S % IDX_MOD and copied
-into r1 */
+/* takes 3 parameters. The first two must be indexes or registers, the third
+one must be a register. This operation modifies the carry. ldi 3, %4, r1 reads
+IND_SIZE bytes from the address PC + 3 % IDX_MOD, adds 4 to this value. The sum
+is named S. REG_SIZE bytes are read from the address PC + S % IDX_MOD and
+copied into r1 */
 
 int execute_ldi_instruction(
     arena_t *arena,

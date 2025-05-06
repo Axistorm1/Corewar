@@ -18,6 +18,8 @@ int execute_st_instruction(
 
     if (instruction->param_types[0] == PARAM_REG)
         value = process->registers[instruction->params[0].reg];
+    else
+        return 1;
     if (instruction->param_types[1] == PARAM_REG)
         process->registers[instruction->params[1].reg] = value;
     else if (instruction->param_types[1] == PARAM_IND)

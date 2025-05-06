@@ -55,7 +55,6 @@ int main(
         free_garbage();
         return 0;
     }
-    print_robots_data(data->robots, data->robot_count);
     create_arena(data);
     free_garbage();
     return 0;

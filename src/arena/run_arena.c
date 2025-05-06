@@ -10,10 +10,8 @@
 #include "my_stdlib.h"
 #include "my_string.h"
 #include "arena.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <time.h>
 #include <unistd.h>
 
 // handle robots that wrap around memory
@@ -60,17 +58,8 @@ static bool keep_running(arena_t *arena)
 
 static void run_arena(arena_t *arena)
 {
-    while (keep_running(arena)) {
+    while (keep_running(arena))
         run_processes(arena);
-        //printf("\033[0J\033[H\n");
-        //print_arena(arena);
-        print_arena_data(arena);
-        struct timespec tim, tim2;
-        tim.tv_sec = 0;
-        tim.tv_nsec = 10000000;
-        nanosleep(&tim , &tim2);
-        //sleep(1);
-    }
 }
 
 arena_t *create_arena(corewar_data_t *data)

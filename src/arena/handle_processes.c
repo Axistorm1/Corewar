@@ -35,10 +35,13 @@ process_data_t *create_new_process(
     process->parent = parent;
     process->robot = robot;
     process->pc = robot->mem_adr;
+    if (parent)
+        process->pc = parent->pc;
     robot->process_count++;
     return process;
 }
 
+// need to handle circular memory accesses
 static void handle_new_instruction(
     process_data_t *proc,
     arena_t *arena)
@@ -51,11 +54,12 @@ static void handle_new_instruction(
     }
     if (update_pc == 1)
         proc->pc += proc->instruction->size;
-    // need to handle circular memory
     proc->instruction = analyze_memory(&arena->memory[proc->pc]);
-    //print_instruction_data(proc->instruction);
     if (!proc->instruction || proc->instruction->op_code > 16) {
-        proc->instruction = NULL;
+        proc->instruction->op_code = 0;
+        proc->instruction->coding_byte = 0;
+        proc->instruction->size = 1;
+        proc->pc = update_program_counter(proc->pc, 1);
         return;
     }
     proc->wait_cycles = (byte4_t)op_tab[proc->instruction->op_code].nbr_cycles;

@@ -40,7 +40,8 @@ static void get_values(
     }
     if (type == P_DIRECT) {
         instruction->param_types[i] = PARAM_DIR;
-        instruction->params[i].dir = (bin[0] << 24) + (bin[1] << 16) + (bin[2] << 8) + bin[3];
+        instruction->params[i].dir =
+            (bin[0] << 24) + (bin[1] << 16) + (bin[2] << 8) + bin[3];
     }
     if (type == P_INDIRECT) {
         instruction->params[i].ind = (u_int16_t)((bin[0] << 8) + bin[1]);
@@ -63,7 +64,7 @@ static int store_params(
             idx += DIR_SIZE;
         if (type_arr[i] == P_INDIRECT)
             idx += IND_SIZE;
-        if (type_arr[i] == P_INDEX)
+        if (type_arr[i] == P_INDEX || type_arr[i] == P_DIRDEX)
             idx += IND_SIZE;
     }
     return idx;
@@ -76,7 +77,7 @@ int parse_params(
     char buffer[CHAR_CODING_B] = {0};
     unsigned int value;
     unsigned int type_arr[MAX_ARGS] = {0};
-    int bytes_read = special_inst(instruction, (char *)bin);
+    int bytes_read = special_inst(instruction, bin);
 
     if (bytes_read != 0)
         return bytes_read;

@@ -36,7 +36,7 @@ static void compute_index(
     instruction_t *instruction)
 {
     if (value & MSB)
-        instruction->params[0].index = (int16_t)(-((~value + 1) & 0xFFFF)) + 1;
+        instruction->params[0].index = (int16_t)(-((~value + 1) & 0xFFFF));
     else
         instruction->params[0].index = (int16_t)value;
 }
