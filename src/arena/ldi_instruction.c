@@ -8,7 +8,6 @@
 #include "op.h"
 #include "arena.h"
 #include "structures.h"
-#include "utils.h"
 
 /* takes 3 parameters. The first two must be indexes or registers, the third
 one must be a register. This operation modifies the carry. ldi 3, %4, r1 reads
@@ -21,7 +20,6 @@ int execute_ldi_instruction(
     process_data_t *process,
     instruction_t *instruction)
 {
-    print_instruction_data(instruction);
     if (instruction->param_types[0] == PARAM_INDEX)
         instruction->params[0].index %= IDX_MOD;
     if (instruction->param_types[0] == PARAM_IND)

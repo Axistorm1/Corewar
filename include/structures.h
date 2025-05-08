@@ -11,6 +11,7 @@
     #include <stdint.h>
     #include <stdbool.h>
     #include "op.h"
+    #include <ncurses.h>
 
     #define PACKED [[gnu::packed]]
 
@@ -90,6 +91,30 @@ PACKED robot_info_s {
     bool alive;
 } robot_info_t;
 
+typedef enum active_window_e {
+    CHAMPIONS_INFO,
+    PROCESSES_INFO,
+    ARENA,
+    GAME_INFO,
+    CONSOLE,
+
+} active_window_t;
+
+typedef struct windows_jungle_s {
+    WINDOW *champions_info;
+    WINDOW *processes_info;
+    WINDOW *arena;
+    WINDOW *game_info;
+    WINDOW *console;
+    sbyte4_t arena_window_size;
+    sbyte4_t current_robot_info;
+    sbyte4_t shown_process;
+    int arena_mem_line;
+    byte2_t cycling_speed;
+    byte1_t active_window;
+    bool cursors;
+} windows_jungle_t;
+
 typedef struct
 PACKED corewar_data_s {
     robot_info_t **robots;
@@ -117,6 +142,7 @@ PACKED arena_s {
     byte1_t memory[MEM_SIZE];
     process_data_t **processes;
     byte4_t process_count;
+    byte4_t dead_process_count;
     byte4_t total_cycles;
     sbyte2_t current_cycle;
     sbyte2_t cycle_to_die;

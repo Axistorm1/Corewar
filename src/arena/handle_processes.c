@@ -65,21 +65,31 @@ static void handle_new_instruction(
     proc->wait_cycles = (byte4_t)op_tab[proc->instruction->op_code].nbr_cycles;
 }
 
+void handle_non_alive(arena_t *arena, byte4_t *index)
+{
+    byte4_t i = *index;
+
+    arena->processes[i]->robot->process_count--;
+    if (arena->processes[i]->robot->process_count == 0)
+        arena->processes[i]->robot->alive = false;
+    free(arena->processes[i]);
+    arena->process_count--;
+    arena->processes[i] = arena->processes[arena->process_count];
+    (*index)--;
+    arena->dead_process_count++;
+}
+
 void kill_non_alive_processes(arena_t *arena)
 {
     for (byte4_t i = 0; i < arena->process_count; i++) {
-        if (!arena->processes[i]->alive) {
-            arena->processes[i]->robot->process_count--;
-            free(arena->processes[i]);
-            arena->process_count--;
-            arena->processes[i] = arena->processes[arena->process_count];
-            i--;
-        } else
+        if (!arena->processes[i]->alive)
+            handle_non_alive(arena, &i);
+        else
             arena->processes[i]->alive = false;
     }
 }
 
-int run_processes(arena_t *arena)
+void run_processes(arena_t *arena)
 {
     process_data_t *ptr = NULL;
 
@@ -89,7 +99,6 @@ int run_processes(arena_t *arena)
             handle_new_instruction(ptr, arena);
         ptr->wait_cycles--;
     }
-    return 0;
 }
 
 void *free_processes(

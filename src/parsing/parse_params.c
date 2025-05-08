@@ -34,7 +34,7 @@ static void get_values(
         if (type == P_DIRDEX)
             instruction->param_types[i] = PARAM_DIRDEX;
     }
-    if (type == P_REG) {
+    if (type == P_REG && bin[0] <= REG_NUMBER) {
         instruction->params[i].reg = (u_int8_t)bin[0];
         instruction->param_types[i] = PARAM_REG;
     }

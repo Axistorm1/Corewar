@@ -12,6 +12,11 @@ file(GLOB SOURCES
     src/arena/*.c
     src/parsing/*.c)
 
+if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
+    add_compile_definitions(BONUS_MODE=1)
+    set(SOURCES ${SOURCES} bonus/bonus.c)
+endif()
+
 add_executable(corewar ${SOURCES})
 
 target_include_directories(corewar PRIVATE include)
@@ -19,6 +24,9 @@ target_include_directories(corewar PRIVATE include)
 add_subdirectory(libs)
 
 target_link_libraries(corewar PRIVATE mystd)
+if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
+    target_link_libraries(corewar PRIVATE mystd ncurses)
+endif()
 
 target_include_directories(corewar PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/libs")
 

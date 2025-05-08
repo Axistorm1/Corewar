@@ -25,7 +25,7 @@ void print_arena_data(arena_t *arena);
 
 process_data_t *create_new_process(
     process_data_t *parent, robot_info_t *robot);
-int run_processes(arena_t *arena);
+void run_processes(arena_t *arena);
 void kill_non_alive_processes(arena_t *arena);
 void *free_processes(process_data_t **processes, byte4_t process_count);
 

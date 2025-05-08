@@ -10,6 +10,7 @@
 #include "my_string.h"
 #include "my_stdlib.h"
 #include "utils.h"
+#include "bonus.h"
 #include "arena.h"
 #include <stddef.h>
 #include <stdint.h>
@@ -55,7 +56,11 @@ int main(
         free_garbage();
         return 0;
     }
+    if (BONUS_MODE == 1)
+        launch_ncurses();
     create_arena(data);
     free_garbage();
+    if (BONUS_MODE == 1)
+        exit_ncurses();
     return 0;
 }

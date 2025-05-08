@@ -7,9 +7,11 @@
 
 #include "op.h"
 #include "structures.h"
+#include "corewar.h"
 #include "my_stdlib.h"
 #include "my_string.h"
 #include "arena.h"
+#include "bonus.h"
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -40,8 +42,6 @@ static arena_t *load_robots_to_arena(
 
 static bool keep_running(arena_t *arena)
 {
-    arena->current_cycle++;
-    arena->total_cycles++;
     if (arena->current_cycle > arena->cycle_to_die) {
         arena->current_cycle = 0;
         kill_non_alive_processes(arena);
@@ -50,16 +50,21 @@ static bool keep_running(arena_t *arena)
             arena->nbr_live = 0;
         }
     }
+    arena->current_cycle++;
+    arena->total_cycles++;
     if (arena->cycle_to_die <= 0 || arena->robots_alive <= 1
         || arena->process_count <= 1)
         return false;
     return true;
 }
 
-static void run_arena(arena_t *arena)
+static void run_arena(arena_t *arena, corewar_data_t *data)
 {
-    while (keep_running(arena))
+    while (keep_running(arena)) {
         run_processes(arena);
+        if (BONUS_MODE == 1)
+            run_ncurses(arena, data);
+    }
 }
 
 arena_t *create_arena(corewar_data_t *data)
@@ -68,7 +73,7 @@ arena_t *create_arena(corewar_data_t *data)
 
     arena->cycle_to_die = CYCLE_TO_DIE;
     load_robots_to_arena(data->robots, data->robot_count, arena);
-    run_arena(arena);
+    run_arena(arena, data);
     free_processes(arena->processes, arena->process_count);
     return arena;
 }

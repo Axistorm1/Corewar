@@ -13,6 +13,10 @@
 
     #define UNUSED [[gnu::unused]]
 
+    #ifndef BONUS_MODE
+        #define BONUS_MODE 0
+    #endif
+
     #define MAX_ROBOTS 1023
     #define MAX_CYCLES 236698
 

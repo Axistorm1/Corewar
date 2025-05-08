@@ -5,20 +5,30 @@
 ** live_instruction.c
 */
 
+#include "bonus.h"
+#include "corewar.h"
 #include "op.h"
 #include "structures.h"
-#include "utils.h"
+#include "my_stdlib.h"
 #include "my_string.h"
 #include <unistd.h>
 
 static void write_player_line(robot_info_t *robot)
 {
-    write(STDOUT_FILENO, "The player ", 11);
-    my_puts_nb(robot->prog_num);
-    write(STDOUT_FILENO, "(", 1);
-    write(STDOUT_FILENO, robot->header->prog_name,
-        my_strlen(robot->header->prog_name));
-    write(STDOUT_FILENO, ")is alive.\n", 11);
+    char player_line[200];
+
+    my_memset(player_line, 0, 200);
+    my_strcat(player_line, "The player ");
+    my_itoa(robot->prog_num, &player_line[11], 10);
+    my_strcat(player_line, "(");
+    my_strcat(player_line, robot->header->prog_name);
+    my_strcat(player_line, ")is alive.\n");
+    if (BONUS_MODE == 0) {
+        write(STDOUT_FILENO, player_line, my_strlen(player_line));
+        return;
+    }
+    if (BONUS_MODE == 1)
+        update_console_window(player_line, robot->prog_num);
 }
 
 static void handle_alive(process_data_t *process, arena_t *arena)
