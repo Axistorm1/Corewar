@@ -106,6 +106,7 @@ typedef enum signal_type_e {
     SKIP,
     KILL,
     CARRY,
+    REVIVE,
 } signal_type_t;
 
 // this shit structure is for the bonus part only
@@ -125,6 +126,7 @@ typedef struct windows_jungle_s {
     byte1_t signal;
     bool cursors;
     bool process_menu;
+    bool fullscreen_arena;
 } windows_jungle_t;
 
 typedef struct

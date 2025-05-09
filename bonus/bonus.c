@@ -5,6 +5,7 @@
 #include <alloca.h>
 #include <ctype.h>
 #include <ncurses.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -21,6 +22,9 @@ static int wgetch_l(WINDOW *window)
 static void update_arena_window(arena_t *arena)
 {
     WINDOW *wd = jungle->arena;
+
+    if (jungle->fullscreen_arena)
+        wd = newwin(LINES, COLS, 0, 0);
 
     int cols = getmaxx(wd) / 2 - 1;
     int lines = getmaxy(wd) - 2;
@@ -54,6 +58,12 @@ static void update_arena_window(arena_t *arena)
                 wattroff(wd, COLOR_PAIR(color_pair));
             }
         }
+    }
+    if (jungle->fullscreen_arena) {
+        box(wd, 0, 0);
+        mvwprintw(wd, 0, 4, "Arena");
+        wnoutrefresh(wd);
+        delwin(wd);
     }
 }
 
@@ -111,7 +121,7 @@ static void update_processes_info_window(arena_t *arena)
         process_data_t *data = arena->processes[i + (byte4_t)jungle->shown_process];
         wattron(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, (sbyte4_t)i + 1, 2, "Process #%-3d", i + 1 + (byte4_t)jungle->shown_process);
-        wprintw(wd,  "%5s", op_tab[data->instruction->op_code].mnemonique);
+        wprintw(wd,  "%5s -> %4d cycles", op_tab[data->instruction->op_code].mnemonique, data->wait_cycles);
         wattroff(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS + light_mode * LIGHT_MODE_OFFSET));
     }
 }
@@ -349,9 +359,10 @@ static void update_help_menu(void)
     mvwprintw(wd, arena_offset + 2, 2, "RIGHT\tIncrease speed");
     mvwprintw(wd, arena_offset + 3, 2, "UP\tMove up in arena");
     mvwprintw(wd, arena_offset + 4, 2, "DOWN\tMove down in arena");
+    mvwprintw(wd, arena_offset + 5, 2, "F\tToggle Fullscreen");
 
     // champions help
-    int champions_offset = arena_offset + 6;
+    int champions_offset = arena_offset + 7;
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, champions_offset, 2, "Champions:");
     wattroff(wd, A_UNDERLINE);
@@ -366,7 +377,8 @@ static void update_help_menu(void)
     mvwprintw(wd, processes_offset + 1, 2, "DOWN\tMove down in processes");
     mvwprintw(wd, processes_offset + 2, 2, "UP\tMove up in processes");
 
-    mvwprintw(wd, getmaxy(wd) - 1, getmaxx(wd) / 2 - 12, "Made by Axistorm with <3");
+    mvwprintw(wd, getmaxy(wd) - 2, (getmaxx(wd) - 12) / 2, "Made with <3");
+    mvwprintw(wd, getmaxy(wd) - 1, (getmaxx(wd) - 24) / 2, "by Axistorm and Arkcadia");
 
     // Something should change without these two lines but nothing does
     // It truly is black magic
@@ -456,7 +468,7 @@ void update_process_menu_window(arena_t *arena)
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, 13, 2, "Signals");
     wattroff(wd, A_UNDERLINE);
-    mvwprintw(wd, 14, 2, "1: Finish instruction  2: Kill process  3: Change carry");
+    mvwprintw(wd, 14, 2, "1: Finish instruction  2: Kill process  3: Change carry  4: Revive");
 
     if (jungle->signal == SKIP)
         process->wait_cycles = 0;
@@ -466,7 +478,10 @@ void update_process_menu_window(arena_t *arena)
     }
     if (jungle->signal == CARRY)
         process->carry = !process->carry;
-
+    if (jungle->signal == REVIVE) {
+        process->alive = true;
+        process->wait_cycles = (byte4_t)op_tab[instruction->op_code].nbr_cycles;
+    }
     wnoutrefresh(wd);
     delwin(wd);
 }
@@ -613,6 +628,8 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->arena_mem_line--;
     if (key == KEY_DOWN)
         jungle->arena_mem_line++;
+    if (key == 'f')
+        jungle->fullscreen_arena = !jungle->fullscreen_arena;
     handle_cycling_speed(key);
     return;
 
@@ -663,31 +680,36 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->signal = KILL;
     if (key == '3')
         jungle->signal = CARRY;
+    if (key == '4')
+        jungle->signal = REVIVE;
 }
 
 void run_ncurses(arena_t *arena, corewar_data_t *data)
 {
     erase();
-    if (light_mode) {
+    if (light_mode && !jungle->fullscreen_arena) {
         wbkgd(jungle->champions, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
         wbkgd(jungle->processes, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
         wbkgd(jungle->arena, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
         wbkgd(jungle->game_info, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
         wbkgd(jungle->console, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
-    } else {
+    } else if (!light_mode) {
         wbkgd(jungle->champions, COLOR_PAIR(0));
         wbkgd(jungle->processes, COLOR_PAIR(0));
         wbkgd(jungle->arena, COLOR_PAIR(0));
         wbkgd(jungle->game_info, COLOR_PAIR(0));
         wbkgd(jungle->console, COLOR_PAIR(0));
     }
-    update_champions_info_window(arena, data);
+
     update_arena_window(arena);
-    update_game_info(arena, data);
-    update_console_window(NULL, 0, 0);
-    update_processes_info_window(arena);
-    draw_borders();
-    update_process_menu_window(arena);
+    if (!jungle->fullscreen_arena) {
+        update_champions_info_window(arena, data);
+        update_game_info(arena, data);
+        update_console_window(NULL, 0, 0);
+        update_processes_info_window(arena);
+        draw_borders();
+        update_process_menu_window(arena);
+    }
     doupdate();
     handle_events(data, arena);
 }
@@ -733,7 +755,7 @@ void launch_ncurses(void)
     jungle->game_info = game_info;
     jungle->console = console;
 
-    jungle->arena_mem_line = 10000;
+    jungle->arena_mem_line = 10000 + arc4random() % 100;
     jungle->active_window = ARENA;
     jungle->arena_window_size = (MEM_SIZE / (COLS / 3)) - (LINES * 2 / 3 - 2);
 
