@@ -12,6 +12,8 @@
 #include "my_string.h"
 #include "arena.h"
 #include "bonus.h"
+#include "utils.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -60,10 +62,18 @@ static bool keep_running(arena_t *arena)
 
 static void run_arena(arena_t *arena, corewar_data_t *data)
 {
-    while (keep_running(arena)) {
+    while (keep_running(arena) && arena->total_cycles < data->dump_cycle) {
         run_processes(arena);
         if (BONUS_MODE == 1)
             run_ncurses(arena, data);
+    }
+    if (data->dump_cycle != (byte4_t)-1) {
+        for (byte2_t i = 0; i < MEM_SIZE; i += 32) {
+            for (byte1_t j = 0; j < 32; j++)
+                my_puts_hexa(arena->memory[i + j], 2);
+                //printf("%02X", arena->memory[i + j]);
+            printf("\n");
+        }
     }
 }
 

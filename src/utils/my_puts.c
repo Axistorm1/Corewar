@@ -7,6 +7,7 @@
 
 #include "my_stdlib.h"
 #include "my_string.h"
+#include "my_ctype.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,6 +45,8 @@ ssize_t my_puts_hexa(ssize_t nb, size_t leading_zeros)
     my_memset(zeros, '0', leading_zeros);
     my_memset(buffer, 0, 20);
     my_ltoa(nb, buffer, 16);
+    for (int i = 0; buffer[i]; i++)
+        buffer[i] = (char)my_toupper(buffer[i]);
     write(STDOUT_FILENO, zeros, leading_zeros - my_strlen(buffer));
     write(STDOUT_FILENO, buffer, my_strlen(buffer));
     return 0;

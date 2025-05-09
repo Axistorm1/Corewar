@@ -5,7 +5,6 @@
 #include <alloca.h>
 #include <ctype.h>
 #include <ncurses.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -47,7 +46,9 @@ static void update_arena_window(arena_t *arena)
         for (int x = 0; x < cols; x++) {
             int pos = (start_pos + y * cols + x) % MEM_SIZE;
             if (pos < MEM_SIZE) {
-                int color_pair = cursors[pos] * TOTAL_COLORS + arena->ownership_map[pos] % TOTAL_COLORS;
+                int color_pair = cursors[pos] * TOTAL_COLORS + arena->ownership_map[pos] % TOTAL_COLORS - cursors[pos];
+                if (light_mode && color_pair < TOTAL_COLORS)
+                    color_pair += TOTAL_COLORS * COLOR_WHITE;
                 wattron(wd, COLOR_PAIR(color_pair));
                 mvwprintw(wd, y + 1, (x << 1) + 1, "%02X", arena->memory[pos]);
                 wattroff(wd, COLOR_PAIR(color_pair));
@@ -85,13 +86,13 @@ static void update_champions_info_window(arena_t *arena, corewar_data_t *data)
     // status
     mvwprintw(wd, max_height + 1, 2, "Status: ");
     if (robot->alive) {
-        wattron(wd, COLOR_PAIR(2));
+        wattron(wd, COLOR_PAIR(COLOR_GREEN + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, max_height + 1, 10, "Alive");
-        wattroff(wd, COLOR_PAIR(2));
+        wattroff(wd, COLOR_PAIR(COLOR_GREEN + light_mode * LIGHT_MODE_OFFSET));
     } else {
-        wattron(wd, COLOR_PAIR(1));
+        wattron(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, max_height + 1, 10, "Dead");
-        wattroff(wd, COLOR_PAIR(1));
+        wattroff(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
     }
 
     mvwprintw(wd, max_height + 2, 2, "Process count: %d  ->  %.1f%%     ", robot->process_count, (float)robot->process_count / (float)arena->process_count * 100);
@@ -108,10 +109,10 @@ static void update_processes_info_window(arena_t *arena)
 
     for (byte4_t i = 0; i + (byte4_t)jungle->shown_process < arena->process_count && i < max_height; i++) {
         process_data_t *data = arena->processes[i + (byte4_t)jungle->shown_process];
-        wattron(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS));
+        wattron(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, (sbyte4_t)i + 1, 2, "Process #%-3d", i + 1 + (byte4_t)jungle->shown_process);
         wprintw(wd,  "%5s", op_tab[data->instruction->op_code].mnemonique);
-        wattroff(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS));
+        wattroff(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS + light_mode * LIGHT_MODE_OFFSET));
     }
 }
 
@@ -122,7 +123,7 @@ static int compare(const void* a, const void* b)
     return (x > y) - (x < y);
 }
 
-static void update_game_info(arena_t *arena)
+static void update_game_info(arena_t *arena, corewar_data_t *data)
 {
     WINDOW *wd = jungle->game_info;
 
@@ -133,14 +134,14 @@ static void update_game_info(arena_t *arena)
     mvwprintw(wd, 1, 40, "+%d/s", jungle->cycling_speed);
 
     // process count color
-    int color = COLOR_GREEN;
+    int color = COLOR_GREEN + light_mode * LIGHT_MODE_OFFSET;
 
     if (arena->process_count > 1000)
-        color = COLOR_YELLOW;
+        color = COLOR_YELLOW + light_mode * LIGHT_MODE_OFFSET;
     if (arena->process_count > 10000)
-        color = COLOR_ORANGE;
+        color = COLOR_ORANGE + light_mode * LIGHT_MODE_OFFSET;
     if (arena->process_count > 100000)
-        color = COLOR_RED;
+        color = COLOR_RED + light_mode * LIGHT_MODE_OFFSET;
     if (arena->process_count == 999999)
         color = COLOR_BLACK + TOTAL_COLORS;
 
@@ -151,16 +152,24 @@ static void update_game_info(arena_t *arena)
     mvwprintw(wd, 3, 25, "Live count: ");
     // color for the live count
     if (arena->nbr_live == NBR_LIVE) {
-        wattron(wd, COLOR_PAIR(2));
+        wattron(wd, COLOR_PAIR(COLOR_GREEN + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, 3, 37, "%d/%d\n", NBR_LIVE, NBR_LIVE);
-        wattroff(wd, COLOR_PAIR(2));
+        wattroff(wd, COLOR_PAIR(COLOR_GREEN + light_mode * LIGHT_MODE_OFFSET));
     } else {
-        wattron(wd, COLOR_PAIR(1));
+        wattron(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, 3, 37, "%d/%d\n", arena->nbr_live, NBR_LIVE);
-        wattroff(wd, COLOR_PAIR(1));
+        wattroff(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
     }
 
     mvwprintw(wd, 4, 2, "Dead processes: %d", arena->dead_process_count);
+
+    mvwprintw(wd, 5, 2, "Dump cycle: ");
+    if (data->dump_cycle == (byte4_t)-1) {
+        wattron(wd, COLOR_PAIR(COLOR_RED  + light_mode * LIGHT_MODE_OFFSET));
+        mvwprintw(wd, 5, 14, "Never");
+        wattroff(wd, COLOR_PAIR(COLOR_RED  + light_mode * LIGHT_MODE_OFFSET));
+    } else
+        mvwprintw(wd, 5, 14, "%d", data->dump_cycle);
 
     // this is the math to get the % of ownership
     byte4_t *copy = alloca(MEM_SIZE * sizeof(byte4_t));
@@ -203,9 +212,9 @@ static void update_game_info(arena_t *arena)
 
         wmove(wd, getcury(wd), current_x);
         if (values[i] == 0) {
-            wattron(wd, COLOR_PAIR(TOTAL_COLORS * (COLOR_WHITE)));
+            wattron(wd, COLOR_PAIR(LIGHT_MODE_OFFSET - light_mode * LIGHT_MODE_OFFSET + 1));
             whline(wd, ' ', segment_width);
-            wattroff(wd, COLOR_PAIR(TOTAL_COLORS * (COLOR_WHITE)));
+            wattroff(wd, COLOR_PAIR(LIGHT_MODE_OFFSET - light_mode * LIGHT_MODE_OFFSET + 1));
         } else {
             wattron(wd, COLOR_PAIR(values[i] % TOTAL_COLORS * TOTAL_COLORS + 1));
             whline(wd, ' ', segment_width);
@@ -254,9 +263,9 @@ void update_console_window(
 
     for (byte1_t i = 0; i < current_messages; i++) {
         mvwprintw(wd, i + 1 + max_messages - current_messages, 2, "%d: ", cycle_sent[i]);
-        wattron(wd, COLOR_PAIR(prog_nums[i]));
+        wattron(wd, COLOR_PAIR(prog_nums[i] + light_mode * LIGHT_MODE_OFFSET));
         wprintw(wd, "%s\n", messages[i]);
-        wattroff(wd, COLOR_PAIR(prog_nums[i]));
+        wattroff(wd, COLOR_PAIR(prog_nums[i] + light_mode * LIGHT_MODE_OFFSET));
     }
 }
 
@@ -280,6 +289,9 @@ static void display_corewar_ascii_logo(void)
     "##      ##    ## ##   ## ##      ## ### ## ##   ## ##   ## \n"
     " ######  ######  ##   ## #######  ### ###  ##   ## ##   ## \n";
 
+    if (light_mode)
+        wbkgd(wd, COLOR_PAIR(LIGHT_MODE_OFFSET));
+
     for (int i = 0; logo_array[i]; i++)
         if (logo_array[i] == 35) {
             wattron(wd, COLOR_PAIR(TOTAL_COLORS * COLOR_DARK_RED));
@@ -302,9 +314,12 @@ static void update_help_menu(void)
 
     WINDOW *wd = newwin(LINES - 6, 40, 5, COLS / 2 - 20);
 
-    wattron(wd, COLOR_PAIR(1));
+    if (light_mode)
+        wbkgd(wd, COLOR_PAIR(LIGHT_MODE_OFFSET));
+
+    wattron(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
     box(wd, 0, 0);
-    wattroff(wd, COLOR_PAIR(1));
+    wattroff(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
 
     mvwprintw(wd, 0, 4, "Help");
 
@@ -323,9 +338,10 @@ static void update_help_menu(void)
     mvwprintw(wd, 11, 2, ">\tIncrease cycles to die");
     mvwprintw(wd, 12, 2, "S\tFinish cycles round");
     mvwprintw(wd, 13, 2, "P\tOpen processes menu");
+    mvwprintw(wd, 14, 2, "B\tSwitch between light/dark mode");
 
     //arena help
-    int arena_offset = 15;
+    int arena_offset = 16;
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, arena_offset, 2, "Arena:");
     wattroff(wd, A_UNDERLINE);
@@ -380,7 +396,7 @@ static void update_help_menu(void)
 // top -> process number and robot
 // some stats/info
 // what to change (with numbers to use) [signals]
-void update_process_menu_window(arena_t *arena, corewar_data_t *data)
+void update_process_menu_window(arena_t *arena)
 {
     if (!jungle->process_menu)
         return;
@@ -391,6 +407,9 @@ void update_process_menu_window(arena_t *arena, corewar_data_t *data)
 
     keypad(wd, TRUE);
 
+    if (light_mode)
+        wbkgd(wd, COLOR_PAIR(LIGHT_MODE_OFFSET));
+
     box(wd, 0, 0);
     mvwprintw(wd, 0, 4, "Processes menu");
 
@@ -400,24 +419,24 @@ void update_process_menu_window(arena_t *arena, corewar_data_t *data)
     // status
     mvwprintw(wd, 3, 2, "Status: ");
     if (process->alive) {
-        wattron(wd, COLOR_PAIR(2));
+        wattron(wd, COLOR_PAIR(COLOR_GREEN + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, 3, 10, "Alive");
-        wattroff(wd, COLOR_PAIR(2));
+        wattroff(wd, COLOR_PAIR(COLOR_GREEN + light_mode * LIGHT_MODE_OFFSET));
     } else {
-        wattron(wd, COLOR_PAIR(1));
+        wattron(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, 3, 10, "Dead");
-        wattroff(wd, COLOR_PAIR(1));
+        wattroff(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
     }
     // carry
     mvwprintw(wd, 3, 25, "Carry: ");
     if (process->carry) {
-        wattron(wd, COLOR_PAIR(2));
+        wattron(wd, COLOR_PAIR(COLOR_GREEN + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, 3, 32, "True");
-        wattroff(wd, COLOR_PAIR(2));
+        wattroff(wd, COLOR_PAIR(COLOR_GREEN + light_mode * LIGHT_MODE_OFFSET));
     } else {
-        wattron(wd, COLOR_PAIR(1));
+        wattron(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, 3, 32, "False");
-        wattroff(wd, COLOR_PAIR(1));
+        wattroff(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
     }
 
     mvwprintw(wd, 4, 2, "Program counter: %-5d Wait cycles: %-5d Lifetime: %d", process->pc, process->wait_cycles, arena->total_cycles - process->cycle_born);
@@ -472,7 +491,7 @@ static void draw_borders(void)
     WINDOW *active = get_active();
 
     if (light_mode)
-        wbkgd(stdscr, COLOR_PAIR(TOTAL_COLORS * 7));
+        wbkgd(active, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
 
     box(jungle->champions, 0, 0);
     box(jungle->processes, 0, 0);
@@ -480,9 +499,15 @@ static void draw_borders(void)
     box(jungle->game_info, 0, 0);
     box(jungle->console, 0, 0);
 
-    wattron(active, COLOR_PAIR(2));
-    box(active, 0, 0);
-    wattroff(active, COLOR_PAIR(2));
+    if (light_mode) {
+        wattron(active, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE + COLOR_DARK_RED));
+        box(active, 0, 0);
+        wattroff(active, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE + COLOR_DARK_RED));
+    } else {
+        wattron(active, COLOR_PAIR(COLOR_GREEN));
+        box(active, 0, 0);
+        wattroff(active, COLOR_PAIR(COLOR_GREEN));
+    }
 
     mvwprintw(jungle->champions, 0, 4, "Champions");
     mvwprintw(jungle->processes, 0, 4, "Processes");
@@ -552,6 +577,10 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
     // cursors toggle
     if (key == 'c')
         jungle->cursors = !jungle->cursors;
+
+    // light/dark mode
+    if (key == 'b')
+        light_mode = !light_mode;
 
     // speed modifications
     if (key == '+')
@@ -639,13 +668,26 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
 void run_ncurses(arena_t *arena, corewar_data_t *data)
 {
     erase();
+    if (light_mode) {
+        wbkgd(jungle->champions, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
+        wbkgd(jungle->processes, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
+        wbkgd(jungle->arena, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
+        wbkgd(jungle->game_info, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
+        wbkgd(jungle->console, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
+    } else {
+        wbkgd(jungle->champions, COLOR_PAIR(0));
+        wbkgd(jungle->processes, COLOR_PAIR(0));
+        wbkgd(jungle->arena, COLOR_PAIR(0));
+        wbkgd(jungle->game_info, COLOR_PAIR(0));
+        wbkgd(jungle->console, COLOR_PAIR(0));
+    }
     update_champions_info_window(arena, data);
     update_arena_window(arena);
-    update_game_info(arena);
+    update_game_info(arena, data);
     update_console_window(NULL, 0, 0);
     update_processes_info_window(arena);
     draw_borders();
-    update_process_menu_window(arena, data);
+    update_process_menu_window(arena);
     doupdate();
     handle_events(data, arena);
 }

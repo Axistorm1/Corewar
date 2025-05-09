@@ -32,7 +32,7 @@ static corewar_data_t *initialize_data(
 {
     corewar_data_t *data = my_calloc(1, sizeof(corewar_data_t));
 
-    data->dump_cycle = MAX_CYCLES + 1;
+    data->dump_cycle = (byte4_t)-1;
     data->robots = my_calloc((my_size_t)argc, sizeof(robot_info_t *));
     if (!check_args(argc, argv, data))
         return NULL;
