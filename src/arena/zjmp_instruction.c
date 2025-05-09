@@ -21,6 +21,7 @@ int execute_zjmp_instruction(
         return 1;
     if (instruction->param_types[0] == PARAM_DIRDEX)
         value = instruction->params[0].index;
-    process->pc = update_program_counter(process->pc, (sbyte2_t)(value % IDX_MOD));
+    process->pc = update_program_counter(process->pc,
+        (sbyte2_t)(value % IDX_MOD));
     return 0;
 }
