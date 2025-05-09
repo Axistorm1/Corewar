@@ -41,18 +41,21 @@ static arena_t *load_robots_to_arena(
     return arena;
 }
 
-static bool keep_running(arena_t *arena)
+static bool keep_running(arena_t *arena, corewar_data_t *data)
 {
     arena->current_cycle++;
     arena->total_cycles++;
     if (arena->current_cycle > arena->cycle_to_die) {
         arena->current_cycle = 0;
-        kill_non_alive_processes(arena);
+        kill_non_alive_processes(arena, data);
         if (arena->nbr_live >= NBR_LIVE) {
             arena->cycle_to_die -= CYCLE_DELTA;
             arena->nbr_live = 0;
         }
     }
+    arena->robots_alive = 0;
+    for (byte2_t i = 0; i < data->robot_count; i++)
+        arena->robots_alive += data->robots[i]->process_count != 0;
     if (arena->cycle_to_die <= 0 || arena->robots_alive <= 1
         || arena->process_count <= 1)
         return false;
@@ -70,7 +73,8 @@ static void dump_memory(arena_t *arena)
 
 static void run_arena(arena_t *arena, corewar_data_t *data)
 {
-    while (keep_running(arena) && arena->total_cycles < data->dump_cycle) {
+    while (keep_running(arena, data)
+        && arena->total_cycles < data->dump_cycle) {
         run_processes(arena);
         if (BONUS_MODE == 1)
             run_ncurses(arena, data);

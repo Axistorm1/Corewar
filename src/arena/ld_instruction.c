@@ -33,7 +33,9 @@ int execute_lld_instruction(
         PARAM_DIR | PARAM_IND, arena, process);
     if (value == 1l << 32)
         return 1;
-    if (instruction->param_types[1] == PARAM_REG)
+    if (instruction->param_types[1] == PARAM_REG) {
         process->registers[instruction->params[1].reg] = (sbyte4_t)value;
+        process->carry = value == 0;
+    }
     return 1;
 }

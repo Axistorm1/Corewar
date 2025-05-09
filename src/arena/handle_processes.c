@@ -35,6 +35,7 @@ process_data_t *create_new_process(
     process->parent = parent;
     process->robot = robot;
     process->pc = robot->mem_adr;
+    process->registers[0] = robot->prog_num;
     if (parent)
         process->pc = parent->pc;
     robot->process_count++;
@@ -79,7 +80,7 @@ void handle_non_alive(arena_t *arena, byte4_t *index)
     arena->dead_process_count++;
 }
 
-void kill_non_alive_processes(arena_t *arena)
+void kill_non_alive_processes(arena_t *arena, corewar_data_t *data)
 {
     for (byte4_t i = 0; i < arena->process_count; i++) {
         if (!arena->processes[i]->alive)

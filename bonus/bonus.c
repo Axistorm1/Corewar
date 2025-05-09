@@ -63,7 +63,10 @@ static void update_arena_window(arena_t *arena)
         for (int x = 0; x < cols; x++) {
             int pos = (start_pos + y * cols + x) % MEM_SIZE;
             if (pos < MEM_SIZE) {
-                byte4_t color_pair = cursors[pos] * TOTAL_COLORS + arena->ownership_map[pos] % TOTAL_COLORS - cursors[pos];
+                byte4_t color_pair = arena->ownership_map[pos] % TOTAL_COLORS;
+                if (color_pair != 0)
+                    color_pair -= cursors[pos];
+                color_pair += cursors[pos] * TOTAL_COLORS;
                 if (light_mode && color_pair < TOTAL_COLORS)
                     color_pair += TOTAL_COLORS * COLOR_WHITE;
                 wattron(wd, COLOR_PAIR(color_pair));
@@ -185,6 +188,7 @@ static void update_game_info(arena_t *arena, corewar_data_t *data)
     }
 
     mvwprintw(wd, 4, 2, "Dead processes: %d", arena->dead_process_count);
+    mvwprintw(wd, 4, 25, "Robots alive: %d", arena->robots_alive);
 
     mvwprintw(wd, 5, 2, "Dump cycle: ");
     if (data->dump_cycle == (byte4_t)-1) {
@@ -469,7 +473,7 @@ void update_process_menu_window(arena_t *arena)
 
     // instruction
     instruction_t *instruction = process->instruction;
-    mvwprintw(wd, 5, 2, "Instruction: %-9s Coding byte: %d", op_tab[instruction->op_code].mnemonique, instruction->coding_byte);
+    mvwprintw(wd, 5, 2, "Instruction: %-9s Coding byte: %d Size: %d", op_tab[instruction->op_code].mnemonique, instruction->coding_byte, instruction->size);
 
     // registers
     wattron(wd, A_UNDERLINE);
@@ -703,7 +707,6 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
 
 void run_ncurses(arena_t *arena, corewar_data_t *data)
 {
-    erase();
     if (light_mode && !jungle->fullscreen_arena) {
         wbkgd(jungle->champions, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
         wbkgd(jungle->processes, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
@@ -760,11 +763,12 @@ void launch_ncurses(void)
         init_pair(i + TOTAL_COLORS * 9, i, COLOR_DARK_RED);
     }
 
+    // need to get actual values instead of rounded approximations
     WINDOW *champions = subwin(stdscr, LINES / 3, COLS / 2, 0, 0);
     WINDOW *processes = subwin(stdscr, LINES / 3, COLS / 2, 0, COLS / 2);
     WINDOW *arena = subwin(stdscr, LINES * 2 / 3, COLS * 2 / 3, LINES / 3, 0);
-    WINDOW *game_info = subwin(stdscr, LINES / 3, COLS / 3, LINES / 3, COLS / 3 * 2);
-    WINDOW *console = subwin(stdscr, LINES / 3, COLS / 3, LINES / 3 * 2, COLS / 3 * 2);
+    WINDOW *game_info = subwin(stdscr, LINES / 3, COLS / 3, LINES / 3, COLS * 2 / 3);
+    WINDOW *console = subwin(stdscr, LINES / 3, COLS / 3, LINES * 2 / 3, COLS * 2 / 3);
 
     jungle->champions = champions;
     jungle->processes = processes;
@@ -776,7 +780,7 @@ void launch_ncurses(void)
     jungle->active_window = ARENA;
     jungle->arena_window_size = (MEM_SIZE / (COLS / 3)) - (LINES * 2 / 3 - 2);
 
-    jungle->cycling_speed = 100;
+    jungle->cycling_speed = 1;
 
     jungle->cursors = true;
 

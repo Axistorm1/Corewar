@@ -22,6 +22,7 @@ int execute_add_instruction(
             value = process->registers[instruction->params[0].reg] +
                 process->registers[instruction->params[1].reg];
         process->registers[instruction->params[2].reg] = (sbyte4_t)value;
+        process->carry = value == 0;
     }
     return 1;
 }
@@ -39,6 +40,7 @@ int execute_sub_instruction(
             value = process->registers[instruction->params[0].reg] -
                 process->registers[instruction->params[1].reg];
         process->registers[instruction->params[0].reg] = (sbyte4_t)value;
+        process->carry = value == 0;
     }
     return 1;
 }

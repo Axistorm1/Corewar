@@ -25,7 +25,7 @@ add_subdirectory(libs)
 
 target_link_libraries(corewar PRIVATE mystd)
 if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
-    target_link_libraries(corewar PRIVATE mystd ncurses)
+    target_link_libraries(corewar PRIVATE mystd ncurses m)
 endif()
 
 target_include_directories(corewar PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/libs")
