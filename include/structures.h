@@ -91,28 +91,40 @@ PACKED robot_info_s {
     bool alive;
 } robot_info_t;
 
+// BONUS ONLY
 typedef enum active_window_e {
     CHAMPIONS_INFO,
     PROCESSES_INFO,
     ARENA,
     GAME_INFO,
     CONSOLE,
-
 } active_window_t;
 
+// BONUS ONLY
+typedef enum signal_type_e {
+    NO_SIGNAL,
+    SKIP,
+    KILL,
+    CARRY,
+} signal_type_t;
+
+// this shit structure is for the bonus part only
 typedef struct windows_jungle_s {
-    WINDOW *champions_info;
-    WINDOW *processes_info;
+    WINDOW *champions;
+    WINDOW *processes;
     WINDOW *arena;
     WINDOW *game_info;
     WINDOW *console;
     sbyte4_t arena_window_size;
     sbyte4_t current_robot_info;
     sbyte4_t shown_process;
-    int arena_mem_line;
+    sbyte4_t arena_mem_line;
+    byte4_t current_process;
     byte2_t cycling_speed;
     byte1_t active_window;
+    byte1_t signal;
     bool cursors;
+    bool process_menu;
 } windows_jungle_t;
 
 typedef struct
@@ -131,6 +143,7 @@ PACKED process_data_s {
     instruction_t *instruction;
     sbyte4_t registers[REG_NUMBER];
     byte4_t wait_cycles;
+    byte4_t cycle_born;
     byte2_t pc;
     bool carry;
     bool alive;

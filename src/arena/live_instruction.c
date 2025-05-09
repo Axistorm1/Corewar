@@ -13,7 +13,7 @@
 #include "my_string.h"
 #include <unistd.h>
 
-static void write_player_line(robot_info_t *robot)
+static void write_player_line(robot_info_t *robot, arena_t *arena)
 {
     char player_line[200];
 
@@ -28,7 +28,8 @@ static void write_player_line(robot_info_t *robot)
         return;
     }
     if (BONUS_MODE == 1)
-        update_console_window(player_line, robot->prog_num);
+        update_console_window(
+            player_line, robot->prog_num, arena->total_cycles);
 }
 
 static void handle_alive(process_data_t *process, arena_t *arena)
@@ -37,7 +38,7 @@ static void handle_alive(process_data_t *process, arena_t *arena)
     process->robot->alive = true;
     if (arena->nbr_live < NBR_LIVE)
         arena->nbr_live++;
-    write_player_line(process->robot);
+    write_player_line(process->robot, arena);
 }
 
 static bool find_process(

@@ -42,6 +42,8 @@ static arena_t *load_robots_to_arena(
 
 static bool keep_running(arena_t *arena)
 {
+    arena->current_cycle++;
+    arena->total_cycles++;
     if (arena->current_cycle > arena->cycle_to_die) {
         arena->current_cycle = 0;
         kill_non_alive_processes(arena);
@@ -50,8 +52,6 @@ static bool keep_running(arena_t *arena)
             arena->nbr_live = 0;
         }
     }
-    arena->current_cycle++;
-    arena->total_cycles++;
     if (arena->cycle_to_die <= 0 || arena->robots_alive <= 1
         || arena->process_count <= 1)
         return false;

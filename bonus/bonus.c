@@ -5,25 +5,28 @@
 #include <alloca.h>
 #include <ctype.h>
 #include <ncurses.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-windows_jungle_t *jungle = NULL;
-bool light_mode = false;
+static windows_jungle_t *jungle = NULL;
+static bool light_mode = false;
 
 static int wgetch_l(WINDOW *window)
 {
     return tolower(wgetch(window));
 }
 
-// make memory arena wrap around itself
+// add fullscreen toggle
 static void update_arena_window(arena_t *arena)
 {
     WINDOW *wd = jungle->arena;
 
-    int cols = getmaxx(wd) / 2;
+    int cols = getmaxx(wd) / 2 - 1;
     int lines = getmaxy(wd) - 2;
+
+    werase(wd);
 
     int start_pos = (jungle->arena_mem_line * cols) % MEM_SIZE;
     if (start_pos < 0)
@@ -38,7 +41,7 @@ static void update_arena_window(arena_t *arena)
         for (byte4_t i = 0; i < arena->process_count; i++)
             cursors[arena->processes[i]->pc] = arena->processes[i]->robot->prog_num % TOTAL_COLORS;
 
-    werase(wd);
+    // draw the memory arena
     wmove(wd, 0, 0);
     for (int y = 0; y < lines; y++) {
         for (int x = 0; x < cols; x++) {
@@ -55,7 +58,7 @@ static void update_arena_window(arena_t *arena)
 
 static void update_champions_info_window(arena_t *arena, corewar_data_t *data)
 {
-    WINDOW *wd = jungle->champions_info;
+    WINDOW *wd = jungle->champions;
     robot_info_t *robot = data->robots[jungle->current_robot_info];
 
     werase(wd);
@@ -95,9 +98,10 @@ static void update_champions_info_window(arena_t *arena, corewar_data_t *data)
     wprintw(wd, "Starting adress: %d", robot->mem_adr);
 }
 
+// replace registers by something more... fancy?
 static void update_processes_info_window(arena_t *arena)
 {
-    WINDOW *wd = jungle->processes_info;
+    WINDOW *wd = jungle->processes;
     byte4_t max_height = (byte4_t)getmaxy(wd) - 2;
 
     werase(wd);
@@ -105,11 +109,8 @@ static void update_processes_info_window(arena_t *arena)
     for (byte4_t i = 0; i + (byte4_t)jungle->shown_process < arena->process_count && i < max_height; i++) {
         process_data_t *data = arena->processes[i + (byte4_t)jungle->shown_process];
         wattron(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS));
-        mvwprintw(wd, (sbyte4_t)i + 1, 1, "Process #%-3d", i + 1 + (byte4_t)jungle->shown_process);
-        wprintw(wd,  "%5s -> {", op_tab[data->instruction->op_code].mnemonique);
-        for (byte1_t i = 0; i < REG_NUMBER - 1; i++)
-            wprintw(wd, "%d,", data->registers[i]);
-        wprintw(wd, "%d}", data->registers[15]);
+        mvwprintw(wd, (sbyte4_t)i + 1, 2, "Process #%-3d", i + 1 + (byte4_t)jungle->shown_process);
+        wprintw(wd,  "%5s", op_tab[data->instruction->op_code].mnemonique);
         wattroff(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS));
     }
 }
@@ -217,20 +218,21 @@ static void update_game_info(arena_t *arena)
     }
 }
 
-// add colors
-// add a drawing based on remaining side based on each line
-void update_console_window(char *str, byte2_t prog_num)
+void update_console_window(
+    char *str,
+    byte2_t prog_num,
+    byte4_t cycle)
 {
     WINDOW *wd = jungle->console;
-    int max_messages = getmaxy(wd) - 5;
+    int max_messages = getmaxy(wd) - 2;
 
     if (!str)
         goto draw;
 
     static char *messages[100];
     static byte2_t prog_nums[100];
+    static byte4_t cycle_sent[100];
     static byte1_t current_messages = 0;
-    static byte4_t total_messages = 0;
 
     // handle messages
     if (current_messages >= max_messages) {
@@ -238,23 +240,20 @@ void update_console_window(char *str, byte2_t prog_num)
         for (byte1_t i = 0; i < current_messages - 1; i++) {
             messages[i] = messages[i + 1];
             prog_nums[i] = prog_nums[i + 1];
+            cycle_sent[i] = cycle_sent[i + 1];
         }
         current_messages--;
     }
     messages[current_messages] = strdup(str);
     prog_nums[current_messages] = prog_num % TOTAL_COLORS;
+    cycle_sent[current_messages] = cycle;
     current_messages++;
-    total_messages++;
 
     draw:
     werase(wd);
 
-    wattron(wd, A_UNDERLINE);
-    mvwprintw(wd, 1, getmaxx(wd) / 2 - 5, "CONSOLE:\n");
-    wattroff(wd, A_UNDERLINE);
-
     for (byte1_t i = 0; i < current_messages; i++) {
-        mvwprintw(wd, i + 3 + max_messages - current_messages, 2, "%2d: ", total_messages - current_messages + i + 1);
+        mvwprintw(wd, i + 1 + max_messages - current_messages, 2, "%d: ", cycle_sent[i]);
         wattron(wd, COLOR_PAIR(prog_nums[i]));
         wprintw(wd, "%s\n", messages[i]);
         wattroff(wd, COLOR_PAIR(prog_nums[i]));
@@ -268,39 +267,93 @@ static void quit_ncurses(void)
     exit(0);
 }
 
-void update_help_menu(void)
+static void display_corewar_ascii_logo(void)
 {
-    WINDOW *wd = newwin(LINES - 5, COLS / 3, 2, COLS / 3);
+    WINDOW *wd = newwin(5, 60, 0, (COLS - 60) / 2);
+
+    werase(wd);
+
+    byte1_t logo_array[] =
+    " ######  ######  ######  ####### ##     ##  #####  ######  \n"
+    "##      ##    ## ##   ## ##      ##     ## ##   ## ##   ## \n"
+    "##      ##    ## ######  #####   ##  #  ## ####### ######  \n"
+    "##      ##    ## ##   ## ##      ## ### ## ##   ## ##   ## \n"
+    " ######  ######  ##   ## #######  ### ###  ##   ## ##   ## \n";
+
+    for (int i = 0; logo_array[i]; i++)
+        if (logo_array[i] == 35) {
+            wattron(wd, COLOR_PAIR(TOTAL_COLORS * COLOR_DARK_RED));
+            waddch(wd, ' ');
+            wattroff(wd, COLOR_PAIR(TOTAL_COLORS * COLOR_DARK_RED));
+        } else if (logo_array[i] == '\n')
+            waddch(wd, '\n');
+        else
+            waddch(wd, logo_array[i]);
+
+    wnoutrefresh(wd);
+    doupdate();
+    delwin(wd);
+}
+
+// maybe add a big COREWAR ascii? like btop (UwU btop my beloved)
+static void update_help_menu(void)
+{
+    display_corewar_ascii_logo();
+
+    WINDOW *wd = newwin(LINES - 6, 40, 5, COLS / 2 - 20);
 
     wattron(wd, COLOR_PAIR(1));
     box(wd, 0, 0);
     wattroff(wd, COLOR_PAIR(1));
 
-    wattron(wd, A_UNDERLINE);
-    mvwprintw(wd, 1, 2, "HELP MENU");
-    wattroff(wd, A_UNDERLINE);
+    mvwprintw(wd, 0, 4, "Help");
 
-    mvwprintw(wd, 3, 2, "H\tOpen this help menu");
+    wattron(wd, A_UNDERLINE);
+    mvwprintw(wd, 2, 2, "Key:");
+    mvwprintw(wd, 2, 8, "Description:");
+    wattroff(wd, A_UNDERLINE);
+    mvwprintw(wd, 3, 2, "H\tOpen the help window");
     mvwprintw(wd, 4, 2, "TAB\tSwitch active window");
     mvwprintw(wd, 5, 2, "SPACE\tPause game");
     mvwprintw(wd, 6, 2, "C\tEnable/Disable cursors");
-    mvwprintw(wd, 7, 2, "+\tIncrease speed to maximum");
-    mvwprintw(wd, 8, 2, "-\tDecrease speed to minimum");
+    mvwprintw(wd, 7, 2, "Q\tQuit the game");
+    mvwprintw(wd, 8, 2, "+\tIncrease speed to maximum");
+    mvwprintw(wd, 9, 2, "-\tDecrease speed to minimum");
+    mvwprintw(wd, 10, 2, "<\tDecrease cycles to die");
+    mvwprintw(wd, 11, 2, ">\tIncrease cycles to die");
+    mvwprintw(wd, 12, 2, "S\tFinish cycles round");
+    mvwprintw(wd, 13, 2, "P\tOpen processes menu");
 
-    int arena_offset = 10;
     //arena help
+    int arena_offset = 15;
+    wattron(wd, A_UNDERLINE);
     mvwprintw(wd, arena_offset, 2, "Arena:");
+    wattroff(wd, A_UNDERLINE);
     mvwprintw(wd, arena_offset + 1, 2, "LEFT\tDecrease speed");
     mvwprintw(wd, arena_offset + 2, 2, "RIGHT\tIncrease speed");
     mvwprintw(wd, arena_offset + 3, 2, "UP\tMove up in arena");
     mvwprintw(wd, arena_offset + 4, 2, "DOWN\tMove down in arena");
 
+    // champions help
     int champions_offset = arena_offset + 6;
-    // champions info help
-    mvwprintw(wd, champions_offset, 2, "Champions info:");
+    wattron(wd, A_UNDERLINE);
+    mvwprintw(wd, champions_offset, 2, "Champions:");
+    wattroff(wd, A_UNDERLINE);
     mvwprintw(wd, champions_offset + 1, 2, "LEFT\tCycle left through champions");
     mvwprintw(wd, champions_offset + 2, 2, "RIGHT\tCycle right through champions");
 
+    // processes help
+    int processes_offset = champions_offset + 4;
+    wattron(wd, A_UNDERLINE);
+    mvwprintw(wd, processes_offset, 2, "Processes:");
+    wattroff(wd, A_UNDERLINE);
+    mvwprintw(wd, processes_offset + 1, 2, "DOWN\tMove down in processes");
+    mvwprintw(wd, processes_offset + 2, 2, "UP\tMove up in processes");
+
+    mvwprintw(wd, getmaxy(wd) - 1, getmaxx(wd) / 2 - 12, "Made by Axistorm with <3");
+
+    // Something should change without these two lines but nothing does
+    // It truly is black magic
     wnoutrefresh(wd);
     doupdate();
 
@@ -310,6 +363,10 @@ void update_help_menu(void)
     while (key != 'h') {
         if (key == 'q')
             quit_ncurses();
+        if (key == 'p') {
+            jungle->process_menu = true;
+            break;
+        }
         key = wgetch_l(wd);
     }
 
@@ -317,14 +374,90 @@ void update_help_menu(void)
     werase(wd);
     wnoutrefresh(wd);
     doupdate();
+    delwin(wd);
+}
+
+// top -> process number and robot
+// some stats/info
+// what to change (with numbers to use) [signals]
+void update_process_menu_window(arena_t *arena, corewar_data_t *data)
+{
+    if (!jungle->process_menu)
+        return;
+
+    WINDOW *wd = newwin(LINES / 2, COLS / 2, LINES / 4, COLS / 4);
+
+    werase(wd);
+
+    keypad(wd, TRUE);
+
+    box(wd, 0, 0);
+    mvwprintw(wd, 0, 4, "Processes menu");
+
+    process_data_t *process = arena->processes[jungle->current_process];
+
+    mvwprintw(wd, 1, 2, "Process #%-4d Robot: %s", jungle->current_process + 1, process->robot->header->prog_name);
+    // status
+    mvwprintw(wd, 3, 2, "Status: ");
+    if (process->alive) {
+        wattron(wd, COLOR_PAIR(2));
+        mvwprintw(wd, 3, 10, "Alive");
+        wattroff(wd, COLOR_PAIR(2));
+    } else {
+        wattron(wd, COLOR_PAIR(1));
+        mvwprintw(wd, 3, 10, "Dead");
+        wattroff(wd, COLOR_PAIR(1));
+    }
+    // carry
+    mvwprintw(wd, 3, 25, "Carry: ");
+    if (process->carry) {
+        wattron(wd, COLOR_PAIR(2));
+        mvwprintw(wd, 3, 32, "True");
+        wattroff(wd, COLOR_PAIR(2));
+    } else {
+        wattron(wd, COLOR_PAIR(1));
+        mvwprintw(wd, 3, 32, "False");
+        wattroff(wd, COLOR_PAIR(1));
+    }
+
+    mvwprintw(wd, 4, 2, "Program counter: %-5d Wait cycles: %-5d Lifetime: %d", process->pc, process->wait_cycles, arena->total_cycles - process->cycle_born);
+
+    // instruction
+    instruction_t *instruction = process->instruction;
+    mvwprintw(wd, 5, 2, "Instruction: %-9s Coding byte: %d", op_tab[instruction->op_code].mnemonique, instruction->coding_byte);
+
+    // registers
+    wattron(wd, A_UNDERLINE);
+    mvwprintw(wd, 7, 17, "Registers");
+    wattroff(wd, A_UNDERLINE);
+    for (byte1_t i = 0; i < REG_NUMBER / 4; i++)
+        mvwprintw(wd, 8 + i, 2, "%-10d| %-10d| %-10d| %-10d", process->registers[i * 4], process->registers[i * 4 + 1], process->registers[i * 4 + 2], process->registers[i * 4 + 3]);
+
+    // signals
+    wattron(wd, A_UNDERLINE);
+    mvwprintw(wd, 13, 2, "Signals");
+    wattroff(wd, A_UNDERLINE);
+    mvwprintw(wd, 14, 2, "1: Finish instruction  2: Kill process  3: Change carry");
+
+    if (jungle->signal == SKIP)
+        process->wait_cycles = 0;
+    if (jungle->signal == KILL) {
+        process->alive = false;
+        process->wait_cycles = (byte4_t)-1;
+    }
+    if (jungle->signal == CARRY)
+        process->carry = !process->carry;
+
+    wnoutrefresh(wd);
+    delwin(wd);
 }
 
 static WINDOW *get_active(void)
 {
     if (jungle->active_window == CHAMPIONS_INFO)
-        return jungle->champions_info;
+        return jungle->champions;
     if (jungle->active_window == PROCESSES_INFO)
-        return jungle->processes_info;
+        return jungle->processes;
     if (jungle->active_window == ARENA)
         return jungle->arena;
     if (jungle->active_window == GAME_INFO)
@@ -338,8 +471,11 @@ static void draw_borders(void)
 {
     WINDOW *active = get_active();
 
-    box(jungle->champions_info, 0, 0);
-    box(jungle->processes_info, 0, 0);
+    if (light_mode)
+        wbkgd(stdscr, COLOR_PAIR(TOTAL_COLORS * 7));
+
+    box(jungle->champions, 0, 0);
+    box(jungle->processes, 0, 0);
     box(jungle->arena, 0, 0);
     box(jungle->game_info, 0, 0);
     box(jungle->console, 0, 0);
@@ -348,13 +484,17 @@ static void draw_borders(void)
     box(active, 0, 0);
     wattroff(active, COLOR_PAIR(2));
 
-    wnoutrefresh(jungle->champions_info);
-    wnoutrefresh(jungle->processes_info);
+    mvwprintw(jungle->champions, 0, 4, "Champions");
+    mvwprintw(jungle->processes, 0, 4, "Processes");
+    mvwprintw(jungle->arena, 0, 4, "Arena");
+    mvwprintw(jungle->game_info, 0, 4, "Game info");
+    mvwprintw(jungle->console, 0, 4, "Console");
+
+    wnoutrefresh(jungle->champions);
+    wnoutrefresh(jungle->processes);
     wnoutrefresh(jungle->arena);
     wnoutrefresh(jungle->game_info);
     wnoutrefresh(jungle->console);
-
-    doupdate();
 }
 
 static void handle_cycling_speed(int key)
@@ -363,10 +503,6 @@ static void handle_cycling_speed(int key)
         jungle->cycling_speed--;
     if (key == KEY_RIGHT && jungle->cycling_speed < 1000)
         jungle->cycling_speed++;
-    if (key == '+')
-        jungle->cycling_speed = 1000;
-    if (key == '-')
-        jungle->cycling_speed = 1;
 }
 
 static void handle_events(corewar_data_t *data, arena_t *arena)
@@ -378,14 +514,18 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
 
     int key = wgetch_l(wd);
 
+    // quit
     if (key == 'q')
         quit_ncurses();
 
+    // switch active
     if (key == KEY_STAB || key == '\t')
         jungle->active_window++;
     if (jungle->active_window > CONSOLE)
         jungle->active_window = CHAMPIONS_INFO;
 
+    // pause
+    // bug pausing in process menu
     if (key == ' ') {
         werase(jungle->arena);
         box(jungle->arena, 0, 0);
@@ -401,12 +541,32 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         }
     }
 
+    // help menu
     if (key == 'h')
         update_help_menu();
 
+    // processes menu
+    if (key == 'p')
+        jungle->process_menu = !jungle->process_menu;
+
+    // cursors toggle
     if (key == 'c')
         jungle->cursors = !jungle->cursors;
 
+    // speed modifications
+    if (key == '+')
+        jungle->cycling_speed = 1000;
+    if (key == '-')
+        jungle->cycling_speed = 1;
+    if (key == 's')
+        arena->current_cycle = arena->cycle_to_die;
+    if (key == '<')
+        arena->cycle_to_die -= 5;
+    if (key == '>')
+        arena->cycle_to_die += 5;
+
+    if (jungle->process_menu)
+        goto process_menu;
     if (jungle->active_window == ARENA)
         goto arena;
     if (jungle->active_window == CHAMPIONS_INFO)
@@ -428,7 +588,7 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
     return;
 
     processes_info:
-    if (key == KEY_DOWN && jungle->shown_process + getmaxy(jungle->processes_info) - 2 < (sbyte4_t)arena->process_count)
+    if (key == KEY_DOWN && jungle->shown_process + getmaxy(jungle->processes) - 2 < (sbyte4_t)arena->process_count)
         jungle->shown_process++;
     if (key == KEY_UP && jungle->shown_process > 0)
         jungle->shown_process--;
@@ -444,10 +604,6 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->current_robot_info++;
     if (jungle->current_robot_info >= data->robot_count)
         jungle->current_robot_info = 0;
-    if (key == '+')
-        jungle->cycling_speed = 1000;
-    if (key == '-')
-        jungle->cycling_speed = 1;
     if (key == 'k')
         data->robots[jungle->current_robot_info]->alive = false;
     return;
@@ -460,6 +616,24 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
     handle_cycling_speed(key);
     return;
 
+    process_menu:
+    if (key == KEY_LEFT) {
+        if (jungle->current_process == 0)
+            jungle->current_process = arena->process_count;
+        jungle->current_process--;
+    }
+    if (key == KEY_RIGHT)
+        jungle->current_process++;
+    if (jungle->current_process >= arena->process_count)
+        jungle->current_process = 0;
+
+    jungle->signal = NO_SIGNAL;
+    if (key == '1')
+        jungle->signal = SKIP;
+    if (key == '2')
+        jungle->signal = KILL;
+    if (key == '3')
+        jungle->signal = CARRY;
 }
 
 void run_ncurses(arena_t *arena, corewar_data_t *data)
@@ -468,9 +642,11 @@ void run_ncurses(arena_t *arena, corewar_data_t *data)
     update_champions_info_window(arena, data);
     update_arena_window(arena);
     update_game_info(arena);
-    update_console_window(NULL, 0);
+    update_console_window(NULL, 0, 0);
     update_processes_info_window(arena);
     draw_borders();
+    update_process_menu_window(arena, data);
+    doupdate();
     handle_events(data, arena);
 }
 
@@ -503,14 +679,14 @@ void launch_ncurses(void)
         init_pair(i + TOTAL_COLORS * 9, i, COLOR_DARK_RED);
     }
 
-    WINDOW *champions_info = subwin(stdscr, LINES / 3, COLS / 2, 0, 0);
-    WINDOW *processes_info = subwin(stdscr, LINES / 3, COLS / 2, 0, COLS / 2);
+    WINDOW *champions = subwin(stdscr, LINES / 3, COLS / 2, 0, 0);
+    WINDOW *processes = subwin(stdscr, LINES / 3, COLS / 2, 0, COLS / 2);
     WINDOW *arena = subwin(stdscr, LINES * 2 / 3, COLS * 2 / 3, LINES / 3, 0);
     WINDOW *game_info = subwin(stdscr, LINES / 3, COLS / 3, LINES / 3, COLS / 3 * 2);
     WINDOW *console = subwin(stdscr, LINES / 3, COLS / 3, LINES / 3 * 2, COLS / 3 * 2);
 
-    jungle->champions_info = champions_info;
-    jungle->processes_info = processes_info;
+    jungle->champions = champions;
+    jungle->processes = processes;
     jungle->arena = arena;
     jungle->game_info = game_info;
     jungle->console = console;
@@ -523,7 +699,7 @@ void launch_ncurses(void)
 
     jungle->cursors = true;
 
-    update_console_window(NULL, 0);
+    update_console_window(NULL, 0, 0);
 }
 
 void exit_ncurses(void)

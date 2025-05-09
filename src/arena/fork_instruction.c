@@ -41,6 +41,7 @@ int execute_lfork_instruction(
         value = instruction->params[0].index;
         new = create_new_process(process, process->robot);
         new->pc = update_program_counter(new->pc, value);
+        new->cycle_born = arena->total_cycles;
         arena->processes[arena->process_count] = new;
         arena->process_count++;
         return 1;
