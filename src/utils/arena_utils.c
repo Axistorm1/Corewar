@@ -29,7 +29,7 @@ void write4_to_arena(
     byte4_t data,
     byte4_t prog_number)
 {
-    arena->memory[adress] = (data >> 24) & 0xFF;
+    arena->memory[adress] = (byte1_t)(data >> 24) & 0xFF;
     arena->memory[adress + 1] = (data >> 16) & 0xFF;
     arena->memory[adress + 2] = (data >> 8) & 0xFF;
     arena->memory[adress + 3] = data & 0xFF;

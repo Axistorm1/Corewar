@@ -5,7 +5,7 @@
 #include <alloca.h>
 #include <ctype.h>
 #include <ncurses.h>
-#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -16,6 +16,19 @@ static bool light_mode = false;
 static int wgetch_l(WINDOW *window)
 {
     return tolower(wgetch(window));
+}
+
+static void dump_memory_to_file(arena_t *arena)
+{
+    char *filename = NULL;
+
+    asprintf(&filename, "dump_cycle_%d.txt", arena->total_cycles);
+    FILE *stream = fopen(filename, "w");
+    for (byte2_t i = 0; i < MEM_SIZE; i += 32) {
+        for (byte1_t j = 0; j < 32; j++)
+            fprintf(stream, "%02X", arena->memory[i + j]);
+        fprintf(stream, "\n");
+    }
 }
 
 // add fullscreen toggle
@@ -42,7 +55,7 @@ static void update_arena_window(arena_t *arena)
     memset(cursors, 0, MEM_SIZE);
     if (jungle->cursors)
         for (byte4_t i = 0; i < arena->process_count; i++)
-            cursors[arena->processes[i]->pc] = arena->processes[i]->robot->prog_num % TOTAL_COLORS;
+            cursors[arena->processes[i]->pc] = (byte1_t)arena->processes[i]->robot->prog_num % TOTAL_COLORS;
 
     // draw the memory arena
     wmove(wd, 0, 0);
@@ -50,7 +63,7 @@ static void update_arena_window(arena_t *arena)
         for (int x = 0; x < cols; x++) {
             int pos = (start_pos + y * cols + x) % MEM_SIZE;
             if (pos < MEM_SIZE) {
-                int color_pair = cursors[pos] * TOTAL_COLORS + arena->ownership_map[pos] % TOTAL_COLORS - cursors[pos];
+                byte4_t color_pair = cursors[pos] * TOTAL_COLORS + arena->ownership_map[pos] % TOTAL_COLORS - cursors[pos];
                 if (light_mode && color_pair < TOTAL_COLORS)
                     color_pair += TOTAL_COLORS * COLOR_WHITE;
                 wattron(wd, COLOR_PAIR(color_pair));
@@ -349,9 +362,10 @@ static void update_help_menu(void)
     mvwprintw(wd, 12, 2, "S\tFinish cycles round");
     mvwprintw(wd, 13, 2, "P\tOpen processes menu");
     mvwprintw(wd, 14, 2, "B\tSwitch between light/dark mode");
+    mvwprintw(wd, 15, 2, "L\tDump memory to file");
 
     //arena help
-    int arena_offset = 16;
+    int arena_offset = 17;
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, arena_offset, 2, "Arena:");
     wattroff(wd, A_UNDERLINE);
@@ -597,6 +611,9 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
     if (key == 'b')
         light_mode = !light_mode;
 
+    if (key == 'l')
+        dump_memory_to_file(arena);
+
     // speed modifications
     if (key == '+')
         jungle->cycling_speed = 1000;
@@ -755,7 +772,7 @@ void launch_ncurses(void)
     jungle->game_info = game_info;
     jungle->console = console;
 
-    jungle->arena_mem_line = 10000 + arc4random() % 100;
+    jungle->arena_mem_line = 10000 + (sbyte4_t)(arc4random() % 100);
     jungle->active_window = ARENA;
     jungle->arena_window_size = (MEM_SIZE / (COLS / 3)) - (LINES * 2 / 3 - 2);
 

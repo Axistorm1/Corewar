@@ -29,7 +29,7 @@ int execute_sti_instruction(
         adress += instruction->params[2].dir;
     if (instruction->param_types[2] == PARAM_REG)
         adress += process->registers[instruction->params[2].reg];
-    write4_to_arena(arena, update_program_counter(process->pc, adress %
-        IDX_MOD), (byte4_t)value, process->robot->prog_num);
+    write4_to_arena(arena, update_program_counter(process->pc, (sbyte2_t)
+        (adress % IDX_MOD)), (byte4_t)value, process->robot->prog_num);
     return 1;
 }
