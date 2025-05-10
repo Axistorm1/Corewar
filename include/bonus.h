@@ -13,8 +13,14 @@
 
     #define COLOR_ORANGE 8
     #define COLOR_DARK_RED 9
-    #define TOTAL_COLORS 10
+    // THIS MUST BE A POWER OF 2
+    // If not, the game will most certainly crash
+    #define TOTAL_COLORS 16
     #define LIGHT_MODE_OFFSET TOTAL_COLORS * COLOR_WHITE
+
+    //optimizations
+    #define COLORS_MODULO 0xF
+    #define COLORS_BS (unsigned int)__builtin_ctz(TOTAL_COLORS)
 
 void launch_ncurses(void);
 void run_ncurses(arena_t *arena, corewar_data_t *data);

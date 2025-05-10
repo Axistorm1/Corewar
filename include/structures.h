@@ -72,7 +72,7 @@ type_and_param_s {
 } type_and_param_t;
 
 typedef struct
-PACKED instruction_s {
+instruction_s {
     op_code_t op_code;
     byte1_t coding_byte;
     param_type_t param_types[3];

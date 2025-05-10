@@ -11,7 +11,7 @@
 #include "my_string.h"
 #include "utils.h"
 #include <stdlib.h>
-#include <arena.h>
+#include "arena.h"
 
 static int (* const instructions[])
     (arena_t *, process_data_t *, instruction_t *) = {
@@ -66,7 +66,7 @@ static void handle_new_instruction(
     proc->wait_cycles = (byte4_t)op_tab[proc->instruction->op_code].nbr_cycles;
 }
 
-void handle_non_alive(arena_t *arena, byte4_t *index)
+static void handle_non_alive(arena_t *arena, byte4_t *index)
 {
     byte4_t i = *index;
 
@@ -80,7 +80,7 @@ void handle_non_alive(arena_t *arena, byte4_t *index)
     arena->dead_process_count++;
 }
 
-void kill_non_alive_processes(arena_t *arena, corewar_data_t *data)
+void kill_non_alive_processes(arena_t *arena)
 {
     for (byte4_t i = 0; i < arena->process_count; i++) {
         if (!arena->processes[i]->alive)

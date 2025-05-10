@@ -8,6 +8,7 @@
 */
 
 #include "op.h"
+#include "arena.h"
 #include "structures.h"
 
 sbyte8_t get_data_in_param_idx_mod(

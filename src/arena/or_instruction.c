@@ -5,14 +5,14 @@
 ** or_instruction.c
 */
 
-#include "corewar.h"
+#include "arena.h"
 #include "structures.h"
 #include "arena.h"
 
 int execute_or_instruction(
-    UNUSED arena_t *arena,
-    UNUSED process_data_t *process,
-    UNUSED instruction_t *instruction)
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction)
 {
     sbyte8_t first_value = 0;
     sbyte8_t second_value = 0;
@@ -34,9 +34,9 @@ int execute_or_instruction(
 }
 
 int execute_xor_instruction(
-    UNUSED arena_t *arena,
-    UNUSED process_data_t *process,
-    UNUSED instruction_t *instruction)
+    arena_t *arena,
+    process_data_t *process,
+    instruction_t *instruction)
 {
     sbyte8_t first_value = 0;
     sbyte8_t second_value = 0;

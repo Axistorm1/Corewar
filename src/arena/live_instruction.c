@@ -9,6 +9,7 @@
 #include "corewar.h"
 #include "op.h"
 #include "structures.h"
+#include "arena.h"
 #include "my_stdlib.h"
 #include "my_string.h"
 #include <unistd.h>

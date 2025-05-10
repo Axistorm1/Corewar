@@ -5,6 +5,7 @@
 ** aff_instruction.c
 */
 
+#include "arena.h"
 #include "structures.h"
 #include "corewar.h"
 #include <unistd.h>

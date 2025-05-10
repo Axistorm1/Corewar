@@ -8,6 +8,7 @@
 #include "corewar.h"
 #include "structures.h"
 #include "utils.h"
+#include "arena.h"
 
 int execute_not_instruction(
     UNUSED arena_t *arena,

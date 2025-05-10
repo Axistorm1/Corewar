@@ -75,8 +75,10 @@ typedef struct
 header_s {
     int magic;
     char prog_name[PROG_NAME_LENGTH + 1];
+    char padding[3];
     int prog_size;
     char comment[COMMENT_LENGTH + 1];
+    char padding2[3];
 } header_t;
 
 /*

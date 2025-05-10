@@ -9,6 +9,7 @@
 #include "op.h"
 #include "structures.h"
 #include "utils.h"
+#include "arena.h"
 
 int execute_zjmp_instruction(
     UNUSED arena_t *arena,

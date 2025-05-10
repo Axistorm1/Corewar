@@ -47,7 +47,7 @@ static bool keep_running(arena_t *arena, corewar_data_t *data)
     arena->total_cycles++;
     if (arena->current_cycle > arena->cycle_to_die) {
         arena->current_cycle = 0;
-        kill_non_alive_processes(arena, data);
+        kill_non_alive_processes(arena);
         if (arena->nbr_live >= NBR_LIVE) {
             arena->cycle_to_die -= CYCLE_DELTA;
             arena->nbr_live = 0;
@@ -55,7 +55,8 @@ static bool keep_running(arena_t *arena, corewar_data_t *data)
     }
     arena->robots_alive = 0;
     for (byte2_t i = 0; i < data->robot_count; i++)
-        arena->robots_alive += data->robots[i]->process_count != 0;
+        if (data->robots[i]->process_count)
+            arena->robots_alive++;
     if (arena->cycle_to_die <= 0 || arena->robots_alive <= 1
         || arena->process_count <= 1)
         return false;

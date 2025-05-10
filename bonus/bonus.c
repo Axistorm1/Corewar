@@ -58,21 +58,18 @@ static void update_arena_window(arena_t *arena)
             cursors[arena->processes[i]->pc] = (byte1_t)arena->processes[i]->robot->prog_num % TOTAL_COLORS;
 
     // draw the memory arena
-    wmove(wd, 0, 0);
     for (int y = 0; y < lines; y++) {
         for (int x = 0; x < cols; x++) {
             int pos = (start_pos + y * cols + x) % MEM_SIZE;
-            if (pos < MEM_SIZE) {
-                byte4_t color_pair = arena->ownership_map[pos] % TOTAL_COLORS;
-                if (color_pair != 0)
-                    color_pair -= cursors[pos];
-                color_pair += cursors[pos] * TOTAL_COLORS;
-                if (light_mode && color_pair < TOTAL_COLORS)
-                    color_pair += TOTAL_COLORS * COLOR_WHITE;
-                wattron(wd, COLOR_PAIR(color_pair));
-                mvwprintw(wd, y + 1, (x << 1) + 1, "%02X", arena->memory[pos]);
-                wattroff(wd, COLOR_PAIR(color_pair));
-            }
+            byte4_t color_pair = arena->ownership_map[pos] & COLORS_MODULO;
+            if (color_pair != 0)
+                color_pair -= cursors[pos];
+            color_pair += (byte4_t)cursors[pos] << COLORS_BS;
+            if (light_mode && color_pair < TOTAL_COLORS)
+                color_pair += COLOR_WHITE << COLORS_BS;
+            wattron(wd, COLOR_PAIR(color_pair));
+            mvwprintw(wd, y + 1, (x << 1) + 1, "%02X", arena->memory[pos]);
+            wattroff(wd, COLOR_PAIR(color_pair));
         }
     }
     if (jungle->fullscreen_arena) {
@@ -135,10 +132,10 @@ static void update_processes_info_window(arena_t *arena)
 
     for (byte4_t i = 0; i + (byte4_t)jungle->shown_process < arena->process_count && i < max_height; i++) {
         process_data_t *data = arena->processes[i + (byte4_t)jungle->shown_process];
-        wattron(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS + light_mode * LIGHT_MODE_OFFSET));
+        wattron(wd, COLOR_PAIR((data->robot->prog_num & COLORS_MODULO) + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, (sbyte4_t)i + 1, 2, "Process #%-3d", i + 1 + (byte4_t)jungle->shown_process);
         wprintw(wd,  "%5s -> %4d cycles", op_tab[data->instruction->op_code].mnemonique, data->wait_cycles);
-        wattroff(wd, COLOR_PAIR(data->robot->prog_num % TOTAL_COLORS + light_mode * LIGHT_MODE_OFFSET));
+        wattroff(wd, COLOR_PAIR((data->robot->prog_num & COLORS_MODULO) + light_mode * LIGHT_MODE_OFFSET));
     }
 }
 
@@ -198,6 +195,11 @@ static void update_game_info(arena_t *arena, corewar_data_t *data)
     } else
         mvwprintw(wd, 5, 14, "%d", data->dump_cycle);
 
+    // Decided to only do this every x cycles
+    static int call_counter = 199;
+    if (++call_counter % 200 != 0)
+        goto draw_chart;
+
     // this is the math to get the % of ownership
     byte4_t *copy = alloca(MEM_SIZE * sizeof(byte4_t));
     memcpy(copy, arena->ownership_map, MEM_SIZE * sizeof(byte4_t));
@@ -207,8 +209,10 @@ static void update_game_info(arena_t *arena, corewar_data_t *data)
     byte4_t current = copy[0];
     byte4_t count = 1;
     byte2_t current_robot = 0;
-    float percentages[arena->robots_alive + 1];
-    byte4_t values[arena->robots_alive + 1];
+    static float *percentages = NULL;
+    percentages = calloc(arena->robots_alive + 1, sizeof(float));
+    static byte4_t *values = NULL;
+    values = calloc(arena->robots_alive + 1, sizeof(byte4_t));
 
     for (byte2_t i = 1; i < MEM_SIZE; i++) {
         if (copy[i] == current)
@@ -225,6 +229,7 @@ static void update_game_info(arena_t *arena, corewar_data_t *data)
     values[current_robot] = current;
 
     // draw the line
+    draw_chart:
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, getmaxy(wd) - 3, getmaxx(wd) / 2 - 6, "Arena share:\n");
     wattroff(wd, A_UNDERLINE);
@@ -243,9 +248,9 @@ static void update_game_info(arena_t *arena, corewar_data_t *data)
             whline(wd, ' ', segment_width);
             wattroff(wd, COLOR_PAIR(LIGHT_MODE_OFFSET - light_mode * LIGHT_MODE_OFFSET + 1));
         } else {
-            wattron(wd, COLOR_PAIR(values[i] % TOTAL_COLORS * TOTAL_COLORS + 1));
+            wattron(wd, COLOR_PAIR(((values[i] & COLORS_MODULO) << COLORS_BS) + 1));
             whline(wd, ' ', segment_width);
-            wattroff(wd, COLOR_PAIR(values[i] % TOTAL_COLORS * TOTAL_COLORS + 1));
+            wattroff(wd, COLOR_PAIR(((values[i] & COLORS_MODULO) << COLORS_BS) + 1));
         }
 
         current_x += segment_width;
@@ -281,7 +286,7 @@ void update_console_window(
         current_messages--;
     }
     messages[current_messages] = strdup(str);
-    prog_nums[current_messages] = prog_num % TOTAL_COLORS;
+    prog_nums[current_messages] = prog_num & COLORS_MODULO;
     cycle_sent[current_messages] = cycle;
     current_messages++;
 
@@ -567,7 +572,7 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
 {
     WINDOW *wd = get_active();
 
-    wtimeout(wd, 1000 / jungle->cycling_speed);;
+    wtimeout(wd, 1000 / jungle->cycling_speed);
     keypad(wd, TRUE);
 
     int key = wgetch_l(wd);
@@ -744,8 +749,15 @@ void launch_ncurses(void)
     curs_set(0);
 
     start_color();
-    init_color(8, 255 * 4 - 20, 165 * 4 - 18, 0);
-    init_color(9, 139 * 4 - 10, 0, 0);
+    //make total colors a multiple of 2 to optimize a lot of bottleneck coomputation in arena
+    init_color(8, 1000, 640, 0);
+    init_color(9, 550, 0, 0);
+    init_color(10, 670, 1000, 180);
+    init_color(11, 4, 520, 100);
+    init_color(12, 280, 0, 120);
+    init_color(13, 1000, 0, 750);
+    init_color(14, 800, 750, 800);
+    init_color(15, 400, 800, 1000);
     for (byte1_t i = 0; i < TOTAL_COLORS; i++) {
         // dark mode
         init_pair(i, i, COLOR_BLACK);
@@ -761,6 +773,12 @@ void launch_ncurses(void)
         // non standard colors
         init_pair(i + TOTAL_COLORS * 8, i, COLOR_ORANGE);
         init_pair(i + TOTAL_COLORS * 9, i, COLOR_DARK_RED);
+        init_pair(i + TOTAL_COLORS * 10, i, 10);
+        init_pair(i + TOTAL_COLORS * 11, i, 11);
+        init_pair(i + TOTAL_COLORS * 12, i, 12);
+        init_pair(i + TOTAL_COLORS * 13, i, 13);
+        init_pair(i + TOTAL_COLORS * 14, i, 14);
+        init_pair(i + TOTAL_COLORS * 15, i, 15);
     }
 
     // need to get actual values instead of rounded approximations

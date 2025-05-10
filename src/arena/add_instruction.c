@@ -5,6 +5,7 @@
 ** add_instruction.c
 */
 
+#include "arena.h"
 #include "corewar.h"
 #include "structures.h"
 #include <stdint.h>
