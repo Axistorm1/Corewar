@@ -17,7 +17,29 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-// handle robots that wrap around memory
+// this will certainly crash if the prog size of a robot is > 6144
+static void initialize_robot_in_memory(
+    arena_t *arena,
+    robot_info_t *robot)
+{
+    byte2_t size = MEM_SIZE - robot->mem_adr;
+
+    if (robot->mem_adr + robot->header->prog_size >= MEM_SIZE) {
+        my_memcpy(&arena->memory[robot->mem_adr], robot->memory, size);
+        my_memcpy(&arena->memory[0], &robot->memory[size],
+            (ulong)robot->header->prog_size - size);
+        my_memset(&arena->ownership_map[robot->mem_adr],
+            robot->prog_num, size * sizeof(byte4_t));
+        my_memset(&arena->ownership_map[0], robot->prog_num,
+            ((ulong)robot->header->prog_size - size) * sizeof(byte4_t));
+    } else {
+        my_memcpy(&arena->memory[robot->mem_adr], robot->memory,
+        (ulong)robot->header->prog_size);
+        my_memset(&arena->ownership_map[robot->mem_adr],
+        robot->prog_num, (ulong)robot->header->prog_size * sizeof(byte4_t));
+    }
+}
+
 static arena_t *load_robots_to_arena(
     robot_info_t **robots,
     byte2_t robot_count,
@@ -26,10 +48,7 @@ static arena_t *load_robots_to_arena(
     arena->processes = malloc(sizeof(process_data_t *) * 1);
     arena->processes[0] = NULL;
     for (byte2_t i = 0; i < robot_count; i++) {
-        my_memcpy(&arena->memory[robots[i]->mem_adr], robots[i]->memory,
-            (ulong)robots[i]->header->prog_size);
-        for (int j = 0; j < robots[i]->header->prog_size; j++)
-            arena->ownership_map[robots[i]->mem_adr + j] = robots[i]->prog_num;
+        initialize_robot_in_memory(arena, robots[i]);
         arena->processes = realloc(arena->processes, sizeof(process_data_t *)
             * (arena->process_count + 2));
         arena->processes[arena->process_count] =

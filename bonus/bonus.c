@@ -798,7 +798,7 @@ void launch_ncurses(void)
     jungle->active_window = ARENA;
     jungle->arena_window_size = (MEM_SIZE / (COLS / 3)) - (LINES * 2 / 3 - 2);
 
-    jungle->cycling_speed = 1;
+    jungle->cycling_speed = 50;
 
     jungle->cursors = true;
 

@@ -25,7 +25,7 @@ static const char *const error_strings[] = {
 
 static const char *const warning_strings[] = {
     "is lonely in the arena :( Consider finding him some friends",
-    "cycle will never be reached (MAX: 236,698)"
+    "cycle will never be reached (MAX: 4,733,960)"
 };
 
 static void write_auxiliary(

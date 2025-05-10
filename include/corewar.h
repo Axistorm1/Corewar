@@ -18,7 +18,7 @@
     #endif
 
     #define MAX_ROBOTS 1023
-    #define MAX_CYCLES 236698
+    #define MAX_CYCLES 4'733'960
 
 corewar_data_t *check_args(int argc, const char **argv, corewar_data_t *data);
 

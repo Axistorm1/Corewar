@@ -22,7 +22,7 @@ sbyte8_t get_data_in_param_idx_mod(
 
     if (!(params_value & type))
         return 1l << 32;
-    if (params_value == PARAM_REG)
+    if (params_value == PARAM_REG && param.reg < REG_NUMBER)
         return process->registers[param.reg];
     if (params_value == PARAM_DIR)
         return param.dir;
@@ -46,7 +46,7 @@ sbyte8_t get_data_in_param(
 
     if (!(params_value & type))
         return 1l << 32;
-    if (type == PARAM_REG)
+    if (type == PARAM_REG && param.reg < REG_NUMBER)
         return process->registers[param.reg];
     if (type == PARAM_DIR)
         return param.dir;

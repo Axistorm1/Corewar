@@ -39,7 +39,7 @@ static bool handle_dump(
     UNUSED int tmp)
 {
     if (!argv[*i + 1] || !my_str_isdigit(argv[*i + 1]))
-        return write_error(BAD_VALUE, argv[*i], -1) != NULL;
+        return write_error(BAD_VALUE, argv[*i], -1);
     *i += 1;
     data->dump_cycle = (uint32_t)my_atol(argv[*i]);
     if (data->dump_cycle > MAX_CYCLES)
@@ -102,9 +102,9 @@ static bool handle_n(
     int prog_num = -1;
 
     if (!argv[*i + 2])
-        return write_error(MISSING_CHAMPION, NULL, -1) != NULL;
+        return write_error(MISSING_CHAMPION, NULL, -1);
     if (!argv[*i + 1] || !my_str_isdigit(argv[*i + 1]))
-        return write_error(BAD_VALUE, argv[*i], -1) != NULL;
+        return write_error(BAD_VALUE, argv[*i], -1);
     prog_num = my_atoi(argv[*i + 1]);
     *i += 2;
     if (identify_arg(argv[*i]) == 2 && tmp == -1)
@@ -112,6 +112,8 @@ static bool handle_n(
     data->robots[data->robot_count] = init_robot(argv[*i], prog_num, tmp);
     if (data->robots[data->robot_count])
         data->robot_count++;
+    else
+        return false;
     return true;
 }
 
@@ -124,9 +126,9 @@ bool handle_a(
     int prog_adr = -1;
 
     if (!argv[*i + 2])
-        return write_error(MISSING_CHAMPION, NULL, -1) != NULL;
+        return write_error(MISSING_CHAMPION, NULL, -1);
     if (!argv[*i + 1] || !my_str_isdigit(argv[*i + 1]))
-        return write_error(BAD_VALUE, argv[*i], -1) != NULL;
+        return write_error(BAD_VALUE, argv[*i], -1);
     prog_adr = my_atoi(argv[*i + 1]);
     *i += 2;
     if (identify_arg(argv[*i]) == 1 && tmp == -1)
@@ -134,6 +136,8 @@ bool handle_a(
     data->robots[data->robot_count] = init_robot(argv[*i], tmp, prog_adr);
     if (data->robots[data->robot_count])
         data->robot_count++;
+    else
+        return false;
     return true;
 }
 
@@ -147,6 +151,8 @@ static bool handle_unknown(
     data->robots[data->robot_count] = init_robot(argv[*i], tmp, tmp);
     if (data->robots[data->robot_count])
         data->robot_count++;
+    else
+        return false;
     return true;
 }
 
@@ -155,14 +161,13 @@ static bool check_corewar_data(corewar_data_t *data)
     robot_info_t *robot = data->robots[0];
 
     if (data->robot_count == 0)
-        return write_error(NOT_ENOUGH_ROBOTS, NULL, -1) != NULL;
+        return write_error(NOT_ENOUGH_ROBOTS, NULL, -1);
     if (data->robot_count == 1)
         write_error(ONE_ROBOT, robot->header->prog_name, -1);
     for (byte2_t i = 0; i < data->robot_count; i++) {
         robot = data->robots[i];
         if (robot->header->prog_size > MEM_SIZE)
-            return write_error(ROBOT_TOO_BIG,
-                robot->header->prog_name, -1) != NULL;
+            return write_error(ROBOT_TOO_BIG, robot->header->prog_name, -1);
     }
     return true;
 }
