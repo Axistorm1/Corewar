@@ -28,15 +28,15 @@ static void initialize_robot_in_memory(
         my_memcpy(&arena->memory[robot->mem_adr], robot->memory, size);
         my_memcpy(&arena->memory[0], &robot->memory[size],
             (ulong)robot->header->prog_size - size);
-        my_memset(&arena->ownership_map[robot->mem_adr],
-            robot->prog_num, size * sizeof(byte4_t));
-        my_memset(&arena->ownership_map[0], robot->prog_num,
-            ((ulong)robot->header->prog_size - size) * sizeof(byte4_t));
+        for (byte2_t j = 0; j < size; j++)
+            arena->ownership_map[robot->mem_adr + j] = robot->prog_num;
+        for (byte2_t j = 0; j < robot->header->prog_size - size; j++)
+            arena->ownership_map[0 + j] = robot->prog_num;
     } else {
         my_memcpy(&arena->memory[robot->mem_adr], robot->memory,
         (ulong)robot->header->prog_size);
-        my_memset(&arena->ownership_map[robot->mem_adr],
-        robot->prog_num, (ulong)robot->header->prog_size * sizeof(byte4_t));
+        for (int j = 0; j < robot->header->prog_size; j++)
+            arena->ownership_map[robot->mem_adr + j] = robot->prog_num;
     }
 }
 

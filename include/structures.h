@@ -135,7 +135,6 @@ PACKED corewar_data_s {
     byte4_t dump_cycle;
     byte2_t robot_count;
     bool usage;
-    bool grapical_env;
 } corewar_data_t;
 
 typedef struct

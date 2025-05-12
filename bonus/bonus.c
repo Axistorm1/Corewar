@@ -18,11 +18,24 @@ static int wgetch_l(WINDOW *window)
     return tolower(wgetch(window));
 }
 
+static void dump_ownership_to_file(arena_t *arena)
+{
+    char *filename = NULL;
+
+    asprintf(&filename, "own_dump_cycle_%d.txt", arena->total_cycles);
+    FILE *stream = fopen(filename, "w");
+    for (byte2_t i = 0; i < MEM_SIZE; i += 32) {
+        for (byte1_t j = 0; j < 32; j++)
+            fprintf(stream, "%08X", arena->ownership_map[i + j]);
+        fprintf(stream, "\n");
+    }
+}
+
 static void dump_memory_to_file(arena_t *arena)
 {
     char *filename = NULL;
 
-    asprintf(&filename, "dump_cycle_%d.txt", arena->total_cycles);
+    asprintf(&filename, "mem_dump_cycle_%d.txt", arena->total_cycles);
     FILE *stream = fopen(filename, "w");
     for (byte2_t i = 0; i < MEM_SIZE; i += 32) {
         for (byte1_t j = 0; j < 32; j++)
@@ -210,9 +223,9 @@ static void update_game_info(arena_t *arena, corewar_data_t *data)
     byte4_t count = 1;
     byte2_t current_robot = 0;
     static float *percentages = NULL;
-    percentages = calloc(arena->robots_alive + 1, sizeof(float));
+    percentages = calloc(data->robot_count + 1, sizeof(float));
     static byte4_t *values = NULL;
-    values = calloc(arena->robots_alive + 1, sizeof(byte4_t));
+    values = calloc(data->robot_count + 1, sizeof(byte4_t));
 
     for (byte2_t i = 1; i < MEM_SIZE; i++) {
         if (copy[i] == current)
@@ -237,7 +250,7 @@ static void update_game_info(arena_t *arena, corewar_data_t *data)
     int max_width = getmaxx(wd) - 4;
     int current_x = 2;
 
-    for (byte2_t i = 0; i < arena->robots_alive + 1; i++) {
+    for (byte2_t i = 0; i < data->robot_count + 1; i++) {
         int segment_width = (int)((float)max_width * percentages[i]);
         if (segment_width <= 0)
             continue;
@@ -364,17 +377,16 @@ static void update_help_menu(void)
     mvwprintw(wd, 5, 2, "SPACE\tPause game");
     mvwprintw(wd, 6, 2, "C\tEnable/Disable cursors");
     mvwprintw(wd, 7, 2, "Q\tQuit the game");
-    mvwprintw(wd, 8, 2, "+\tIncrease speed to maximum");
-    mvwprintw(wd, 9, 2, "-\tDecrease speed to minimum");
-    mvwprintw(wd, 10, 2, "<\tDecrease cycles to die");
-    mvwprintw(wd, 11, 2, ">\tIncrease cycles to die");
-    mvwprintw(wd, 12, 2, "S\tFinish cycles round");
-    mvwprintw(wd, 13, 2, "P\tOpen processes menu");
-    mvwprintw(wd, 14, 2, "B\tSwitch between light/dark mode");
-    mvwprintw(wd, 15, 2, "L\tDump memory to file");
+    mvwprintw(wd, 8, 2, "+/-\tSet speed to max/min");
+    mvwprintw(wd, 9, 2, "</>\tChange cycles to die");
+    mvwprintw(wd, 10, 2, "S\tFinish cycles round");
+    mvwprintw(wd, 11, 2, "P\tOpen processes menu");
+    mvwprintw(wd, 12, 2, "B\tSwitch between light/dark mode");
+    mvwprintw(wd, 13, 2, "L\tDump memory to file");
+    mvwprintw(wd, 14, 2, "X\tDump ownerships to file");
 
     //arena help
-    int arena_offset = 17;
+    int arena_offset = 16;
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, arena_offset, 2, "Arena:");
     wattroff(wd, A_UNDERLINE);
@@ -622,6 +634,9 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
 
     if (key == 'l')
         dump_memory_to_file(arena);
+
+    if (key == 'x')
+        dump_ownership_to_file(arena);
 
     // speed modifications
     if (key == '+')
