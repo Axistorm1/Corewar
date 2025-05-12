@@ -36,8 +36,10 @@ process_data_t *create_new_process(
     process->robot = robot;
     process->pc = robot->mem_adr;
     process->registers[0] = robot->prog_num;
-    if (parent)
+    if (parent) {
+        my_memcpy(process->registers, parent->registers, 64);
         process->pc = parent->pc;
+    }
     robot->process_count++;
     return process;
 }
