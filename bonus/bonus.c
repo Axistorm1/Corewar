@@ -2,6 +2,7 @@
 #include "op.h"
 #include "structures.h"
 #include "my_stdlib.h"
+#include "my_string.h"
 #include <alloca.h>
 #include <ctype.h>
 #include <ncurses.h>
@@ -87,7 +88,7 @@ static void update_arena_window(arena_t *arena)
     }
     if (jungle->fullscreen_arena) {
         box(wd, 0, 0);
-        mvwprintw(wd, 0, 4, "Arena");
+        mvwprintw(wd, 0, 4, "Arena - Fullscreen");
         wnoutrefresh(wd);
         delwin(wd);
     }
@@ -147,7 +148,16 @@ static void update_processes_info_window(arena_t *arena)
         process_data_t *data = arena->processes[i + (byte4_t)jungle->shown_process];
         wattron(wd, COLOR_PAIR((data->robot->prog_num & COLORS_MODULO) + light_mode * LIGHT_MODE_OFFSET));
         mvwprintw(wd, (sbyte4_t)i + 1, 2, "Process #%-3d", i + 1 + (byte4_t)jungle->shown_process);
-        wprintw(wd,  "%5s -> %4d cycles", op_tab[data->instruction->op_code].mnemonique, data->wait_cycles);
+        wprintw(wd,  "%5s -> %5d cycles", op_tab[data->instruction->op_code].mnemonique, data->wait_cycles);
+        if (data->alive)
+            wprintw(wd, "\tAlive");
+        else
+            wprintw(wd, "\tDead");
+        wprintw(wd, "\tCarry: ");
+        if (data->carry)
+            wprintw(wd, "1");
+        else
+        wprintw(wd, "0");
         wattroff(wd, COLOR_PAIR((data->robot->prog_num & COLORS_MODULO) + light_mode * LIGHT_MODE_OFFSET));
     }
 }
@@ -411,6 +421,7 @@ static void update_help_menu(void)
     wattroff(wd, A_UNDERLINE);
     mvwprintw(wd, processes_offset + 1, 2, "DOWN\tMove down in processes");
     mvwprintw(wd, processes_offset + 2, 2, "UP\tMove up in processes");
+    mvwprintw(wd, processes_offset + 3, 2, "M\tShow decompiled source code");
 
     mvwprintw(wd, getmaxy(wd) - 2, (getmaxx(wd) - 12) / 2, "Made with <3");
     mvwprintw(wd, getmaxy(wd) - 1, (getmaxx(wd) - 24) / 2, "by Axistorm and Arkcadia");
@@ -521,6 +532,43 @@ void update_process_menu_window(arena_t *arena)
     delwin(wd);
 }
 
+void update_source_code_window(corewar_data_t *data)
+{
+    if (!jungle->source_code)
+        return;
+
+    WINDOW *wd = newwin(LINES - 5, COLS / 3, 2, COLS * 1/3);
+
+    werase(wd);
+
+    if (light_mode)
+        wbkgd(wd, COLOR_PAIR(LIGHT_MODE_OFFSET));
+
+    wattron(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
+    box(wd, 0, 0);
+    wattroff(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
+
+    robot_info_t *robot = data->robots[jungle->current_robot_info];
+
+    mvwprintw(wd, 0, 4, "Source - %s", robot->filename);
+
+    instruction_t **instructions = parse_champions(robot->header, robot->filename);
+    char **lines = transcribe_dot_s(instructions);
+    sbyte4_t len = (sbyte4_t)str_array_len(lines);
+
+    if (jungle->source_line > len - getmaxy(wd) + 3)
+        jungle->source_line = len - getmaxy(wd) + 3;
+
+    if (jungle->source_line < 0)
+        jungle->source_line = 0;
+
+    for (sbyte4_t i = jungle->source_line; i < len && i < getmaxy(wd) - 3 + jungle->source_line && lines[i]; i++)
+        mvwprintw(wd, 2 + i - jungle->source_line, 2, "%4d | %s", i + 1, lines[i]);
+
+    wnoutrefresh(wd);
+    delwin(wd);
+}
+
 static WINDOW *get_active(void)
 {
     if (jungle->active_window == CHAMPIONS_INFO)
@@ -554,9 +602,9 @@ static void draw_borders(void)
         box(active, 0, 0);
         wattroff(active, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE + COLOR_DARK_RED));
     } else {
-        wattron(active, COLOR_PAIR(COLOR_GREEN));
+        wattron(active, COLOR_PAIR(COLOR_RED));
         box(active, 0, 0);
-        wattroff(active, COLOR_PAIR(COLOR_GREEN));
+        wattroff(active, COLOR_PAIR(COLOR_RED));
     }
 
     mvwprintw(jungle->champions, 0, 4, "Champions");
@@ -621,7 +669,7 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         update_help_menu();
 
     // processes menu
-    if (key == 'p')
+    if (key == 'p' && !jungle->source_code)
         jungle->process_menu = !jungle->process_menu;
 
     // cursors toggle
@@ -650,6 +698,8 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
     if (key == '>')
         arena->cycle_to_die += 5;
 
+    if (jungle->source_code)
+        goto source_code;
     if (jungle->process_menu)
         goto process_menu;
     if (jungle->active_window == ARENA)
@@ -691,8 +741,8 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->current_robot_info++;
     if (jungle->current_robot_info >= data->robot_count)
         jungle->current_robot_info = 0;
-    if (key == 'k')
-        data->robots[jungle->current_robot_info]->alive = false;
+    if (key == 'm')
+        jungle->source_code = !jungle->source_code;
     return;
 
     game_info:
@@ -723,6 +773,14 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->signal = CARRY;
     if (key == '4')
         jungle->signal = REVIVE;
+    return;
+
+    source_code:
+    if (key == KEY_DOWN)
+        jungle->source_line++;
+    if (key == KEY_UP && jungle->source_line > 0)
+        jungle->source_line--;
+    goto robot_info;
 }
 
 void run_ncurses(arena_t *arena, corewar_data_t *data)
@@ -749,6 +807,7 @@ void run_ncurses(arena_t *arena, corewar_data_t *data)
         update_processes_info_window(arena);
         draw_borders();
         update_process_menu_window(arena);
+        update_source_code_window(data);
     }
     doupdate();
     handle_events(data, arena);

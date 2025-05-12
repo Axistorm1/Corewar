@@ -45,14 +45,10 @@ int special_inst(
     instruction_t *instruction,
     u_char *bin)
 {
-    if (instruction->op_code == 12 || instruction->op_code == 15) {
+    if (instruction->op_code == 12 || instruction->op_code == 15
+        || instruction->op_code == 9) {
         compute_index((sbyte2_t)(bin[0] << 8) + bin[1], instruction);
         instruction->param_types[0] = PARAM_INDEX;
-        return 2;
-    }
-    if (instruction->op_code == 9) {
-        compute_index((sbyte2_t)(bin[0] << 8) + bin[1], instruction);
-        instruction->param_types[0] = PARAM_DIRDEX;
         return 2;
     }
     if (instruction->op_code == 1) {

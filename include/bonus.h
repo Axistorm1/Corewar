@@ -27,4 +27,7 @@ void run_ncurses(arena_t *arena, corewar_data_t *data);
 void update_console_window(char *str, byte2_t prog_num, byte4_t cycle);
 void exit_ncurses(void);
 
+instruction_t **parse_champions(header_t *header, char *filename);
+char **transcribe_dot_s(instruction_t **instructions);
+
 #endif /* BONUS_H_ */

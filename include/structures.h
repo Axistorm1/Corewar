@@ -120,6 +120,7 @@ typedef struct windows_jungle_s {
     sbyte4_t current_robot_info;
     sbyte4_t shown_process;
     sbyte4_t arena_mem_line;
+    sbyte4_t source_line;
     byte4_t current_process;
     byte2_t cycling_speed;
     byte1_t active_window;
@@ -127,6 +128,7 @@ typedef struct windows_jungle_s {
     bool cursors;
     bool process_menu;
     bool fullscreen_arena;
+    bool source_code;
 } windows_jungle_t;
 
 typedef struct

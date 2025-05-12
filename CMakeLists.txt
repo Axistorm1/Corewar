@@ -14,7 +14,7 @@ file(GLOB SOURCES
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
     add_compile_definitions(BONUS_MODE=1)
-    set(SOURCES ${SOURCES} bonus/bonus.c)
+    set(SOURCES ${SOURCES} bonus/bonus.c bonus/transcribe_dot_s.c bonus/parse_champion.c)
 endif()
 
 add_executable(corewar ${SOURCES})
