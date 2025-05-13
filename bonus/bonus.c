@@ -473,8 +473,13 @@ static void update_help_menu(void)
 // top -> process number and robot
 // some stats/info
 // what to change (with numbers to use) [signals]
-void update_process_menu_window(arena_t *arena)
+void update_process_menu_window(arena_t *arena, bool paused)
 {
+    if (paused) {
+        WINDOW *wd = newwin(LINES >> 1, COLS >> 1, LINES >> 2, COLS >> 2);
+        werase(wd);
+        wnoutrefresh(wd);
+    }
     if (!jungle->process_menu)
         return;
 
@@ -652,6 +657,19 @@ static void handle_cycling_speed(int key)
         jungle->cycling_speed++;
 }
 
+static void handle_process_change(int key, arena_t *arena)
+{
+    if (key == KEY_LEFT) {
+        if (jungle->current_process == 0)
+            jungle->current_process = arena->process_count;
+        jungle->current_process--;
+    }
+    if (key == KEY_RIGHT)
+        jungle->current_process++;
+    if (jungle->current_process >= arena->process_count)
+        jungle->current_process = 0;
+}
+
 static void handle_events(corewar_data_t *data, arena_t *arena)
 {
     WINDOW *wd = get_active();
@@ -672,24 +690,38 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->active_window = CHAMPIONS_INFO;
 
     // pause
-    // bug pausing in process menu
+    // THIS IS THE WORST PAUSE MENU POSSIBLE BUT IT WORKS
     if (key == ' ') {
         werase(jungle->arena);
         box(jungle->arena, 0, 0);
         mvwprintw(wd, 0, 4, "Arena - Paused");
         mvwprintw(jungle->arena, getmaxy(jungle->arena) / 2 - 1, getmaxx(jungle->arena) / 2 - 7, "GAME PAUSED");
         wnoutrefresh(jungle->arena);
-        if (jungle->process_menu) {
-            update_process_menu_window(arena);
-            mvwprintw(jungle->arena, getmaxy(jungle->arena) / 2 - 1, getmaxx(jungle->arena) / 2 - 32, "GAME PAUSED");
-        }
-        doupdate();
 
+        wtimeout(wd, 0);
         key = wgetch_l(wd);
         while (key != ' ') {
             if (key == 'q')
                 quit_ncurses();
+            if (jungle->process_menu) {
+                mvwprintw(jungle->arena, getmaxy(jungle->arena) / 2 - 1, getmaxx(jungle->arena) / 2 - 32, "GAME PAUSED");
+                wnoutrefresh(wd);
+                handle_process_change(key, arena);
+                update_process_menu_window(arena, false);
+            }
+            if (key == 'p') {
+                jungle->process_menu = !jungle->process_menu;
+                if (!jungle->process_menu) {
+                    update_process_menu_window(arena, true);
+                    werase(jungle->arena);
+                    draw_borders();
+                    mvwprintw(wd, 0, 4, "Arena - Paused");
+                    mvwprintw(jungle->arena, getmaxy(jungle->arena) / 2 - 1, getmaxx(jungle->arena) / 2 - 7, "GAME PAUSED");
+                    wnoutrefresh(jungle->arena);
+                }
+            }
             key = wgetch_l(wd);
+            doupdate();
         }
     }
 
@@ -783,15 +815,7 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
     return;
 
     process_menu:
-    if (key == KEY_LEFT) {
-        if (jungle->current_process == 0)
-            jungle->current_process = arena->process_count;
-        jungle->current_process--;
-    }
-    if (key == KEY_RIGHT)
-        jungle->current_process++;
-    if (jungle->current_process >= arena->process_count)
-        jungle->current_process = 0;
+    handle_process_change(key, arena);
 
     jungle->signal = NO_SIGNAL;
     if (key == '1')
@@ -835,7 +859,7 @@ void run_ncurses(arena_t *arena, corewar_data_t *data)
         update_console_window(NULL, 0, 0);
         update_processes_info_window(arena);
         draw_borders();
-        update_process_menu_window(arena);
+        update_process_menu_window(arena, false);
         update_source_code_window(data);
     }
     doupdate();
@@ -885,11 +909,11 @@ void launch_ncurses(void)
     }
 
     // need to get actual values instead of rounded approximations
-    WINDOW *champions = newwin(LINES / 3, COLS >> 1, 0, 0);
-    WINDOW *processes = newwin(LINES / 3, COLS >> 1, 0, COLS >> 1);
-    WINDOW *arena = newwin(LINES * 2 / 3, COLS * 2 / 3, LINES / 3, 0);
-    WINDOW *game_info = newwin(LINES / 3, COLS / 3, LINES / 3, COLS * 2 / 3);
-    WINDOW *console = newwin(LINES / 3, COLS / 3, LINES * 2 / 3, COLS * 2 / 3);
+    WINDOW *champions = subwin(stdscr, LINES / 3, COLS >> 1, 0, 0);
+    WINDOW *processes = subwin(stdscr, LINES / 3, COLS >> 1, 0, COLS >> 1);
+    WINDOW *arena = subwin(stdscr, LINES * 2 / 3, COLS * 2 / 3, LINES / 3, 0);
+    WINDOW *game_info = subwin(stdscr, LINES / 3, COLS / 3, LINES / 3, COLS * 2 / 3);
+    WINDOW *console = subwin(stdscr, LINES / 3, COLS / 3, LINES * 2 / 3, COLS * 2 / 3);
 
     jungle->champions = champions;
     jungle->processes = processes;
@@ -910,11 +934,6 @@ void launch_ncurses(void)
 
 void exit_ncurses(void)
 {
-    delwin(jungle->champions);
-    delwin(jungle->processes);
-    delwin(jungle->arena);
-    delwin(jungle->game_info);
-    delwin(jungle->console);
     free(jungle);
     endwin();
 }
