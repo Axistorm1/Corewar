@@ -10,7 +10,9 @@
 #include "structures.h"
 #include "my_string.h"
 #include "utils.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "arena.h"
 
 static int (* const instructions[])
@@ -78,17 +80,20 @@ static void handle_non_alive(arena_t *arena, byte4_t *index)
     free(arena->processes[i]);
     arena->process_count--;
     arena->processes[i] = arena->processes[arena->process_count];
-    (*index)--;
     arena->dead_process_count++;
 }
 
 void kill_non_alive_processes(arena_t *arena)
 {
-    for (byte4_t i = 0; i < arena->process_count; i++) {
+    byte4_t i = 0;
+
+    while (i < arena->process_count) {
         if (!arena->processes[i]->alive)
             handle_non_alive(arena, &i);
-        else
+        else {
             arena->processes[i]->alive = false;
+            i++;
+        }
     }
 }
 

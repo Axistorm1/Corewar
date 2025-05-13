@@ -29,10 +29,10 @@ void write4_to_arena(
     byte4_t data,
     byte4_t prog_number)
 {
-    arena->memory[adress] = (byte1_t)(data >> 24) & 0xFF;
-    arena->memory[adress + 1] = (data >> 16) & 0xFF;
-    arena->memory[adress + 2] = (data >> 8) & 0xFF;
-    arena->memory[adress + 3] = data & 0xFF;
+    arena->memory[adress % MEM_SIZE] = (byte1_t)(data >> 24) & 0xFF;
+    arena->memory[(adress + 1) % MEM_SIZE] = (data >> 16) & 0xFF;
+    arena->memory[(adress + 2) % MEM_SIZE] = (data >> 8) & 0xFF;
+    arena->memory[(adress + 3) % MEM_SIZE] = data & 0xFF;
     arena->ownership_map[adress] = prog_number;
     arena->ownership_map[adress + 1] = prog_number;
     arena->ownership_map[adress + 2] = prog_number;

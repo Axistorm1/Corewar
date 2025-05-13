@@ -17,7 +17,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-// this will certainly crash if the prog size of a robot is > 6144
+// this will certainly crash if the prog size of a robot is > 6144 * 2
 static void initialize_robot_in_memory(
     arena_t *arena,
     robot_info_t *robot)

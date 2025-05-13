@@ -27,11 +27,12 @@ int execute_sti_instruction(
     if (adress == 1l << 32)
         return 1;
     adr2 = get_data_in_param(&(type_and_param_t){instruction->param_types[2],
-        instruction->params[2]}, PARAM_DIR | PARAM_REG, arena, process);
+        instruction->params[2]}, PARAM_DIR | PARAM_REG | PARAM_DIRDEX, arena,
+        process);
     if (adr2 == 1l << 32)
         return 1;
     adress += adr2;
     write4_to_arena(arena, update_program_counter(process->pc, (sbyte2_t)
-        (adress % IDX_MOD)) + 1, (byte4_t)value, process->robot->prog_num);
+        (adress % IDX_MOD)), (byte4_t)value, process->robot->prog_num);
     return 1;
 }

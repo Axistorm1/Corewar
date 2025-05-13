@@ -1,4 +1,5 @@
 #include "bonus.h"
+#include "arena.h"
 #include "op.h"
 #include "structures.h"
 #include "my_stdlib.h"
@@ -45,6 +46,23 @@ static void dump_memory_to_file(arena_t *arena)
     }
 }
 
+static char *type_to_str(param_type_t type)
+{
+    if (type == PARAM_NOTHING)
+        return "Nothing";
+    if (type == PARAM_DIR)
+        return "Direct";
+    if (type == PARAM_INDEX)
+        return "Index";
+    if (type == PARAM_DIRDEX)
+        return "Dirdex";
+    if (type == PARAM_IND)
+        return "Indirect";
+    if (type == PARAM_REG)
+        return "Register";
+    return "Nothing";
+}
+
 // add fullscreen toggle
 static void update_arena_window(arena_t *arena)
 {
@@ -53,7 +71,7 @@ static void update_arena_window(arena_t *arena)
     if (jungle->fullscreen_arena)
         wd = newwin(LINES, COLS, 0, 0);
 
-    int cols = getmaxx(wd) / 2 - 1;
+    int cols = (getmaxx(wd) >> 1) - 1;
     int lines = getmaxy(wd) - 2;
 
     werase(wd);
@@ -254,7 +272,7 @@ static void update_game_info(arena_t *arena, corewar_data_t *data)
     // draw the line
     draw_chart:
     wattron(wd, A_UNDERLINE);
-    mvwprintw(wd, getmaxy(wd) - 3, getmaxx(wd) / 2 - 6, "Arena share:\n");
+    mvwprintw(wd, getmaxy(wd) - 3, (getmaxx(wd) >> 1) - 6, "Arena share:\n");
     wattroff(wd, A_UNDERLINE);
 
     int max_width = getmaxx(wd) - 4;
@@ -333,7 +351,7 @@ static void quit_ncurses(void)
 
 static void display_corewar_ascii_logo(void)
 {
-    WINDOW *wd = newwin(5, 60, 0, (COLS - 60) / 2);
+    WINDOW *wd = newwin(5, 60, 0, (COLS - 60) >> 1);
 
     werase(wd);
 
@@ -367,7 +385,7 @@ static void update_help_menu(void)
 {
     display_corewar_ascii_logo();
 
-    WINDOW *wd = newwin(LINES - 6, 40, 5, COLS / 2 - 20);
+    WINDOW *wd = newwin(LINES - 6, 40, 5, (COLS >> 1) - 20);
 
     if (light_mode)
         wbkgd(wd, COLOR_PAIR(LIGHT_MODE_OFFSET));
@@ -423,8 +441,8 @@ static void update_help_menu(void)
     mvwprintw(wd, processes_offset + 2, 2, "UP\tMove up in processes");
     mvwprintw(wd, processes_offset + 3, 2, "M\tShow decompiled source code");
 
-    mvwprintw(wd, getmaxy(wd) - 2, (getmaxx(wd) - 12) / 2, "Made with <3");
-    mvwprintw(wd, getmaxy(wd) - 1, (getmaxx(wd) - 24) / 2, "by Axistorm and Arkcadia");
+    mvwprintw(wd, getmaxy(wd) - 2, (getmaxx(wd) - 12) >> 1, "Made with <3");
+    mvwprintw(wd, getmaxy(wd) - 1, (getmaxx(wd) - 24) >> 1, "by Axistorm and Arkcadia");
 
     // Something should change without these two lines but nothing does
     // It truly is black magic
@@ -459,7 +477,7 @@ void update_process_menu_window(arena_t *arena)
     if (!jungle->process_menu)
         return;
 
-    WINDOW *wd = newwin(LINES / 2, COLS / 2, LINES / 4, COLS / 4);
+    WINDOW *wd = newwin(LINES >> 1, COLS >> 1, LINES >> 2, COLS >> 2);
 
     werase(wd);
 
@@ -501,20 +519,25 @@ void update_process_menu_window(arena_t *arena)
 
     // instruction
     instruction_t *instruction = process->instruction;
-    mvwprintw(wd, 5, 2, "Instruction: %-9s Coding byte: %d Size: %d", op_tab[instruction->op_code].mnemonique, instruction->coding_byte, instruction->size);
+    mvwprintw(wd, 5, 2, "Instruction: %-9s Coding byte: %-3d   Size: %d", op_tab[instruction->op_code].mnemonique, instruction->coding_byte, instruction->size);
+
+    mvwprintw(wd, 6, 2, "%s: %d %s: %d %s: %d",
+        type_to_str(instruction->param_types[0]), (int)get_data_in_param(&(type_and_param_t){instruction->param_types[0], instruction->params[0]}, instruction->param_types[0], arena, process),
+        type_to_str(instruction->param_types[1]), (int)get_data_in_param(&(type_and_param_t){instruction->param_types[1], instruction->params[1]}, instruction->param_types[1], arena, process),
+        type_to_str(instruction->param_types[2]), (int)get_data_in_param(&(type_and_param_t){instruction->param_types[2], instruction->params[2]}, instruction->param_types[2], arena, process));
 
     // registers
     wattron(wd, A_UNDERLINE);
-    mvwprintw(wd, 7, 17, "Registers");
+    mvwprintw(wd, 8, 17, "Registers");
     wattroff(wd, A_UNDERLINE);
-    for (byte1_t i = 0; i < REG_NUMBER / 4; i++)
-        mvwprintw(wd, 8 + i, 2, "%-10d| %-10d| %-10d| %-10d", process->registers[i * 4], process->registers[i * 4 + 1], process->registers[i * 4 + 2], process->registers[i * 4 + 3]);
+    for (byte1_t i = 0; i < REG_NUMBER >> 2; i++)
+        mvwprintw(wd, 9 + i, 2, "%-10d| %-10d| %-10d| %-10d", process->registers[i * 4], process->registers[i * 4 + 1], process->registers[i * 4 + 2], process->registers[i * 4 + 3]);
 
     // signals
     wattron(wd, A_UNDERLINE);
-    mvwprintw(wd, 13, 2, "Signals");
+    mvwprintw(wd, 14, 2, "Signals");
     wattroff(wd, A_UNDERLINE);
-    mvwprintw(wd, 14, 2, "1: Finish instruction  2: Kill process  3: Change carry  4: Revive");
+    mvwprintw(wd, 15, 2, "1: Finish instruction  2: Kill process  3: Change carry  4: Revive");
 
     if (jungle->signal == SKIP)
         process->wait_cycles = 0;
@@ -856,8 +879,8 @@ void launch_ncurses(void)
     }
 
     // need to get actual values instead of rounded approximations
-    WINDOW *champions = subwin(stdscr, LINES / 3, COLS / 2, 0, 0);
-    WINDOW *processes = subwin(stdscr, LINES / 3, COLS / 2, 0, COLS / 2);
+    WINDOW *champions = subwin(stdscr, LINES / 3, COLS >> 1, 0, 0);
+    WINDOW *processes = subwin(stdscr, LINES / 3, COLS >> 1, 0, COLS >> 1);
     WINDOW *arena = subwin(stdscr, LINES * 2 / 3, COLS * 2 / 3, LINES / 3, 0);
     WINDOW *game_info = subwin(stdscr, LINES / 3, COLS / 3, LINES / 3, COLS * 2 / 3);
     WINDOW *console = subwin(stdscr, LINES / 3, COLS / 3, LINES * 2 / 3, COLS * 2 / 3);
