@@ -104,6 +104,7 @@ static void update_arena_window(arena_t *arena)
             wattroff(wd, COLOR_PAIR(color_pair));
         }
     }
+
     if (jungle->fullscreen_arena) {
         box(wd, 0, 0);
         mvwprintw(wd, 0, 4, "Arena - Fullscreen");
@@ -879,11 +880,11 @@ void launch_ncurses(void)
     }
 
     // need to get actual values instead of rounded approximations
-    WINDOW *champions = subwin(stdscr, LINES / 3, COLS >> 1, 0, 0);
-    WINDOW *processes = subwin(stdscr, LINES / 3, COLS >> 1, 0, COLS >> 1);
-    WINDOW *arena = subwin(stdscr, LINES * 2 / 3, COLS * 2 / 3, LINES / 3, 0);
-    WINDOW *game_info = subwin(stdscr, LINES / 3, COLS / 3, LINES / 3, COLS * 2 / 3);
-    WINDOW *console = subwin(stdscr, LINES / 3, COLS / 3, LINES * 2 / 3, COLS * 2 / 3);
+    WINDOW *champions = newwin(LINES / 3, COLS >> 1, 0, 0);
+    WINDOW *processes = newwin(LINES / 3, COLS >> 1, 0, COLS >> 1);
+    WINDOW *arena = newwin(LINES * 2 / 3, COLS * 2 / 3, LINES / 3, 0);
+    WINDOW *game_info = newwin(LINES / 3, COLS / 3, LINES / 3, COLS * 2 / 3);
+    WINDOW *console = newwin(LINES / 3, COLS / 3, LINES * 2 / 3, COLS * 2 / 3);
 
     jungle->champions = champions;
     jungle->processes = processes;
@@ -904,6 +905,11 @@ void launch_ncurses(void)
 
 void exit_ncurses(void)
 {
+    delwin(jungle->champions);
+    delwin(jungle->processes);
+    delwin(jungle->arena);
+    delwin(jungle->game_info);
+    delwin(jungle->console);
     free(jungle);
     endwin();
 }

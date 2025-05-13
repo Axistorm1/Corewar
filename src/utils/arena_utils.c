@@ -34,9 +34,9 @@ void write4_to_arena(
     arena->memory[(adress + 2) % MEM_SIZE] = (data >> 8) & 0xFF;
     arena->memory[(adress + 3) % MEM_SIZE] = data & 0xFF;
     arena->ownership_map[adress] = prog_number;
-    arena->ownership_map[adress + 1] = prog_number;
-    arena->ownership_map[adress + 2] = prog_number;
-    arena->ownership_map[adress + 3] = prog_number;
+    arena->ownership_map[(adress + 1) % MEM_SIZE] = prog_number;
+    arena->ownership_map[(adress + 2) % MEM_SIZE] = prog_number;
+    arena->ownership_map[(adress + 3) % MEM_SIZE] = prog_number;
 }
 
 byte2_t update_program_counter(
