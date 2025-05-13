@@ -447,8 +447,8 @@ static void update_help_menu(void)
 
     // Something should change without these two lines but nothing does
     // It truly is black magic
-    wnoutrefresh(wd);
-    doupdate();
+    //wnoutrefresh(wd);
+    //doupdate();
 
     // stay in help loop
     wtimeout(wd, 1000);
@@ -676,8 +676,13 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
     if (key == ' ') {
         werase(jungle->arena);
         box(jungle->arena, 0, 0);
-        mvwprintw(jungle->arena, getmaxy(jungle->arena) / 2 - 1, getmaxx(jungle->arena) / 2 - 7,"GAME PAUSED");
+        mvwprintw(wd, 0, 4, "Arena - Paused");
+        mvwprintw(jungle->arena, getmaxy(jungle->arena) / 2 - 1, getmaxx(jungle->arena) / 2 - 7, "GAME PAUSED");
         wnoutrefresh(jungle->arena);
+        if (jungle->process_menu) {
+            update_process_menu_window(arena);
+            mvwprintw(jungle->arena, getmaxy(jungle->arena) / 2 - 1, getmaxx(jungle->arena) / 2 - 32, "GAME PAUSED");
+        }
         doupdate();
 
         key = wgetch_l(wd);
