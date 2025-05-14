@@ -89,7 +89,7 @@ static robot_info_t *init_robot(
     info->filename = my_strdup(filename);
     info->header = header;
     info->prog_num = (byte2_t)prog_number;
-    info->mem_adr = (byte2_t)prog_adress % MEM_SIZE;
+    info->mem_adr = (byte2_t)prog_adress;
     return info;
 }
 
@@ -106,6 +106,8 @@ static bool handle_n(
     if (!argv[*i + 1] || !my_str_isdigit(argv[*i + 1]))
         return write_error(BAD_VALUE, argv[*i], -1);
     prog_num = my_atoi(argv[*i + 1]);
+    if (prog_num == 0)
+        return write_error(PROG_NUM_0, argv[*i], -1);
     *i += 2;
     if (identify_arg(argv[*i]) == 2 && tmp == -1)
         return handle_a(data, argv, i, prog_num);
@@ -129,7 +131,7 @@ bool handle_a(
         return write_error(MISSING_CHAMPION, NULL, -1);
     if (!argv[*i + 1] || !my_str_isdigit(argv[*i + 1]))
         return write_error(BAD_VALUE, argv[*i], -1);
-    prog_adr = my_atoi(argv[*i + 1]);
+    prog_adr = my_atoi(argv[*i + 1]) % MEM_SIZE;
     *i += 2;
     if (identify_arg(argv[*i]) == 1 && tmp == -1)
         return handle_n(data, argv, i, prog_adr);

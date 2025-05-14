@@ -20,7 +20,8 @@ static const char *const error_strings[] = {
     "There must be at least one robot",
     "File is incorrect",
     "The file must be a .cor file and have a magic number",
-    "Robot too big for the arena"
+    "Robot too big for the arena",
+    "Program number must be higher than 0"
 };
 
 static const char *const warning_strings[] = {

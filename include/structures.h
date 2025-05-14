@@ -91,6 +91,14 @@ PACKED robot_info_s {
     bool alive;
 } robot_info_t;
 
+typedef struct
+PACKED gap_placement_info_s {
+    robot_info_t **robots_in_gap;
+    int gap_start;
+    int gap_size;
+    int positions_count;
+} gap_placement_info_t;
+
 // BONUS ONLY
 typedef enum active_window_e {
     CHAMPIONS_INFO,

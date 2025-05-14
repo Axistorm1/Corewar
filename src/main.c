@@ -55,13 +55,10 @@ static byte2_t find_lowest_prog_num(
 
 static void assign_default_values(corewar_data_t *data)
 {
-    for (byte2_t i = 0; i < data->robot_count; i++) {
+    for (byte2_t i = 0; i < data->robot_count; i++)
         if (data->robots[i]->prog_num == (byte2_t)-1)
             data->robots[i]->prog_num =
                 find_lowest_prog_num(data->robots, data->robot_count);
-        if (data->robots[i]->mem_adr == (byte2_t)-1)
-            data->robots[i]->mem_adr = 0;
-    }
 }
 
 int main(

@@ -20,6 +20,7 @@ enum error_codes {
     INCORRECT_FILE,
     NOT_COR_FILE,
     ROBOT_TOO_BIG,
+    PROG_NUM_0,
 };
 
     #define WARNINGS_START 100
