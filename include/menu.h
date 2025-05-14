@@ -12,20 +12,38 @@
 
 
 
-typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
+typedef enum GameScreen {TITLE = 0, SETTING } GameScreen;
+
 typedef struct {
-    Texture2D menu;
+
     Vector2 pos_menu;
-    Texture2D title;
     Vector2 pos_title;
-    Texture2D start;
     Vector2 pos_start;
-    Texture2D setting;
     Vector2 pos_setting;
-    Texture2D exit;
     Vector2 pos_exit;
-    Texture2D mute;
     Vector2 pos_mute;
+    Vector2 pos_sans;
+    Vector2 pos_back;
+    Vector2 pos_tick_on;
+} Vector;
+
+typedef struct {
+    bool button1;
+} Setting;
+
+typedef struct {
+    Vector *vec_data;
+    Setting *setting_data;
+    Texture2D menu;
+    Texture2D title;
+    Texture2D start;
+    Texture2D setting;
+    Texture2D exit;
+    Texture2D mute;
+    Texture2D sans;
+    Texture2D back;
+    Texture2D tick_on;
+    Texture2D tick_off;
 } Textures;
 
 #endif /* MENU_H_ */
