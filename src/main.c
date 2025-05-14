@@ -43,11 +43,12 @@ int main(
     char **env)
 {
     corewar_data_t *data = initialize_data(argc, argv);
-    
-    if (BONUS_MODE == 1)
+
+    if (BONUS_MODE == 1) {
         if (my_menu() == 0)
             return 0;
-    setup_audio();
+        setup_audio();
+    }
     if (!data || (BONUS_MODE == 1 && !is_graphical_env(env))) {
         free_garbage();
         return 84;
