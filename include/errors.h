@@ -27,6 +27,7 @@ enum error_codes {
 enum warning_codes {
     ONE_ROBOT = WARNINGS_START,
     MAX_CYCLE,
+    ROBOTS_EAT_OTHERS,
 };
 
 void *write_error(

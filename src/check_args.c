@@ -89,7 +89,7 @@ static robot_info_t *init_robot(
     info->filename = my_strdup(filename);
     info->header = header;
     info->prog_num = (byte2_t)prog_number;
-    info->mem_adr = (byte2_t)prog_adress;
+    info->mem_adr = (byte2_t)prog_adress % MEM_SIZE;
     return info;
 }
 
@@ -159,6 +159,7 @@ static bool handle_unknown(
 static bool check_corewar_data(corewar_data_t *data)
 {
     robot_info_t *robot = data->robots[0];
+    long total_size = 0;
 
     if (data->robot_count == 0)
         return write_error(NOT_ENOUGH_ROBOTS, NULL, -1);
@@ -166,9 +167,12 @@ static bool check_corewar_data(corewar_data_t *data)
         write_error(ONE_ROBOT, robot->header->prog_name, -1);
     for (byte2_t i = 0; i < data->robot_count; i++) {
         robot = data->robots[i];
+        total_size += robot->header->prog_size;
         if (robot->header->prog_size > MEM_SIZE)
             return write_error(ROBOT_TOO_BIG, robot->header->prog_name, -1);
     }
+    if (total_size > MEM_SIZE)
+        write_error(ROBOTS_EAT_OTHERS, NULL, -1);
     return true;
 }
 

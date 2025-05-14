@@ -48,13 +48,13 @@ int special_inst(
     if (instruction->op_code == 12 || instruction->op_code == 15
         || instruction->op_code == 9) {
         compute_index((sbyte2_t)(bin[0] << 8) + bin[1], instruction);
-        instruction->param_types[0] = PARAM_INDEX;
+        instruction->types[0] = PARAM_INDEX;
         return 2;
     }
     if (instruction->op_code == 1) {
         instruction->params[0].dir = (bin[0] << 24) + (bin[1] << 16) +
             (bin[2] << 8) + bin[3];
-        instruction->param_types[0] = PARAM_DIR;
+        instruction->types[0] = PARAM_DIR;
         return 4;
     }
     return 0;

@@ -18,11 +18,11 @@ static char *get_parameter_type(
     instruction_t *instruction,
     int i)
 {
-    if (instruction->param_types[i] == PARAM_REG)
+    if (instruction->types[i] == PARAM_REG)
         return " r";
-    if (instruction->param_types[i] == PARAM_DIR || instruction->param_types[i] == PARAM_INDEX)
+    if (instruction->types[i] == PARAM_DIR || instruction->types[i] == PARAM_INDEX)
         return " %";
-    if (instruction->param_types[i] == PARAM_IND || instruction->param_types[i] == PARAM_DIRDEX)
+    if (instruction->types[i] == PARAM_IND || instruction->types[i] == PARAM_DIRDEX)
         return " ";
     return " Bad param";
 }
@@ -34,17 +34,17 @@ static char *get_parameters(
     size_t len = 0;
 
     for (int i = 0; i != MAX_ARGS; i++) {
-        if (instruction->param_types[i] == PARAM_NOTHING)
+        if (instruction->types[i] == PARAM_NOTHING)
             break;
         strcat(line_buffer, get_parameter_type(instruction, i));
         len = strlen(line_buffer);
-        if (instruction->param_types[i] == PARAM_REG)
+        if (instruction->types[i] == PARAM_REG)
             sprintf(&line_buffer[len], "%d", instruction->params[i].reg + 1);
-        if (instruction->param_types[i] == PARAM_DIR)
+        if (instruction->types[i] == PARAM_DIR)
             sprintf(&line_buffer[len], "%d", instruction->params[i].dir);
-        if (instruction->param_types[i] == PARAM_INDEX || instruction->param_types[i] == PARAM_DIRDEX)
+        if (instruction->types[i] == PARAM_INDEX || instruction->types[i] == PARAM_DIRDEX)
             sprintf(&line_buffer[len], "%d", instruction->params[i].index);
-        if (instruction->param_types[i] == PARAM_IND)
+        if (instruction->types[i] == PARAM_IND)
             sprintf(&line_buffer[len], "%d", instruction->params[i].ind);
         }
     return line_buffer;

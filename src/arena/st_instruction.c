@@ -6,25 +6,26 @@
 */
 
 #include "arena.h"
+#include "op.h"
 #include "structures.h"
 #include "utils.h"
 
 int execute_st_instruction(
     arena_t *arena,
     process_data_t *process,
-    instruction_t *instruction)
+    instruction_t *instr)
 {
     sbyte4_t value = 0;
 
-    if (instruction->param_types[0] == PARAM_REG)
-        value = process->registers[instruction->params[0].reg];
+    if (instr->types[0] == PARAM_REG && instr->params[0].reg < REG_NUMBER)
+        value = process->registers[instr->params[0].reg];
     else
         return 1;
-    if (instruction->param_types[1] == PARAM_REG)
-        process->registers[instruction->params[1].reg] = value;
-    else if (instruction->param_types[1] == PARAM_IND)
+    if (instr->types[1] == PARAM_REG && instr->params[1].reg < REG_NUMBER)
+        process->registers[instr->params[1].reg] = value;
+    else if (instr->types[1] == PARAM_IND)
         write4_to_arena(arena,
-            update_program_counter(process->pc, instruction->params[1].index),
+            update_program_counter(process->pc, instr->params[1].index),
             (byte4_t)value, process->robot->prog_num);
     return 1;
 }

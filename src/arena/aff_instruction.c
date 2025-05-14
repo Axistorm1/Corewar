@@ -6,6 +6,7 @@
 */
 
 #include "arena.h"
+#include "op.h"
 #include "structures.h"
 #include "corewar.h"
 #include <unistd.h>
@@ -14,13 +15,13 @@
 int execute_aff_instruction(
     UNUSED arena_t *arena,
     process_data_t *process,
-    instruction_t *instruction)
+    instruction_t *instr)
 {
     sbyte4_t value = 0;
     char ascii = 0;
 
-    if (instruction->param_types[0] == PARAM_REG) {
-        value = process->registers[instruction->params[0].reg] % 256;
+    if (instr->types[0] == PARAM_REG && instr->params[0].reg < REG_NUMBER) {
+        value = process->registers[instr->params[0].reg] % 256;
         ascii = (char)value;
         write(STDOUT_FILENO, &ascii, 1);
         return 1;

@@ -38,7 +38,8 @@ process_data_t *create_new_process(
     process->pc = robot->mem_adr;
     process->registers[0] = robot->prog_num;
     if (parent) {
-        my_memcpy(process->registers, parent->registers, 64);
+        my_memcpy(process->registers, parent->registers,
+            REG_SIZE * REG_NUMBER);
         process->pc = parent->pc;
     }
     robot->process_count++;
@@ -52,10 +53,9 @@ static void handle_new_instruction(
 {
     int update_pc = 0;
 
-    if (proc->instruction) {
+    if (proc->instruction)
         update_pc = instructions[proc->instruction->op_code]
             (arena, proc, proc->instruction);
-    }
     if (update_pc == 1)
         proc->pc += proc->instruction->size;
     proc->instruction = analyze_memory(&arena->memory[proc->pc]);
@@ -102,7 +102,7 @@ void run_processes(arena_t *arena)
 
     for (byte4_t i = 0; i < arena->process_count; i++) {
         ptr = arena->processes[i];
-        if (ptr->wait_cycles == 0)
+        if (ptr->wait_cycles == 0 && ptr)
             handle_new_instruction(ptr, arena);
         ptr->wait_cycles--;
     }

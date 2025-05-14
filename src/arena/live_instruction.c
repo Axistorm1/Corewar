@@ -63,7 +63,7 @@ int execute_live_instruction(
 {
     sbyte4_t value = 0;
 
-    if (instruction->param_types[0] == PARAM_DIR)
+    if (instruction->types[0] == PARAM_DIR)
         value = instruction->params[0].dir;
     else
         return 1;

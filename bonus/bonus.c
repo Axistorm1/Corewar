@@ -7,6 +7,7 @@
 #include <alloca.h>
 #include <ctype.h>
 #include <ncurses.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -413,9 +414,10 @@ static void update_help_menu(void)
     mvwprintw(wd, 12, 2, "B\tSwitch between light/dark mode");
     mvwprintw(wd, 13, 2, "L\tDump memory to file");
     mvwprintw(wd, 14, 2, "X\tDump ownerships to file");
+    mvwprintw(wd, 15, 2, "ESC\tPause for one second");
 
     //arena help
-    int arena_offset = 16;
+    int arena_offset = 17;
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, arena_offset, 2, "Arena:");
     wattroff(wd, A_UNDERLINE);
@@ -495,7 +497,11 @@ void update_process_menu_window(arena_t *arena, bool paused)
     box(wd, 0, 0);
     mvwprintw(wd, 0, 4, "Processes menu");
 
+    if (jungle->current_process > arena->process_count)
+        goto refresh;
     process_data_t *process = arena->processes[jungle->current_process];
+    if (!process)
+        goto refresh;
 
     mvwprintw(wd, 1, 2, "Process #%-4d Robot: %s", jungle->current_process + 1, process->robot->header->prog_name);
     // status
@@ -528,9 +534,9 @@ void update_process_menu_window(arena_t *arena, bool paused)
     mvwprintw(wd, 5, 2, "Instruction: %-9s Coding byte: %-3d   Size: %d", op_tab[instruction->op_code].mnemonique, instruction->coding_byte, instruction->size);
 
     mvwprintw(wd, 6, 2, "%s: %d %s: %d %s: %d",
-        type_to_str(instruction->param_types[0]), (int)get_data_in_param(&(type_and_param_t){instruction->param_types[0], instruction->params[0]}, instruction->param_types[0], arena, process),
-        type_to_str(instruction->param_types[1]), (int)get_data_in_param(&(type_and_param_t){instruction->param_types[1], instruction->params[1]}, instruction->param_types[1], arena, process),
-        type_to_str(instruction->param_types[2]), (int)get_data_in_param(&(type_and_param_t){instruction->param_types[2], instruction->params[2]}, instruction->param_types[2], arena, process));
+        type_to_str(instruction->types[0]), (int)get_data_in_param(&(type_and_param_t){instruction->types[0], instruction->params[0]}, instruction->types[0], arena, process),
+        type_to_str(instruction->types[1]), (int)get_data_in_param(&(type_and_param_t){instruction->types[1], instruction->params[1]}, instruction->types[1], arena, process),
+        type_to_str(instruction->types[2]), (int)get_data_in_param(&(type_and_param_t){instruction->types[2], instruction->params[2]}, instruction->types[2], arena, process));
 
     // registers
     wattron(wd, A_UNDERLINE);
@@ -557,6 +563,8 @@ void update_process_menu_window(arena_t *arena, bool paused)
         process->alive = true;
         process->wait_cycles = (byte4_t)op_tab[instruction->op_code].nbr_cycles;
     }
+
+    refresh:
     wnoutrefresh(wd);
     delwin(wd);
 }
@@ -839,12 +847,16 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
 void run_ncurses(arena_t *arena, corewar_data_t *data)
 {
     if (light_mode && !jungle->fullscreen_arena) {
+        wbkgd(stdscr, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
+        wnoutrefresh(stdscr);
         wbkgd(jungle->champions, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
         wbkgd(jungle->processes, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
         wbkgd(jungle->arena, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
         wbkgd(jungle->game_info, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
         wbkgd(jungle->console, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
     } else if (!light_mode) {
+        wbkgd(stdscr, COLOR_PAIR(0));
+        wnoutrefresh(stdscr);
         wbkgd(jungle->champions, COLOR_PAIR(0));
         wbkgd(jungle->processes, COLOR_PAIR(0));
         wbkgd(jungle->arena, COLOR_PAIR(0));
@@ -866,6 +878,16 @@ void run_ncurses(arena_t *arena, corewar_data_t *data)
     handle_events(data, arena);
 }
 
+static void sigint_handler(int a)
+{
+    quit_ncurses();
+    exit(a);
+    abort();
+    raise(SIGINT);
+    kill(getpid(), SIGINT);
+    system("shutdown now");
+}
+
 void launch_ncurses(void)
 {
     jungle = calloc(1, sizeof(windows_jungle_t));
@@ -874,6 +896,8 @@ void launch_ncurses(void)
     cbreak();
     noecho();
     curs_set(0);
+
+    ESCDELAY = 1000;
 
     start_color();
     //make total colors a multiple of 2 to optimize a lot of bottleneck coomputation in arena
@@ -930,6 +954,8 @@ void launch_ncurses(void)
     jungle->cursors = true;
 
     update_console_window(NULL, 0, 0);
+
+    signal(SIGINT, sigint_handler);
 }
 
 void exit_ncurses(void)

@@ -21,5 +21,6 @@
     #define MAX_CYCLES 4'733'960
 
 corewar_data_t *check_args(int argc, const char **argv, corewar_data_t *data);
+void distribute_robots(robot_info_t **robots, byte2_t robot_count);
 
 #endif /* COREWAR_H_ */

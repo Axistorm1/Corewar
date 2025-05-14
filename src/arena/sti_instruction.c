@@ -14,22 +14,22 @@
 int execute_sti_instruction(
     arena_t *arena,
     process_data_t *process,
-    instruction_t *instruction)
+    instruction_t *instr)
 {
     sbyte4_t value = 0;
     sbyte8_t adress = 0;
     sbyte8_t adr2 = 0;
 
-    if (instruction->param_types[0] == PARAM_REG)
-        value = process->registers[instruction->params[0].reg];
-    adress = get_data_in_param(&(type_and_param_t){instruction->param_types[1],
-        instruction->params[1]}, ALL_PARAMS, arena, process);
-    if (adress == 1l << 32)
+    if (instr->types[0] == PARAM_REG && instr->params[0].reg < REG_NUMBER)
+        value = process->registers[instr->params[0].reg];
+    else
         return 1;
-    adr2 = get_data_in_param(&(type_and_param_t){instruction->param_types[2],
-        instruction->params[2]}, PARAM_DIR | PARAM_REG | PARAM_DIRDEX, arena,
+    adress = get_data_in_param(&(type_and_param_t){instr->types[1],
+        instr->params[1]}, ALL_PARAMS, arena, process);
+    adr2 = get_data_in_param(&(type_and_param_t){instr->types[2],
+        instr->params[2]}, PARAM_DIR | PARAM_REG | PARAM_DIRDEX, arena,
         process);
-    if (adr2 == 1l << 32)
+    if (adress == 1l << 32 || adr2 == 1l << 32)
         return 1;
     adress += adr2;
     write4_to_arena(arena, update_program_counter(process->pc, (sbyte2_t)

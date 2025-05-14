@@ -18,7 +18,7 @@ int execute_fork_instruction(
 {
     if (arena->process_count >= (PROCESS_LIMIT - 1))
         return 1;
-    if (instruction->param_types[0] == PARAM_INDEX) {
+    if (instruction->types[0] == PARAM_INDEX) {
         instruction->params[0].index %= IDX_MOD;
         return execute_lfork_instruction(arena, process, instruction);
     }
@@ -35,7 +35,7 @@ int execute_lfork_instruction(
 
     if (arena->process_count >= (PROCESS_LIMIT - 1))
         return 1;
-    if (instruction->param_types[0] == PARAM_INDEX) {
+    if (instruction->types[0] == PARAM_INDEX) {
         arena->processes = realloc(arena->processes,
             sizeof(process_data_t *) * (arena->process_count + 2));
         value = instruction->params[0].index;

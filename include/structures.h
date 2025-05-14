@@ -75,7 +75,7 @@ typedef struct
 instruction_s {
     op_code_t op_code;
     byte1_t coding_byte;
-    param_type_t param_types[3];
+    param_type_t types[3];
     parameter_t params[3];
     byte1_t size;
 } instruction_t;

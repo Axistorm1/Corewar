@@ -44,15 +44,15 @@ static byte2_t find_lowest_prog_num(
 {
     byte2_t lowest = 1;
 
-    for (byte2_t i = 0; i < robot_count; i++)
+    for (byte2_t i = 0; i < robot_count; i++) {
         if (robots[i]->prog_num == lowest) {
             lowest++;
-            i = 0;
+            i = (byte2_t)-1;
         }
+    }
     return lowest;
 }
 
-// not optimized and too lazy to optimize it
 static void assign_default_values(corewar_data_t *data)
 {
     for (byte2_t i = 0; i < data->robot_count; i++) {
@@ -71,7 +71,6 @@ int main(
 {
     corewar_data_t *data = initialize_data(argc, argv);
 
-    assign_default_values(data);
     if (!data || (BONUS_MODE == 1 && !is_graphical_env(env))) {
         free_garbage();
         return 84;
@@ -81,6 +80,8 @@ int main(
         free_garbage();
         return 0;
     }
+    assign_default_values(data);
+    distribute_robots(data->robots, data->robot_count);
     if (BONUS_MODE == 1)
         launch_ncurses();
     create_arena(data);

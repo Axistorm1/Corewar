@@ -25,7 +25,8 @@ static const char *const error_strings[] = {
 
 static const char *const warning_strings[] = {
     "is lonely in the arena :( Consider finding him some friends",
-    "cycle will never be reached (MAX: 4,733,960)"
+    "cycle will never be reached (MAX: 4,733,960)",
+    "The total memory amount of the robots is higher than the arena size"
 };
 
 static void write_auxiliary(
