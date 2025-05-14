@@ -75,8 +75,6 @@ static void update_arena_window(arena_t *arena)
     int cols = (getmaxx(wd) >> 1) - 1;
     int lines = getmaxy(wd) - 2;
 
-    werase(wd);
-
     int start_pos = (jungle->arena_mem_line * cols) % MEM_SIZE;
     if (start_pos < 0)
         start_pos = 0;
