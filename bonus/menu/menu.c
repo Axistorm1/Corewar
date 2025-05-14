@@ -119,6 +119,7 @@ int my_menu(void)
                     DrawTexture(asset.exit, (int)asset.pos_exit.x, (int)asset.pos_exit.y, WHITE);
                     DrawTexture(asset.mute, (int)asset.pos_mute.x, (int)asset.pos_mute.y, WHITE);
                     if (is_hover(asset.start, asset.pos_start) == true) {
+                        StopMusicStream(music);
                         EndDrawing();
                         CloseWindow();
                         return 1;
@@ -127,6 +128,7 @@ int my_menu(void)
                     if (is_hover(asset.exit, asset.pos_exit) == true) {
                         EndDrawing();
                         CloseWindow();
+                        StopMusicStream(music);
                         return 0;
                     }
                     if (is_hover(asset.mute, asset.pos_mute)) {
