@@ -16,7 +16,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
-
 static bool is_graphical_env(char **env)
 {
     for (size_t i = 0; env[i]; i++)
@@ -44,7 +43,11 @@ int main(
     char **env)
 {
     corewar_data_t *data = initialize_data(argc, argv);
-
+    
+    if (BONUS_MODE == 1)
+        if (my_menu() == 0)
+            return 0;
+    setup_audio();
     if (!data || (BONUS_MODE == 1 && !is_graphical_env(env))) {
         free_garbage();
         return 84;
@@ -54,6 +57,7 @@ int main(
         free_garbage();
         return 0;
     }
+
     if (BONUS_MODE == 1)
         launch_ncurses();
     create_arena(data);

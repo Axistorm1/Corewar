@@ -821,7 +821,6 @@ void launch_ncurses(void)
     cbreak();
     noecho();
     curs_set(0);
-
     start_color();
     //make total colors a multiple of 2 to optimize a lot of bottleneck coomputation in arena
     init_color(8, 1000, 640, 0);
