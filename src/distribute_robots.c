@@ -5,6 +5,7 @@
 ** distribute_robots.c
 */
 
+#include "errors.h"
 #include "op.h"
 #include "structures.h"
 #include "my_string.h"
@@ -101,7 +102,7 @@ static void place_robots_in_gap(gap_placement_info_t *gap_info)
     }
 }
 
-static void place_in_gaps(
+static robot_info_t **place_in_gaps(
     byte2_t placed_count,
     byte2_t to_place_count,
     int gaps[placed_count][3],
@@ -116,23 +117,28 @@ static void place_in_gaps(
     my_memcpy(gaps_copy, gaps, sizeof(int) * placed_count * 3);
     for (byte2_t i = 0; i < to_place_count; i++) {
         highest_index = find_highest_gap(placed_count, gaps, pos_count);
-        gaps[highest_index][2] -= robots[i]->header->prog_size;
-        pos[highest_index][pos_count[highest_index]] = robots[i];
-        pos_count[highest_index]++;
+        if (gaps[highest_index][2] > robots[i]->header->prog_size) {
+            gaps[highest_index][2] -= robots[i]->header->prog_size;
+            pos[highest_index][pos_count[highest_index]] = robots[i];
+            pos_count[highest_index]++;
+        } else
+            return write_error(PLACING_ERROR, NULL, -1);
     }
     for (byte2_t gap_idx = 0; gap_idx < placed_count; gap_idx++)
         place_robots_in_gap(&(gap_placement_info_t){pos[gap_idx],
             gaps_copy[gap_idx][0], gaps_copy[gap_idx][2], pos_count[gap_idx]});
+    return robots;
 }
 
-static void place_default(
+static robot_info_t **place_default(
     robot_info_t **robots,
     byte2_t robot_count)
 {
-    byte2_t memory_adress = MEM_SIZE / robot_count;
+    float memory_adress = (float)MEM_SIZE / robot_count;
 
     for (byte2_t i = 0; i < robot_count; i++)
-        robots[i]->mem_adr = memory_adress * i;
+        robots[i]->mem_adr = (byte2_t)(memory_adress * i);
+    return robots;
 }
 
 static robot_info_t **create_new_robot_list(
@@ -166,7 +172,7 @@ static robot_info_t **create_new_robot_list(
 // There are as many initial gaps as there are robots
 // - 1 robot = 1 gap [the rest of the arena]
 // - 2 robots = 2 gaps [the one between the robots and the one after]
-void distribute_robots(
+robot_info_t **distribute_robots(
     robot_info_t **robots,
     byte2_t robot_count)
 {
@@ -175,18 +181,16 @@ void distribute_robots(
     byte2_t placed_robots = count_placed_robots(robots, robot_count);
     int gaps[placed_robots][3];
 
-    if (placed_robots == 0) {
-        place_default(robots, robot_count);
-        return;
-    }
+    if (placed_robots == 0)
+        return place_default(robots, robot_count);
     if (robot_count - placed_robots == 0)
-        return;
+        return robots;
     for (byte2_t i = 0; i < robot_count; i++) {
         placement_list[i] = robots[i]->mem_adr;
         robots_sizes[i] = robots[i]->header->prog_size;
     }
     compute_gaps(robot_count, gaps, placement_list, robots_sizes);
     robots = create_new_robot_list(robots, robot_count);
-    place_in_gaps(placed_robots, robot_count - placed_robots, gaps, robots);
-    return;
+    return place_in_gaps(placed_robots, robot_count - placed_robots,
+        gaps, robots);
 }

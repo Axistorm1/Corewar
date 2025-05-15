@@ -69,12 +69,15 @@ static int handle_usage(void)
     return 0;
 }
 
-static int handle_program(corewar_data_t *data)
+static int handle_program(
+    corewar_data_t *data,
+    game_info_t *game_data)
 {
     assign_default_values(data);
-    distribute_robots(data->robots, data->robot_count);
+    if (!distribute_robots(data->robots, data->robot_count))
+        return 84;
     if (BONUS_MODE == 1)
-        launch_ncurses();
+        launch_ncurses(game_data);
     create_arena(data);
     free_garbage();
     if (BONUS_MODE == 1)
@@ -101,5 +104,5 @@ int main(
     }
     if (data->usage)
         return handle_usage();
-    return handle_program(data);
+    return handle_program(data, &game_data);
 }

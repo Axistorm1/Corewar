@@ -1,5 +1,6 @@
 #include "bonus.h"
 #include "arena.h"
+#include "game_info.h"
 #include "op.h"
 #include "structures.h"
 #include "my_stdlib.h"
@@ -419,6 +420,12 @@ static void display_secret_menu(WINDOW *wd)
         "     ((____|    )_-\\ \\_-`",
         "     `-----'`-----` `--`",
         NULL};
+    for (byte1_t i = 0; secret_ascii_top[i]; i++)
+        mvwprintw(wd, 1 + i, 1, "%s", secret_ascii_top[i]);
+
+    wattron(wd, A_UNDERLINE);
+    mvwprintw(wd, getmaxy(wd) / 2, getmaxx(wd) / 2 - 4, "The game");
+    wattroff(wd, A_UNDERLINE);
 
     char *secret_ascii_bottom[] = {"",
         "      |\\      _,,,---,,_",
@@ -426,11 +433,9 @@ static void display_secret_menu(WINDOW *wd)
         "     |,4-  ) )-,_. ,\\ (  `'-'",
         "    '---''(_/--'  `-'\\_)",
         NULL};
-    for (byte1_t i = 0; secret_ascii_top[i]; i++)
-        mvwprintw(wd, 1 + i, 1, "%s", secret_ascii_top[i]);
 
     for (byte1_t i = 0; secret_ascii_bottom[i]; i++)
-        mvwprintw(wd, getmaxy(wd) - 7 + i, 1, "%s", secret_ascii_bottom[i]);
+        mvwprintw(wd, getmaxy(wd) - 7 + i, 3, "%s", secret_ascii_bottom[i]);
 }
 
 // maybe add a big COREWAR ascii? like btop (UwU btop my beloved)
@@ -454,7 +459,7 @@ static void update_help_menu(void)
 
 
     if (jungle->help_menu_page == 3) {
-        mvwprintw(wd, 0, 4, "Cute cat");
+        mvwprintw(wd, 0, 4, "Cute cats");
         mvwprintw(wd, 0, getmaxx(wd) - 10, "page ?/2");
         display_secret_menu(wd);
         goto events;
@@ -987,7 +992,7 @@ static void sigint_handler(int a)
     system("shutdown now");
 }
 
-void launch_ncurses(void)
+void launch_ncurses(game_info_t *game_data)
 {
     jungle = calloc(1, sizeof(windows_jungle_t));
 
@@ -1053,6 +1058,8 @@ void launch_ncurses(void)
     jungle->cursors = true;
 
     jungle->help_menu_page = 1;
+
+    light_mode = game_data->light_mode;
 
     update_console_window(NULL, 0, 0);
 

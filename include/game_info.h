@@ -13,7 +13,7 @@
 typedef struct
 PACKED game_info_s {
     int music_select;
-    bool white_mode;
+    bool light_mode;
     bool abel;
     bool john;
 } game_info_t;

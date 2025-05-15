@@ -20,14 +20,15 @@ static const char *const error_strings[] = {
     "There must be at least one robot",
     "File is incorrect",
     "The file must be a .cor file and have a magic number",
-    "Robot too big for the arena",
-    "Program number must be higher than 0"
+    "Program too big for the arena",
+    "Program number must be higher than 0",
+    "There was an error placing the programs"
 };
 
 static const char *const warning_strings[] = {
     "is lonely in the arena :( Consider finding him some friends",
     "cycle will never be reached (MAX: 4,733,960)",
-    "The total memory amount of the robots is higher than the arena size"
+    "The total memory amount of the programs is higher than the arena size"
 };
 
 static void write_auxiliary(

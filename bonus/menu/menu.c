@@ -18,7 +18,7 @@ const int screenHeight = 1080;
 
 static bool is_click (Texture2D texture, Vector2 position)
 {
-   Rectangle bounds = {
+    Rectangle bounds = {
         position.x,
         position.y,
         (float)texture.width,
@@ -34,7 +34,7 @@ static bool is_click (Texture2D texture, Vector2 position)
 static bool is_hover (Texture2D texture, Vector2 position)
 {
 
-   Rectangle bounds = {
+    Rectangle bounds = {
         position.x,
         position.y,
         (float)texture.width,
@@ -129,11 +129,10 @@ static void select_music(textures_t *asset, game_info_t *game_data)
 {
     Vector2 temp;
     if (is_hover(asset->swap, asset->vec_data->pos_swap) == true) {
-        if (asset->setting_data->is_click1 == true) {
+        if (asset->setting_data->is_click1 == true)
             asset->setting_data->is_click1 = false;
-        } else {
+        else
             asset->setting_data->is_click1 = true;
-        }
     }
     if (asset->setting_data->is_click1 == true) {
         DrawTexture(asset->select, (int)asset->vec_data->pos_select.x, (int)asset->vec_data->pos_select.y , WHITE);
@@ -173,124 +172,100 @@ int my_menu(game_info_t *game_data)
     {
         UpdateMusicStream(music);
         BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawTexture(asset.menu, (int)asset.vec_data->pos_menu.x, (int)asset.vec_data->pos_menu.y, WHITE);
-            DrawTexture(asset.mute, (int)asset.vec_data->pos_mute.x, (int)asset.vec_data->pos_mute.y, WHITE);
-            if (is_hover(asset.mute, asset.vec_data->pos_mute)) {
-                if (is_music == 0) {
-                    PauseMusicStream(music);
-                    is_music = 1;
-                } else {
-                    ResumeMusicStream(music);
-                    is_music = 0;
-                     }
-                }
-            switch(currentScreen)
+        ClearBackground(RAYWHITE);
+        DrawTexture(asset.menu, (int)asset.vec_data->pos_menu.x, (int)asset.vec_data->pos_menu.y, WHITE);
+        DrawTexture(asset.mute, (int)asset.vec_data->pos_mute.x, (int)asset.vec_data->pos_mute.y, WHITE);
+        if (is_hover(asset.mute, asset.vec_data->pos_mute)) {
+            if (is_music == 0) {
+                PauseMusicStream(music);
+                is_music = 1;
+            } else {
+                ResumeMusicStream(music);
+                is_music = 0;
+            }
+        }
+        switch(currentScreen) {
+            case TITLE:
             {
-                case TITLE:
-                {
-                    DrawTexture(asset.enemy, (int)asset.vec_data->pos_enemy.x, (int)asset.vec_data->pos_enemy.y, WHITE);
-                    DrawTexture(asset.title, (int)asset.vec_data->pos_title.x, (int)asset.vec_data->pos_title.y, WHITE);
-                    DrawTexture(asset.start, (int)asset.vec_data->pos_start.x, (int)asset.vec_data->pos_start.y, WHITE);
-                    DrawTexture(asset.setting, (int)asset.vec_data->pos_setting.x, (int)asset.vec_data->pos_setting.y, WHITE);
-                    DrawTexture(asset.option, (int)asset.vec_data->pos_option.x, (int)asset.vec_data->pos_option.y, WHITE);
-                    DrawTexture(asset.exit, (int)asset.vec_data->pos_exit.x, (int)asset.vec_data->pos_exit.y, WHITE);
-                    DrawTexture(asset.sans, (int)asset.vec_data->pos_sans.x, (int)asset.vec_data->pos_sans.y, WHITE);
-                    if (is_hover(asset.start, asset.vec_data->pos_start) == true) {
-                        StopMusicStream(music);
-                        EndDrawing();
-                        CloseWindow();
-                        return 1;
-                    }
-                    if (is_hover(asset.setting, asset.vec_data->pos_setting)) {
-                            currentScreen = SETTING;
-                            break;
-                    }
-
-                    if (is_hover(asset.option, asset.vec_data->pos_option)) {
-                            currentScreen = OPTION;
-                            break;
-                    }
-                    if (is_hover(asset.exit, asset.vec_data->pos_exit)) {
-                        EndDrawing();
-                        CloseWindow();
-                        StopMusicStream(music);
-                        return 0;
-                    }
-
-                } break;
-                case SETTING:
-                {
-                    ClearBackground(RAYWHITE);
-                    DrawTexture(asset.enemy, (int)asset.vec_data->pos_enemy.x, (int)asset.vec_data->pos_enemy.y, WHITE);
-                    DrawTexture(asset.back, (int)asset.vec_data->pos_back.x, (int)asset.vec_data->pos_back.y, WHITE);
-                    DrawTexture(asset.tick_on, (int)asset.vec_data->pos_tick_on.x, (int)asset.vec_data->pos_tick_on.y, WHITE);
-                    DrawTexture(asset.swap, (int)asset.vec_data->pos_swap.x, (int)asset.vec_data->pos_swap.y, WHITE);
-                    if (asset.setting_data->button1 == false)
-                        DrawText("White mode", 580, 455, 25, RED);
-                    if (asset.setting_data->button1 == true)
-                        DrawText("White mode", 580, 455, 25, GREEN);
-                    game_data->white_mode = asset.setting_data->button1;
-                    DrawText("Game Music", 580, 520, 25, GRAY);
-                    select_music(&asset, game_data);
-                    if (is_hover(asset.back, asset.vec_data->pos_back)) {
-                            currentScreen = TITLE;
-                            break;
-                    }
-                    if (is_hover(asset.tick_on, asset.vec_data->pos_tick_on) || is_hover(asset.tick_off, asset.vec_data->pos_tick_off)) {
-                            if (asset.setting_data->button1 == false) {
-                                asset.setting_data->button1 = true;
-                                break;
-                            }
-                            if (asset.setting_data->button1 == true) {
-                                asset.setting_data->button1 = false;
-                                break;
-                            }
-                            break;
-                    }
-                    break;
+                DrawTexture(asset.enemy, (int)asset.vec_data->pos_enemy.x, (int)asset.vec_data->pos_enemy.y, WHITE);
+                DrawTexture(asset.title, (int)asset.vec_data->pos_title.x, (int)asset.vec_data->pos_title.y, WHITE);
+                DrawTexture(asset.start, (int)asset.vec_data->pos_start.x, (int)asset.vec_data->pos_start.y, WHITE);
+                DrawTexture(asset.setting, (int)asset.vec_data->pos_setting.x, (int)asset.vec_data->pos_setting.y, WHITE);
+                DrawTexture(asset.option, (int)asset.vec_data->pos_option.x, (int)asset.vec_data->pos_option.y, WHITE);
+                DrawTexture(asset.exit, (int)asset.vec_data->pos_exit.x, (int)asset.vec_data->pos_exit.y, WHITE);
+                DrawTexture(asset.sans, (int)asset.vec_data->pos_sans.x, (int)asset.vec_data->pos_sans.y, WHITE);
+                if (is_hover(asset.start, asset.vec_data->pos_start) == true) {
+                    StopMusicStream(music);
+                    EndDrawing();
+                    CloseWindow();
+                    return 1;
                 }
-                case OPTION:
-                {
-
-                    DrawTexture(asset.previous, (int)asset.vec_data->pos_previous.x, (int)asset.vec_data->pos_previous.y, WHITE);
-                    DrawTexture(asset.next, (int)asset.vec_data->pos_next.x, (int)asset.vec_data->pos_next.y, WHITE);
-                    DrawTexture(asset.john, (int)asset.vec_data->pos_john.x, (int)asset.vec_data->pos_john.y, WHITE);
-                    if (is_hover(asset.previous, asset.vec_data->pos_previous)) {
+                if (is_hover(asset.setting, asset.vec_data->pos_setting)) {
+                        currentScreen = SETTING;
+                        break;
+                }
+                if (is_hover(asset.option, asset.vec_data->pos_option)) {
+                        currentScreen = OPTION;
+                        break;
+                }
+                if (is_hover(asset.exit, asset.vec_data->pos_exit)) {
+                    EndDrawing();
+                    CloseWindow();
+                    StopMusicStream(music);
+                    return 0;
+                }
+            } break;
+            case SETTING:
+            {
+                ClearBackground(RAYWHITE);
+                DrawTexture(asset.enemy, (int)asset.vec_data->pos_enemy.x, (int)asset.vec_data->pos_enemy.y, WHITE);
+                DrawTexture(asset.back, (int)asset.vec_data->pos_back.x, (int)asset.vec_data->pos_back.y, WHITE);
+                DrawTexture(asset.tick_on, (int)asset.vec_data->pos_tick_on.x, (int)asset.vec_data->pos_tick_on.y, WHITE);
+                DrawTexture(asset.swap, (int)asset.vec_data->pos_swap.x, (int)asset.vec_data->pos_swap.y, WHITE);
+                if (asset.setting_data->button1 == false)
+                    DrawText("White mode", 580, 455, 25, GREEN);
+                if (asset.setting_data->button1 == true)
+                    DrawText("White mode", 580, 455, 25, RED);
+                game_data->light_mode = asset.setting_data->button1;
+                DrawText("Game Music", 580, 520, 25, GRAY);
+                select_music(&asset, game_data);
+                if (is_hover(asset.back, asset.vec_data->pos_back)) {
                         currentScreen = TITLE;
                         break;
-                    }
-                    is_hover(asset.next, asset.vec_data->pos_next);
-                    DrawTexture(asset.atom, (int)asset.vec_data->pos_atom.x, (int)asset.vec_data->pos_atom.y, WHITE);
-                    if (is_click(asset.take, asset.vec_data->pos_take_atom)) {
-                        if (game_data->abel == false) {
-                            game_data->abel = true;
-                        } else {
-                            game_data->abel = false;
-                        }
-                    }
-                    if (game_data->abel == false) {
-                        DrawTexture(asset.take, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
-                    } else {
-                        DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
-                    }
-                    if (is_click(asset.take, asset.vec_data->pos_take_john)) {
-                        if (game_data->john == false) {
-                            game_data->john = true;
-                        } else {
-                            game_data->john = false;
-                        }
-                    }
-                    if (game_data->john == false) {
-                        DrawTexture(asset.take, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
-                    } else {
-                        DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
-                    }
-                    DrawText("         Abel\nThe best at being bad", 150, 620, 50, BLACK);
-                    DrawText("John_Snow\nBro is cold", 1450, 620, 50, BLACK);
                 }
-            }
-
+                if (is_hover(asset.tick_on, asset.vec_data->pos_tick_on) || is_hover(asset.tick_off, asset.vec_data->pos_tick_off)) {
+                        asset.setting_data->button1 = !asset.setting_data->button1;
+                        break;
+                }
+                break;
+            } break;
+            case OPTION:
+            {
+                DrawTexture(asset.previous, (int)asset.vec_data->pos_previous.x, (int)asset.vec_data->pos_previous.y, WHITE);
+                DrawTexture(asset.next, (int)asset.vec_data->pos_next.x, (int)asset.vec_data->pos_next.y, WHITE);
+                DrawTexture(asset.john, (int)asset.vec_data->pos_john.x, (int)asset.vec_data->pos_john.y, WHITE);
+                if (is_hover(asset.previous, asset.vec_data->pos_previous)) {
+                    currentScreen = TITLE;
+                    break;
+                }
+                is_hover(asset.next, asset.vec_data->pos_next);
+                DrawTexture(asset.atom, (int)asset.vec_data->pos_atom.x, (int)asset.vec_data->pos_atom.y, WHITE);
+                if (is_click(asset.take, asset.vec_data->pos_take_atom))
+                    game_data->abel = !game_data->abel;
+                if (game_data->abel == false)
+                    DrawTexture(asset.take, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
+                else
+                    DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
+                if (is_click(asset.take, asset.vec_data->pos_take_john))
+                    game_data->john = !game_data->john;
+                if (game_data->john == false)
+                    DrawTexture(asset.take, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
+                else
+                    DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
+                DrawText("         Abel\nThe best at being bad", 150, 620, 50, BLACK);
+                DrawText("John_Snow\nBro is cold", 1450, 620, 50, BLACK);
+            } break;
+        }
         EndDrawing();
     }
     CloseWindow();
