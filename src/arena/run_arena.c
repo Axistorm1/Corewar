@@ -91,6 +91,22 @@ static void dump_memory(arena_t *arena)
     }
 }
 
+static void find_winner(robot_info_t **robots, byte2_t robot_count)
+{
+    char player_line[200];
+
+    for (byte2_t i = 0; i < robot_count; i++)
+        if (robots[i]->process_count) {
+            my_memset(player_line, 0, 200);
+            my_strcat(player_line, "The player ");
+            my_itoa(robots[i]->prog_num, &player_line[11], 10);
+            my_strcat(player_line, "(");
+            my_strcat(player_line, robots[i]->header->prog_name);
+            my_strcat(player_line, ")has won.\n");
+            write(STDOUT_FILENO, player_line, my_strlen(player_line));
+        }
+}
+
 static void run_arena(arena_t *arena, corewar_data_t *data)
 {
     while (keep_running(arena, data)
@@ -101,6 +117,10 @@ static void run_arena(arena_t *arena, corewar_data_t *data)
     }
     if (data->dump_cycle != (byte4_t)-1)
         dump_memory(arena);
+    if (arena->robots_alive == 0)
+        my_puts("No player has won.");
+    else
+        find_winner(data->robots, data->robot_count);
 }
 
 arena_t *create_arena(corewar_data_t *data)
