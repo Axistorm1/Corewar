@@ -1,4 +1,3 @@
-
 /*
 ** EPITECH PROJECT, 2025
 ** corewar
@@ -8,13 +7,16 @@
 
 #ifndef MENU_H_
     #define MENU_H_
+
     #include "raylib.h"
 
+typedef enum game_screen_e {
+    TITLE,
+    SETTING,
+    OPTION
+} game_screen_t;
 
-
-typedef enum GameScreen {TITLE = 0, SETTING, OPTION } GameScreen;
-
-typedef struct {
+typedef struct vector_s {
     Vector2 pos_menu;
     Vector2 pos_title;
     Vector2 pos_start;
@@ -35,16 +37,16 @@ typedef struct {
     Vector2 pos_previous;
     Vector2 pos_next;
     Vector2 pos_john;
-} Vector;
+} vector_t;
 
-typedef struct {
+typedef struct setting_s {
     bool button1;
     bool is_click1;
-} Setting;
+} setting_t;
 
-typedef struct {
-    Vector *vec_data;
-    Setting *setting_data;
+typedef struct textures_s {
+    vector_t *vec_data;
+    setting_t *setting_data;
     Texture2D menu;
     Texture2D title;
     Texture2D start;
@@ -65,7 +67,6 @@ typedef struct {
     Texture2D previous;
     Texture2D next;
     Texture2D john;
-} Textures;
+} textures_t;
 
 #endif /* MENU_H_ */
-

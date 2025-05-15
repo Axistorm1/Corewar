@@ -12,11 +12,12 @@
 #include "utils.h"
 #include "bonus.h"
 #include "arena.h"
+#include "game_info.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "game_info.h"
+
 static bool is_graphical_env(char **env)
 {
     for (size_t i = 0; env[i]; i++)
@@ -61,13 +62,33 @@ static void assign_default_values(corewar_data_t *data)
                 find_lowest_prog_num(data->robots, data->robot_count);
 }
 
+static int handle_usage(void)
+{
+    display_usage();
+    free_garbage();
+    return 0;
+}
+
+static int handle_program(corewar_data_t *data)
+{
+    assign_default_values(data);
+    distribute_robots(data->robots, data->robot_count);
+    if (BONUS_MODE == 1)
+        launch_ncurses();
+    create_arena(data);
+    free_garbage();
+    if (BONUS_MODE == 1)
+        exit_ncurses();
+    return 0;
+}
+
 int main(
     int argc,
     const char **argv,
     char **env)
 {
     corewar_data_t *data = initialize_data(argc, argv);
-    game_info game_data = {0};
+    game_info_t game_data = {0};
 
     if (BONUS_MODE == 1) {
         if (my_menu(&game_data) == 0)
@@ -78,18 +99,7 @@ int main(
         free_garbage();
         return 84;
     }
-    if (data->usage) {
-        display_usage();
-        free_garbage();
-        return 0;
-    }
-    assign_default_values(data);
-    distribute_robots(data->robots, data->robot_count);
-    if (BONUS_MODE == 1)
-        launch_ncurses();
-    create_arena(data);
-    free_garbage();
-    if (BONUS_MODE == 1)
-        exit_ncurses();
-    return 0;
+    if (data->usage)
+        return handle_usage();
+    return handle_program(data);
 }

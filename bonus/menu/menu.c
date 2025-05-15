@@ -7,19 +7,17 @@
 
 #include <raylib.h>
 #include "menu.h"
-#include "corewar.h"
-#include "errors.h"
-#include "op.h"
-#include "structures.h"
 #include "my_string.h"
 #include "my_stype.h"
 #include "my_stdlib.h"
 #include <stdlib.h>
 #include "game_info.h"
 
+const int screenWidth = 1920;
+const int screenHeight = 1080;
+
 static bool is_click (Texture2D texture, Vector2 position)
 {
-
    Rectangle bounds = {
         position.x,
         position.y,
@@ -50,9 +48,9 @@ static bool is_hover (Texture2D texture, Vector2 position)
     return hovering && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
-static Textures create_settings(Textures asset)
+static textures_t create_settings(textures_t asset)
 {
-    asset.setting_data = malloc(sizeof(Setting));
+    asset.setting_data = malloc(sizeof(setting_t));
     asset.setting_data->button1 = true;
     asset.setting_data->is_click1 = false;
     asset.back = LoadTexture("bonus/menu/assets/back.png");
@@ -70,7 +68,7 @@ static Textures create_settings(Textures asset)
     return asset;
 }
 
-static Textures create_option(Textures asset)
+static textures_t create_option(textures_t asset)
 {
     asset.atom = LoadTexture("bonus/menu/assets/atom.png");
     asset.vec_data->pos_atom.x = 100.0f;
@@ -93,10 +91,10 @@ static Textures create_option(Textures asset)
     return asset;
 }
 
-static Textures create_menu(void)
+static textures_t create_menu(void)
 {
-    Textures asset = {0};
-    asset.vec_data = malloc(sizeof(Vector));
+    textures_t asset = {0};
+    asset.vec_data = malloc(sizeof(vector_t));
     asset.menu = LoadTexture("bonus/menu/assets/image.png");
     asset.vec_data->pos_menu.x = 0.0f;
     asset.vec_data->pos_menu.y = 0.0f;
@@ -127,7 +125,7 @@ static Textures create_menu(void)
     return asset;
 }
 
-static void select_music(Textures *asset, game_info *game_data)
+static void select_music(textures_t *asset, game_info_t *game_data)
 {
     Vector2 temp;
     if (is_hover(asset->swap, asset->vec_data->pos_swap) == true) {
@@ -153,19 +151,16 @@ static void select_music(Textures *asset, game_info *game_data)
     }
 }
 
-int my_menu(game_info *game_data)
+int my_menu(game_info_t *game_data)
 {
-    //SetTraceLogLevel(LOG_FATAL);
-    const int screenWidth = 1920;
-    const int screenHeight = 1080;
-    int framesCounter = 0;
+    SetTraceLogLevel(LOG_FATAL);
     int is_music = 0;
 
     game_data->abel = false;
     game_data->john = false;
-    Textures asset = {0};
+    textures_t asset = {0};
     InitWindow(screenWidth, screenHeight, "corewar");
-    GameScreen currentScreen = TITLE;
+    game_screen_t currentScreen = TITLE;
     SetTargetFPS(60);
     InitAudioDevice();
     Music music = LoadMusicStream("bonus/menu/assets/menu_music.mp3");

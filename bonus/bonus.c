@@ -1000,7 +1000,7 @@ void launch_ncurses(void)
 
     start_color();
     //make total colors a multiple of 2 to optimize a lot of bottleneck coomputation in arena
-    init_color(8, 1000, 640, 0);
+    init_color(COLOR_ORANGE, 1000, 640, 0);
     init_color(9, 550, 0, 0);
     init_color(10, 670, 1000, 180);
     init_color(11, 4, 520, 100);

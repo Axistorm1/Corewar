@@ -8,7 +8,9 @@
 NAME	=	corewar
 LIB		=	libmystd.a
 
-CFLAGS = -Wall -Wextra -Iinclude $(pkg-config --libs --cflags raylib)  audio_player `sdl2-config --cflags --libs` -lSDL2_mixer
+CFLAGS = $(pkg-config --libs --cflags raylib)	\
+	audio_player `sdl2-config --cflags --libs` -lSDL2_mixer
+
 LDFLAGS = -Llibs -lmystd
 
 MAKEFLAGS += --no-print-directory
