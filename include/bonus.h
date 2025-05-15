@@ -10,7 +10,7 @@
 
     #include "structures.h"
     #include <ncurses.h>
-
+    #include "game_info.h"
     #define COLOR_ORANGE 8
     #define COLOR_DARK_RED 9
     // THIS MUST BE A POWER OF 2
@@ -26,8 +26,8 @@ void launch_ncurses(void);
 void run_ncurses(arena_t *arena, corewar_data_t *data);
 void update_console_window(char *str, byte2_t prog_num, byte4_t cycle);
 void exit_ncurses(void);
-int my_menu(void);
-void setup_audio(void);
+int my_menu(game_info *game_data);
+void setup_audio(game_info *game_data);
 instruction_t **parse_champions(header_t *header, char *filename);
 char **transcribe_dot_s(instruction_t **instructions);
 
