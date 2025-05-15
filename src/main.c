@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
-
+#include "game_info.h"
 static bool is_graphical_env(char **env)
 {
     for (size_t i = 0; env[i]; i++)
@@ -67,7 +67,13 @@ int main(
     char **env)
 {
     corewar_data_t *data = initialize_data(argc, argv);
+    game_info game_data = {0};
 
+    if (BONUS_MODE == 1) {
+        if (my_menu(&game_data) == 0)
+            return 0;
+        setup_audio(&game_data);
+    }
     if (!data || (BONUS_MODE == 1 && !is_graphical_env(env))) {
         free_garbage();
         return 84;
