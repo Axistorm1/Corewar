@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <ncurses.h>
 #include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,6 +33,7 @@ static void dump_ownership_to_file(arena_t *arena)
             fprintf(stream, "%08X", arena->ownership_map[i + j]);
         fprintf(stream, "\n");
     }
+    fclose(stream);
 }
 
 static void dump_memory_to_file(arena_t *arena)
@@ -45,6 +47,32 @@ static void dump_memory_to_file(arena_t *arena)
             fprintf(stream, "%02X", arena->memory[i + j]);
         fprintf(stream, "\n");
     }
+    fclose(stream);
+}
+
+static void dump_decompiled_to_file(
+    char *filename,
+    header_t *header,
+    char **lines)
+{
+    char *new_filename = NULL;
+
+    char *ptr = strrchr(filename, '.');
+    if (ptr)
+        ptr[0] = 0;
+
+    asprintf(&new_filename, "decompiled_%s.s", filename);
+
+    FILE *stream = fopen(new_filename, "w");
+
+    fprintf(stream, ".name \"%s\"\n", header->prog_name);
+    fprintf(stream, ".comment \"%s\"\n\n", header->comment);
+
+    for (size_t i = 0; lines[i]; i++)
+        fprintf(stream, "%s\n", lines[i]);
+    fclose(stream);
+    if (ptr)
+        ptr[0] = '.';
 }
 
 static char *type_to_str(param_type_t type)
@@ -380,12 +408,42 @@ static void display_corewar_ascii_logo(void)
     delwin(wd);
 }
 
+static void display_secret_menu(WINDOW *wd)
+{
+    char *secret_ascii_top[] = {"",
+        "                   _ |\\_",
+        "                   \\` ..\\",
+        "              __,.-\" =__Y=",
+        "            .\"        )",
+        "      _    /   ,    \\/\\_",
+        "     ((____|    )_-\\ \\_-`",
+        "     `-----'`-----` `--`",
+        NULL};
+
+    char *secret_ascii_bottom[] = {"",
+        "      |\\      _,,,---,,_",
+        "ZZZzz /,`.-'`'    -.  ;-;;,_",
+        "     |,4-  ) )-,_. ,\\ (  `'-'",
+        "    '---''(_/--'  `-'\\_)",
+        NULL};
+    for (byte1_t i = 0; secret_ascii_top[i]; i++)
+        mvwprintw(wd, 1 + i, 1, "%s", secret_ascii_top[i]);
+
+    for (byte1_t i = 0; secret_ascii_bottom[i]; i++)
+        mvwprintw(wd, getmaxy(wd) - 7 + i, 1, "%s", secret_ascii_bottom[i]);
+}
+
 // maybe add a big COREWAR ascii? like btop (UwU btop my beloved)
 static void update_help_menu(void)
 {
-    display_corewar_ascii_logo();
-
     WINDOW *wd = newwin(LINES - 6, 40, 5, (COLS >> 1) - 20);
+
+    keypad(wd, true);
+
+    help_start:
+    werase(wd);
+
+    display_corewar_ascii_logo();
 
     if (light_mode)
         wbkgd(wd, COLOR_PAIR(LIGHT_MODE_OFFSET));
@@ -394,79 +452,116 @@ static void update_help_menu(void)
     box(wd, 0, 0);
     wattroff(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
 
+
+    if (jungle->help_menu_page == 3) {
+        mvwprintw(wd, 0, 4, "Cute cat");
+        mvwprintw(wd, 0, getmaxx(wd) - 10, "page ?/2");
+        display_secret_menu(wd);
+        goto events;
+    }
+
     mvwprintw(wd, 0, 4, "Help");
+
+    mvwprintw(wd, 0, getmaxx(wd) - 10, "page %d/2", jungle->help_menu_page);
+    if (jungle->help_menu_page == 1)
+        mvwprintw(wd, 1, getmaxx(wd) - 7, "->");
+    if (jungle->help_menu_page == 2)
+        mvwprintw(wd, 1, getmaxx(wd) - 7, "<-");
 
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, 2, 2, "Key:");
     mvwprintw(wd, 2, 8, "Description:");
     wattroff(wd, A_UNDERLINE);
+
+    if (jungle->help_menu_page == 1)
+        goto page_1;
+    if (jungle->help_menu_page == 2)
+        goto page_2;
+
+    page_1:
     mvwprintw(wd, 3, 2, "H\tOpen the help window");
-    mvwprintw(wd, 4, 2, "TAB\tSwitch active window");
+    mvwprintw(wd, 4, 2, "P\tOpen processes menu");
     mvwprintw(wd, 5, 2, "SPACE\tPause game");
-    mvwprintw(wd, 6, 2, "C\tEnable/Disable cursors");
-    mvwprintw(wd, 7, 2, "Q\tQuit the game");
-    mvwprintw(wd, 8, 2, "+/-\tSet speed to max/min");
-    mvwprintw(wd, 9, 2, "</>\tChange cycles to die");
-    mvwprintw(wd, 10, 2, "S\tFinish cycles round");
-    mvwprintw(wd, 11, 2, "P\tOpen processes menu");
-    mvwprintw(wd, 12, 2, "B\tSwitch between light/dark mode");
-    mvwprintw(wd, 13, 2, "L\tDump memory to file");
-    mvwprintw(wd, 14, 2, "X\tDump ownerships to file");
-    mvwprintw(wd, 15, 2, "ESC\tPause for one second");
+    mvwprintw(wd, 6, 2, "ESC\tPause for one second");
+    mvwprintw(wd, 7, 2, "C\tEnable/Disable cursors");
+    mvwprintw(wd, 8, 2, "B\tSwitch between light/dark mode");
+    mvwprintw(wd, 10, 2, "+\tIncrease speed to maximum");
+    mvwprintw(wd, 11, 2, "-\tDecrease speed to minimum");
+    mvwprintw(wd, 12, 2, ">\tIncrease cycles to die");
+    mvwprintw(wd, 13, 2, "<\tDecrease cycles to die");
+    mvwprintw(wd, 14, 2, "S\tFinish cycles round");
+    mvwprintw(wd, 16, 2, "L\tDump memory to file");
+    mvwprintw(wd, 17, 2, "X\tDump ownership to file");
+    mvwprintw(wd, 18, 2, "Q\tQuit the game");
+    goto events;
 
     //arena help
-    int arena_offset = 17;
+    page_2:
+    mvwprintw(wd, 3, 2, "TAB\tSwitch active window");
+
     wattron(wd, A_UNDERLINE);
-    mvwprintw(wd, arena_offset, 2, "Arena:");
+    mvwprintw(wd, 5, 2, "Arena:");
     wattroff(wd, A_UNDERLINE);
-    mvwprintw(wd, arena_offset + 1, 2, "LEFT\tDecrease speed");
-    mvwprintw(wd, arena_offset + 2, 2, "RIGHT\tIncrease speed");
-    mvwprintw(wd, arena_offset + 3, 2, "UP\tMove up in arena");
-    mvwprintw(wd, arena_offset + 4, 2, "DOWN\tMove down in arena");
-    mvwprintw(wd, arena_offset + 5, 2, "F\tToggle Fullscreen");
+    mvwprintw(wd, 6, 2, "LEFT\tDecrease speed");
+    mvwprintw(wd, 7, 2, "RIGHT\tIncrease speed");
+    mvwprintw(wd, 8, 2, "UP\tMove up in arena");
+    mvwprintw(wd, 9, 2, "DOWN\tMove down in arena");
+    mvwprintw(wd, 10, 2, "F\tToggle Fullscreen");
 
     // champions help
-    int champions_offset = arena_offset + 7;
+    int champions_offset = 12;
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, champions_offset, 2, "Champions:");
     wattroff(wd, A_UNDERLINE);
     mvwprintw(wd, champions_offset + 1, 2, "LEFT\tCycle left through champions");
     mvwprintw(wd, champions_offset + 2, 2, "RIGHT\tCycle right through champions");
+    mvwprintw(wd, champions_offset + 3, 2, "M\tShow decompiled code");
 
     // processes help
-    int processes_offset = champions_offset + 4;
+    int processes_offset = champions_offset + 5;
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, processes_offset, 2, "Processes:");
     wattroff(wd, A_UNDERLINE);
     mvwprintw(wd, processes_offset + 1, 2, "DOWN\tMove down in processes");
     mvwprintw(wd, processes_offset + 2, 2, "UP\tMove up in processes");
-    mvwprintw(wd, processes_offset + 3, 2, "M\tShow decompiled source code");
+
+    // decompiled menu
+    int decompiled_offset = processes_offset + 4;
+    wattron(wd, A_UNDERLINE);
+    mvwprintw(wd, decompiled_offset, 2, "Decompiled menu:");
+    wattroff(wd, A_UNDERLINE);
+    mvwprintw(wd, decompiled_offset + 1, 2, "DOWN\tMove down in decompiled code");
+    mvwprintw(wd, decompiled_offset + 2, 2, "UP\tMove up in decompiled code");
+    mvwprintw(wd, decompiled_offset + 3, 2, "D\tWrite decompiled code to file");
+
+    events:
 
     mvwprintw(wd, getmaxy(wd) - 2, (getmaxx(wd) - 12) >> 1, "Made with <3");
     mvwprintw(wd, getmaxy(wd) - 1, (getmaxx(wd) - 24) >> 1, "by Axistorm and Arkcadia");
 
-    // Something should change without these two lines but nothing does
-    // It truly is black magic
-    //wnoutrefresh(wd);
-    //doupdate();
-
-    // stay in help loop
-    wtimeout(wd, 1000);
-    int key = wgetch_l(wd);
-    while (key != 'h') {
-        if (key == 'q')
-            quit_ncurses();
-        if (key == 'p') {
-            jungle->process_menu = true;
-            break;
-        }
-        key = wgetch_l(wd);
-    }
-
-    // remove artefacts
-    werase(wd);
     wnoutrefresh(wd);
     doupdate();
+
+    wtimeout(wd, 1000);
+    int key = wgetch_l(wd);
+
+    if (key == 'q')
+        quit_ncurses();
+
+    if (key == 'p')
+        jungle->process_menu = true;
+
+    if ((key == KEY_DOWN || key == KEY_RIGHT) && jungle->help_menu_page < 2)
+        jungle->help_menu_page++;
+    if ((key == KEY_UP || key == KEY_LEFT) && jungle->help_menu_page > 1)
+        jungle->help_menu_page--;
+
+    if (key == 'g')
+        jungle->help_menu_page = 3;
+
+    if (key != 'h' && key != 'p')
+        goto help_start;
+
     delwin(wd);
 }
 
@@ -599,6 +694,9 @@ void update_source_code_window(corewar_data_t *data)
 
     for (sbyte4_t i = jungle->source_line; i < len && i < getmaxy(wd) - 3 + jungle->source_line && lines[i]; i++)
         mvwprintw(wd, 2 + i - jungle->source_line, 2, "%4d | %s", i + 1, lines[i]);
+
+    if (jungle->dump_decompiled)
+        dump_decompiled_to_file(robot->filename, robot->header, lines);
 
     wnoutrefresh(wd);
     delwin(wd);
@@ -839,6 +937,9 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->source_line++;
     if (key == KEY_UP && jungle->source_line > 0)
         jungle->source_line--;
+    jungle->dump_decompiled = false;
+    if (key == 'd')
+        jungle->dump_decompiled = true;
     goto robot_info;
 }
 
@@ -950,6 +1051,8 @@ void launch_ncurses(void)
     jungle->cycling_speed = 50;
 
     jungle->cursors = true;
+
+    jungle->help_menu_page = 1;
 
     update_console_window(NULL, 0, 0);
 

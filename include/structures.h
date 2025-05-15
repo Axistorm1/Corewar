@@ -133,10 +133,12 @@ typedef struct windows_jungle_s {
     byte2_t cycling_speed;
     byte1_t active_window;
     byte1_t signal;
+    byte1_t help_menu_page;
     bool cursors;
     bool process_menu;
     bool fullscreen_arena;
     bool source_code;
+    bool dump_decompiled;
 } windows_jungle_t;
 
 typedef struct

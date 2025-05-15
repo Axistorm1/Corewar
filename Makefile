@@ -17,7 +17,7 @@ CMAKE_DEBUG_FLAGS := -fsanitize=address -Weverything	\
 	-Wno-unsafe-buffer-usage	\
 	-Wno-pre-c23-compat -Wno-cast-qual -Wno-vla	\
 
-CMAKE_BONUS_FLAG := -g3 -Wno-unused-result
+CMAKE_BONUS_FLAG := -O3 -Wno-unused-result
 
 .PHONY: all
 all: $(NAME)
