@@ -22,6 +22,8 @@ enum error_codes {
     ROBOT_TOO_BIG,
     PROG_NUM_0,
     PLACING_ERROR,
+    PROG_NUM_OUT_OF_BOUNDS,
+    INCORRECT_HEADER,
 };
 
     #define WARNINGS_START 100

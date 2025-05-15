@@ -40,26 +40,29 @@ static corewar_data_t *initialize_data(
 }
 
 static byte2_t find_lowest_prog_num(
-    robot_info_t **robots,
-    byte4_t robot_count)
+    byte4_t robot_count,
+    bool *found)
 {
-    byte2_t lowest = 1;
-
-    for (byte2_t i = 0; i < robot_count; i++) {
-        if (robots[i]->prog_num == lowest) {
-            lowest++;
-            i = (byte2_t)-1;
+    for (byte2_t i = 0; i < robot_count; i++)
+        if (found[i] == false) {
+            found[i] = true;
+            return i + 1;
         }
-    }
-    return lowest;
+    return 0;
 }
 
 static void assign_default_values(corewar_data_t *data)
 {
+    bool *found = my_calloc(data->robot_count, sizeof(bool));
+
+    for (byte2_t i = 0; i < data->robot_count; i++)
+        if (data->robots[i]->prog_num != (byte2_t)-1 &&
+            data->robots[i]->prog_num < data->robot_count)
+            found[data->robots[i]->prog_num] = true;
     for (byte2_t i = 0; i < data->robot_count; i++)
         if (data->robots[i]->prog_num == (byte2_t)-1)
             data->robots[i]->prog_num =
-                find_lowest_prog_num(data->robots, data->robot_count);
+                find_lowest_prog_num(data->robot_count, found);
 }
 
 static int handle_usage(void)

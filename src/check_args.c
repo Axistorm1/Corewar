@@ -57,6 +57,8 @@ static FILE *open_file(const char *filename, char *mode)
         return write_error(FILE_NOT_FOUND, filename, -1);
     if (sb.st_size < 1)
         return write_error(EMPTY_FILE, filename, -1);
+    if (sb.st_size < (long)sizeof(header_t))
+        return write_error(INCORRECT_HEADER, filename, -1);
     fptr = fopen(filename, mode);
     fread(&buffer, sizeof(byte4_t), 1, fptr);
     if (my_strcmp(my_strrchr(filename, '.'), ".cor") ||
@@ -108,6 +110,8 @@ static bool handle_n(
     prog_num = my_atoi(argv[*i + 1]);
     if (prog_num == 0)
         return write_error(PROG_NUM_0, argv[*i], -1);
+    if (prog_num > UINT16_MAX)
+        return write_error(PROG_NUM_OUT_OF_BOUNDS, argv[*i], -1);
     *i += 2;
     if (identify_arg(argv[*i]) == 2 && tmp == -1)
         return handle_a(data, argv, i, prog_num);

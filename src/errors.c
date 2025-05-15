@@ -22,7 +22,9 @@ static const char *const error_strings[] = {
     "The file must be a .cor file and have a magic number",
     "Program too big for the arena",
     "Program number must be higher than 0",
-    "There was an error placing the programs"
+    "There was an error placing the programs",
+    "Program number must be lower than 65535",
+    "Header is incorrect or too small",
 };
 
 static const char *const warning_strings[] = {
