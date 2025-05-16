@@ -65,8 +65,8 @@ static textures_t create_settings(textures_t asset)
     asset.select = LoadTexture("bonus/menu/assets/select.png");
     asset.vec_data->pos_select.x = 725.0f;
     asset.vec_data->pos_select.y = 560.0f;
-    asset.vec_data->pos_fullscreen.x = 725.0f;
-    asset.vec_data->pos_fullscreen.y = 585.0f;
+    asset.vec_data->pos_fullscreen.x = 1125.0f;
+    asset.vec_data->pos_fullscreen.y = 450.0f;
     return asset;
 }
 
@@ -236,7 +236,7 @@ int my_menu(game_info_t *game_data)
                 game_data->light_mode = asset.setting_data->button1;
                 DrawText("Game Music", 580, 520, 25, GRAY);
                 select_music(&asset, game_data);
-                DrawText("fullscreen", 580, 585, 25, BLACK);
+                DrawText("fullscreen", 975, 450, 25, GRAY);
                 if (is_hover(asset.tick_on, asset.vec_data->pos_fullscreen)) {
                         ToggleFullscreen();
                         break;
