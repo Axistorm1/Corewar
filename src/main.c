@@ -20,6 +20,8 @@
 
 static bool is_graphical_env(char **env)
 {
+    if (BONUS_MODE == 1)
+        return isatty(STDOUT_FILENO);
     for (size_t i = 0; env[i]; i++)
         if (!my_strncmp(env[i], "DISPLAY", 7))
             return true;
@@ -96,16 +98,16 @@ int main(
     corewar_data_t *data = initialize_data(argc, argv);
     game_info_t game_data = {0};
 
-    if (BONUS_MODE == 1) {
-        if (my_menu(&game_data) == 0)
-            return 0;
-        setup_audio(&game_data);
-    }
     if (!data || (BONUS_MODE == 1 && !is_graphical_env(env))) {
         free_garbage();
         return 84;
     }
     if (data->usage)
         return handle_usage();
+    if (BONUS_MODE == 1) {
+        if (my_menu(&game_data) == 0)
+            return 0;
+        setup_audio(&game_data);
+    }
     return handle_program(data, &game_data);
 }

@@ -5,6 +5,7 @@
 ** usage.c
 */
 
+#include "corewar.h"
 #include "utils.h"
 #include <unistd.h>
 
@@ -25,7 +26,12 @@ static const char usage_text[] = "USAGE\n"
     " are as far away from each other as possible. The addresses are"
     " MEM_SIZE modulo.\n";
 
+static const char bonus_usage_text[] = "USAGE\n";
+
 void display_usage(void)
 {
-    write(STDOUT_FILENO, usage_text, sizeof(usage_text));
+    if (BONUS_MODE == 0)
+        write(STDOUT_FILENO, usage_text, sizeof(usage_text));
+    else
+        write(STDOUT_FILENO, bonus_usage_text, sizeof(bonus_usage_text));
 }

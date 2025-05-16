@@ -20,6 +20,8 @@ void setup_audio(game_info_t *game_data)
         music = Mix_LoadMUS("bonus/menu/assets/terraria.mp3");
     else if (game_data->music_select == 1)
         music = Mix_LoadMUS("bonus/menu/assets/play_audio.mp3");
+    else if (game_data->music_select == 2)
+        music = Mix_LoadMUS("bonus/menu/assets/Doom.mp3");
     else
         music = Mix_LoadMUS("bonus/menu/assets/terraria.mp3");
 

@@ -128,26 +128,24 @@ static textures_t create_menu(void)
 static void select_music(textures_t *asset, game_info_t *game_data)
 {
     Vector2 temp;
-    if (is_hover(asset->swap, asset->vec_data->pos_swap) == true) {
-        if (asset->setting_data->is_click1 == true)
+    if (is_hover(asset->swap, asset->vec_data->pos_swap) == true)
+        asset->setting_data->is_click1 = !asset->setting_data->is_click1;
+    if (!asset->setting_data->is_click1)
+        return;
+    DrawTexture(asset->select, (int)asset->vec_data->pos_select.x, (int)asset->vec_data->pos_select.y , WHITE);
+    DrawTexture(asset->select, (int)asset->vec_data->pos_select.x, (int)asset->vec_data->pos_select.y + 40, WHITE);
+    DrawTexture(asset->select, (int)asset->vec_data->pos_select.x, (int)asset->vec_data->pos_select.y + 80, WHITE);
+    for (int i = 0; i < 3; i++) {
+        temp.x = asset->vec_data->pos_select.x;
+        temp.y = asset->vec_data->pos_select.y + (float)(40 * i);
+        if (is_hover(asset->select, temp) == true) {
+            game_data->music_select = i;
             asset->setting_data->is_click1 = false;
-        else
-            asset->setting_data->is_click1 = true;
+        }
     }
-    if (asset->setting_data->is_click1 == true) {
-        DrawTexture(asset->select, (int)asset->vec_data->pos_select.x, (int)asset->vec_data->pos_select.y , WHITE);
-        DrawTexture(asset->select, (int)asset->vec_data->pos_select.x, (int)asset->vec_data->pos_select.y + 40, WHITE);
-        temp.x = asset->vec_data->pos_select.x;
-        temp.y = asset->vec_data->pos_select.y;
-        if (is_hover(asset->select, temp) == true)
-            game_data->music_select = 0;
-        temp.x = asset->vec_data->pos_select.x;
-        temp.y = asset->vec_data->pos_select.y + 40;
-        if (is_hover(asset->select, temp) == true)
-            game_data->music_select = 1;
-        DrawText("Terraria", (int)asset->vec_data->pos_select.x + 32, (int)asset->vec_data->pos_select.y + 12, 15, WHITE);
-        DrawText("Undertale", (int)asset->vec_data->pos_select.x + 32, (int)asset->vec_data->pos_select.y + 52, 15, WHITE);
-    }
+    DrawText("Terraria", (int)asset->vec_data->pos_select.x + 32, (int)asset->vec_data->pos_select.y + 12, 15, WHITE);
+    DrawText("Undertale", (int)asset->vec_data->pos_select.x + 32, (int)asset->vec_data->pos_select.y + 52, 15, WHITE);
+    DrawText("Doom", (int)asset->vec_data->pos_select.x + 32, (int)asset->vec_data->pos_select.y + 92, 15, WHITE);
 }
 
 int my_menu(game_info_t *game_data)
@@ -176,13 +174,11 @@ int my_menu(game_info_t *game_data)
         DrawTexture(asset.menu, (int)asset.vec_data->pos_menu.x, (int)asset.vec_data->pos_menu.y, WHITE);
         DrawTexture(asset.mute, (int)asset.vec_data->pos_mute.x, (int)asset.vec_data->pos_mute.y, WHITE);
         if (is_hover(asset.mute, asset.vec_data->pos_mute)) {
-            if (is_music == 0) {
+            if (is_music == 0)
                 PauseMusicStream(music);
-                is_music = 1;
-            } else {
+            else
                 ResumeMusicStream(music);
-                is_music = 0;
-            }
+            is_music = !is_music;
         }
         switch(currentScreen) {
             case TITLE:

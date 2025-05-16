@@ -167,7 +167,7 @@ static bool check_corewar_data(corewar_data_t *data)
     robot_info_t *robot = data->robots[0];
     long total_size = 0;
 
-    if (data->robot_count == 0)
+    if (data->robot_count == 0 && BONUS_MODE == 0)
         return write_error(NOT_ENOUGH_ROBOTS, NULL, -1);
     if (data->robot_count == 1)
         write_error(ONE_ROBOT, robot->header->prog_name, -1);
