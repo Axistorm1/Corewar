@@ -11,6 +11,7 @@
 #include "my_string.h"
 #include "my_stdlib.h"
 #include "corewar.h"
+#include "utils.h"
 
 static byte2_t count_placed_robots(
     robot_info_t **robots,
@@ -135,9 +136,13 @@ static robot_info_t **place_default(
     byte2_t robot_count)
 {
     float memory_adress = (float)MEM_SIZE / robot_count;
+    byte2_t new_adress = 0;
 
-    for (byte2_t i = 0; i < robot_count; i++)
-        robots[i]->mem_adr = (byte2_t)(memory_adress * i);
+    for (byte2_t i = 0; i < robot_count; i++) {
+        new_adress = update_program_counter((byte2_t)(memory_adress * i),
+            -(sbyte2_t)robots[i]->header->prog_size / 2);
+        robots[i]->mem_adr = new_adress;
+    }
     return robots;
 }
 
