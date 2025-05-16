@@ -1059,7 +1059,7 @@ void launch_ncurses(game_info_t *game_data)
 
     jungle->help_menu_page = 1;
 
-    light_mode = !game_data->light_mode;
+    light_mode = game_data->light_mode;
 
     update_console_window(NULL, 0, 0);
 

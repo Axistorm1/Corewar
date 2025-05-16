@@ -51,22 +51,3 @@ ssize_t my_puts_hexa(ssize_t nb, size_t leading_zeros)
     write(STDOUT_FILENO, buffer, my_strlen(buffer));
     return 0;
 }
-
-ssize_t my_puts_multiple(size_t n, ...)
-{
-    va_list args;
-    char *tmp = NULL;
-    ssize_t wrote_bytes = 0;
-
-    va_start(args, n);
-    for (size_t i = 0; i < n - 1; i++) {
-        tmp = va_arg(args, char *);
-        wrote_bytes += write(STDOUT_FILENO, tmp, my_strlen(tmp));
-        wrote_bytes += write(STDOUT_FILENO, " ", 1);
-    }
-    tmp = va_arg(args, char *);
-    wrote_bytes += write(STDOUT_FILENO, tmp, my_strlen(tmp));
-    wrote_bytes += write(STDOUT_FILENO, "\n", 1);
-    va_end(args);
-    return wrote_bytes;
-}

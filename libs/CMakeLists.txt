@@ -21,35 +21,21 @@ add_library(mystd STATIC
     my_stdlib/my_atof.c
     my_stdlib/my_atoi.c
     my_stdlib/my_atol.c
-    my_stdlib/my_bytes_rev.c
     my_stdlib/my_calloc.c
-    my_stdlib/my_div.c
-    my_stdlib/my_fabs.c
     my_stdlib/my_free.c
-    my_stdlib/my_getenv.c
     my_stdlib/my_itoa.c
-    my_stdlib/my_labs.c
-    my_stdlib/my_ldiv.c
     my_stdlib/my_ltoa.c
     my_stdlib/my_malloc.c
     my_stdlib/my_reallocarray.c
     my_stdlib/my_realloc.c
     my_stdlib/my_strtod.c
     my_stdlib/my_strtol.c
-    my_string/my_c_to_bin.c
-    my_string/my_memccpy.c
-    my_string/my_memchr.c
     my_string/my_memcmp.c
     my_string/my_memcpy.c
-    my_string/my_memmove.c
-    my_string/my_memrcpy.c
     my_string/my_memset.c
-    my_string/my_stradd.c
-    my_string/my_strcasecmp.c
     my_string/my_strcat.c
     my_string/my_strchr.c
     my_string/my_strcmp.c
-    my_string/my_strcnb.c
     my_string/my_strcpy.c
     my_string/my_strcspn.c
     my_string/my_strdup.c
@@ -63,7 +49,6 @@ add_library(mystd STATIC
     my_string/my_strrev.c
     my_string/my_strspn.c
     my_string/my_strstr.c
-    my_string/my_str_to_bin.c
     my_string/my_strtok.c
     my_string/str_array_len.c
     my_string/str_tolower.c

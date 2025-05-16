@@ -13,16 +13,6 @@
 #include "my_stdlib.h"
 #include <unistd.h>
 
-void write1_to_arena(
-    arena_t *arena,
-    byte2_t adress,
-    byte1_t data,
-    byte4_t prog_number)
-{
-    arena->memory[adress] = data;
-    arena->ownership_map[adress] = prog_number;
-}
-
 void write4_to_arena(
     arena_t *arena,
     byte2_t adress,

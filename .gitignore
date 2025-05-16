@@ -14,7 +14,7 @@ assets/
 *.s
 *.data
 massif*
-*file
+*.file
 
 # Binaries
 corewar

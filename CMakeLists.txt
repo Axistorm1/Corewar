@@ -10,8 +10,12 @@ file(GLOB SOURCES
     src/arena/*.c
     src/parsing/*.c)
 
-if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
+if (${CMAKE_BUILD_TYPE} MATCHES "Tests")
+    list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
+    set(SOURCES ${SOURCES} tests/tests_lib.c tests/rename_memory_buffers.c tests/tests_corewar.c)
+endif()
 
+if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
     add_compile_options(-Wall -Wextra -Wconversion -Wpedantic)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(SDL2 REQUIRED sdl2)
@@ -21,7 +25,7 @@ if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
     include_directories(${RAYLIB_INCLUDE_DIRS})
     link_directories(${RAYLIB_LIBRARY_DIRS})
     add_compile_definitions(BONUS_MODE=1)
-    set(SOURCES ${SOURCES} bonus/bonus.c bonus/transcribe_dot_s.c bonus/parse_champion.c bonus/menu/menu.c bonus/audio.c)    
+    set(SOURCES ${SOURCES} bonus/bonus.c bonus/transcribe_dot_s.c bonus/parse_champion.c bonus/menu/menu.c bonus/audio.c)
     set(RAYLIB_LIBS ${RAYLIB_LIBRARIES} -lGL -lm -lpthread -ldl -lrt -lX11)
 endif()
 
@@ -37,4 +41,3 @@ endif()
 
 target_include_directories(corewar PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/libs")
 set_property(TARGET corewar PROPERTY C_STANDARD 23)
-
