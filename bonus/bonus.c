@@ -10,7 +10,6 @@
 #include <ctype.h>
 #include <ncurses.h>
 #include <signal.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -146,7 +145,7 @@ static void update_arena_window(arena_t *arena)
     }
 
     if (jungle->fullscreen_arena) {
-        box(wd, 0, 0);
+        box(wd, ACS_VLINE, ACS_HLINE);
         mvwprintw(wd, 0, 4, "Arena - Fullscreen");
         wnoutrefresh(wd);
         delwin(wd);
@@ -466,7 +465,7 @@ static void update_help_menu(void)
         wbkgd(wd, COLOR_PAIR(LIGHT_MODE_OFFSET));
 
     wattron(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
-    box(wd, 0, 0);
+    box(wd, ACS_VLINE, ACS_HLINE);
     wattroff(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
 
 
@@ -605,7 +604,7 @@ void update_process_menu_window(arena_t *arena, bool paused)
     if (light_mode)
         wbkgd(wd, COLOR_PAIR(LIGHT_MODE_OFFSET));
 
-    box(wd, 0, 0);
+    box(wd, ACS_VLINE, ACS_HLINE);
     mvwprintw(wd, 0, 4, "Processes menu");
 
     if (jungle->current_process > arena->process_count)
@@ -698,7 +697,7 @@ void update_source_code_window(corewar_data_t *data)
         wbkgd(wd, COLOR_PAIR(LIGHT_MODE_OFFSET));
 
     wattron(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
-    box(wd, 0, 0);
+    box(wd, ACS_VLINE, ACS_HLINE);
     wattroff(wd, COLOR_PAIR(COLOR_RED + light_mode * LIGHT_MODE_OFFSET));
 
     robot_info_t *robot = data->robots[jungle->current_robot_info];
@@ -747,19 +746,19 @@ static void draw_borders(void)
     if (light_mode)
         wbkgd(active, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE));
 
-    box(jungle->champions, 0, 0);
-    box(jungle->processes, 0, 0);
-    box(jungle->arena, 0, 0);
-    box(jungle->game_info, 0, 0);
-    box(jungle->console, 0, 0);
+    box(jungle->champions, ACS_VLINE, ACS_HLINE);
+    box(jungle->processes, ACS_VLINE, ACS_HLINE);
+    box(jungle->arena, ACS_VLINE, ACS_HLINE);
+    box(jungle->game_info, ACS_VLINE, ACS_HLINE);
+    box(jungle->console, ACS_VLINE, ACS_HLINE);
 
     if (light_mode) {
         wattron(active, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE + COLOR_DARK_RED));
-        box(active, 0, 0);
+        box(active, ACS_VLINE, ACS_HLINE);
         wattroff(active, COLOR_PAIR(TOTAL_COLORS * COLOR_WHITE + COLOR_DARK_RED));
     } else {
         wattron(active, COLOR_PAIR(COLOR_RED));
-        box(active, 0, 0);
+        box(active, ACS_VLINE, ACS_HLINE);
         wattroff(active, COLOR_PAIR(COLOR_RED));
     }
 
