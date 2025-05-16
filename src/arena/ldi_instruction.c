@@ -38,9 +38,9 @@ int execute_lldi_instruction(
         arena, process);
     if (adress == ERROR_VALUE || tmp == ERROR_VALUE)
         return 1;
-    sum = arena->memory[process->pc + (adress)];
+    sum = arena->memory[(process->pc + (adress)) % MEM_SIZE];
     sum += tmp;
-    value = arena->memory[process->pc + (sum)];
+    value = arena->memory[(process->pc + (sum)) % MEM_SIZE];
     if (instr->types[2] == PARAM_REG && instr->params[2].reg < REG_NUMBER) {
         process->registers[instr->params[2].reg] = value;
         process->carry = value == 0;

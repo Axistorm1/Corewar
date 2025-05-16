@@ -27,9 +27,9 @@ sbyte8_t get_data_in_param(
     if (type == PARAM_DIR)
         return param.dir;
     if (type == PARAM_IND)
-        return arena->memory[process->pc + param.ind];
+        return arena->memory[(process->pc + param.ind) % MEM_SIZE];
     if (type & PARAM_INDEX)
-        return arena->memory[process->pc + param.index];
+        return arena->memory[(process->pc + param.index) % MEM_SIZE];
     if (type & PARAM_DIRDEX)
         return param.index;
     return ERROR_VALUE;

@@ -14,5 +14,5 @@
 
 int main(int argc, const char **argv, char **env)
 {
-    run_corewar(argc, argv, env);
+    return run_corewar(argc, argv, env);
 }
