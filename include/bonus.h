@@ -34,5 +34,6 @@ int my_menu(game_info_t *game_data);
 void setup_audio(game_info_t *game_data);
 instruction_t **parse_champions(header_t *header, char *filename);
 char **transcribe_dot_s(instruction_t **instructions);
+void add_raylib_champions(corewar_data_t *data, game_info_t *info);
 
 #endif /* BONUS_H_ */

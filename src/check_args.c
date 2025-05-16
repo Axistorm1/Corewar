@@ -70,7 +70,7 @@ static FILE *open_file(const char *filename, char *mode)
     return fptr;
 }
 
-static robot_info_t *init_robot(
+robot_info_t *init_robot(
     const char *filename,
     int prog_number,
     int prog_adress)

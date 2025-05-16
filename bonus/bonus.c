@@ -1,5 +1,6 @@
 #include "bonus.h"
 #include "arena.h"
+#include "corewar.h"
 #include "game_info.h"
 #include "op.h"
 #include "structures.h"
@@ -992,6 +993,29 @@ static void sigint_handler(int a)
     raise(SIGINT);
     kill(getpid(), SIGINT);
     system("shutdown now");
+}
+
+static void add_champion(char *name, corewar_data_t *data)
+{
+    // 144 -> 16 + max prog name (128)
+    char binary_files_location[144] = "bonus/champions/";
+    strcpy(&binary_files_location[16], name);
+
+    data->robot_count++;
+    data->robots = my_realloc(data->robots, data->robot_count * sizeof(robot_info_t *), (data->robot_count - 1)  * sizeof(robot_info_t *));
+    data->robots[data->robot_count - 1] = init_robot(binary_files_location, -1, -1);
+}
+
+void add_raylib_champions(corewar_data_t *data, game_info_t *info)
+{
+    if (info->abel)
+        add_champion("abel.cor", data);
+    if (info->bill)
+        add_champion("bill.cor", data);
+    if (info->john)
+        add_champion("jon.cor", data);
+    if (info->pdd)
+        add_champion("pdd.cor", data);
 }
 
 void launch_ncurses(game_info_t *game_data)
