@@ -59,7 +59,7 @@ static void handle_new_instruction(
         update_pc = instructions[proc->instruction->op_code]
             (arena, proc, proc->instruction);
     if (update_pc == 1)
-        proc->pc += proc->instruction->size;
+        proc->pc = update_program_counter(proc->pc, proc->instruction->size);
     proc->instruction = analyze_memory(&arena->memory[proc->pc]);
     if (!proc->instruction || proc->instruction->op_code > LAST_INSTRUCTION) {
         proc->instruction->op_code = 0;
