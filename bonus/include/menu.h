@@ -40,6 +40,7 @@ typedef struct vector_s {
     Vector2 pos_john;
     Vector2 pos_home;
     Vector2 pos_pdiddy;
+    Vector2 pos_fullscreen;
 } vector_t;
 
 typedef struct setting_s {

@@ -65,7 +65,8 @@ static textures_t create_settings(textures_t asset)
     asset.select = LoadTexture("bonus/menu/assets/select.png");
     asset.vec_data->pos_select.x = 725.0f;
     asset.vec_data->pos_select.y = 560.0f;
-
+    asset.vec_data->pos_fullscreen.x = 725.0f;
+    asset.vec_data->pos_fullscreen.y = 585.0f;
     return asset;
 }
 
@@ -226,6 +227,7 @@ int my_menu(game_info_t *game_data)
                 DrawTexture(asset.enemy, (int)asset.vec_data->pos_enemy.x, (int)asset.vec_data->pos_enemy.y, WHITE);
                 DrawTexture(asset.back, (int)asset.vec_data->pos_back.x, (int)asset.vec_data->pos_back.y, WHITE);
                 DrawTexture(asset.tick_on, (int)asset.vec_data->pos_tick_on.x, (int)asset.vec_data->pos_tick_on.y, WHITE);
+                DrawTexture(asset.tick_on, (int)asset.vec_data->pos_fullscreen.x, (int)asset.vec_data->pos_fullscreen.y, WHITE);
                 DrawTexture(asset.swap, (int)asset.vec_data->pos_swap.x, (int)asset.vec_data->pos_swap.y, WHITE);
                 if (asset.setting_data->button1 == false)
                     DrawText("White mode", 580, 455, 25, GREEN);
@@ -234,6 +236,11 @@ int my_menu(game_info_t *game_data)
                 game_data->light_mode = asset.setting_data->button1;
                 DrawText("Game Music", 580, 520, 25, GRAY);
                 select_music(&asset, game_data);
+                DrawText("fullscreen", 580, 585, 25, BLACK);
+                if (is_hover(asset.tick_on, asset.vec_data->pos_fullscreen)) {
+                        ToggleFullscreen();
+                        break;
+                }
                 if (is_hover(asset.back, asset.vec_data->pos_back)) {
                         currentScreen = TITLE;
                         break;
@@ -259,7 +266,7 @@ int my_menu(game_info_t *game_data)
                 }
                 DrawTexture(asset.atom, (int)asset.vec_data->pos_atom.x, (int)asset.vec_data->pos_atom.y, WHITE);
                 if (is_click(asset.take, asset.vec_data->pos_take_atom))
-                    game_data->bill = !game_data->bill;
+                    game_data->abel = !game_data->abel;
                 if (game_data->bill == false)
                     DrawTexture(asset.take, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
                 else
@@ -287,8 +294,8 @@ int my_menu(game_info_t *game_data)
                 is_hover(asset.next, asset.vec_data->pos_next);
                 DrawTexture(asset.bill, (int)asset.vec_data->pos_atom.x, (int)asset.vec_data->pos_atom.y, WHITE);
                 if (is_click(asset.take, asset.vec_data->pos_take_atom))
-                    game_data->abel = !game_data->abel;
-                if (game_data->abel == false)
+                    game_data->bill = !game_data->bill;
+                if (game_data->bill == false)
                     DrawTexture(asset.take, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
                 else
                     DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
