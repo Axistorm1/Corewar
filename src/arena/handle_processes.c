@@ -70,9 +70,8 @@ static void handle_new_instruction(
     proc->wait_cycles = (byte4_t)op_tab[proc->instruction->op_code].nbr_cycles;
 }
 
-static void handle_non_alive(arena_t *arena, byte4_t *index)
+void handle_non_alive(arena_t *arena, byte4_t i)
 {
-    byte4_t i = *index;
     char tmp_bonus[150];
 
     arena->processes[i]->robot->process_count--;
@@ -98,7 +97,7 @@ void kill_non_alive_processes(arena_t *arena)
 
     while (i < arena->process_count) {
         if (!arena->processes[i]->alive)
-            handle_non_alive(arena, &i);
+            handle_non_alive(arena, i);
         else {
             arena->processes[i]->alive = false;
             i++;
