@@ -250,17 +250,15 @@ int my_menu(game_info_t *game_data)
                         UpdateMusicStream(music3);
                         musicTime += GetFrameTime();
                         if (musicTime >= 33) {
-                            for (int i = 0; i != 20; i++) {
-                                cat.position.x -= (float)(i * 13);
-                                cat.position.y += (float)(i * 10);
-                                DrawTextureRec(cat.texture, cat.frameRec, cat.position, WHITE);
+                            for (int j = 0; j != 20; j++) {
+                                for (int i = 0; i != 18; i++) {
+                                    cat.position.y += (float)(50);
+                                    DrawTextureRec(cat.texture, cat.frameRec, cat.position, WHITE);
+                                }
+                                cat.position.x -= 80;
+                                cat.position.y = temp.y;
                             }
                             cat.position = temp;
-                            for (int i = 0; i != 10; i++) {
-                                cat.position.x -= (float)(i * 14 + 20);
-                                cat.position.y -= (float)(i * 4);
-                                DrawTextureRec(cat.texture, cat.frameRec, cat.position, WHITE);
-                            }
                         }
 
                     }
