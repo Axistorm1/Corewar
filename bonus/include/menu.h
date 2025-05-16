@@ -41,6 +41,7 @@ typedef struct vector_s {
     Vector2 pos_home;
     Vector2 pos_pdiddy;
     Vector2 pos_fullscreen;
+    Vector2 pos_cat;
 } vector_t;
 
 typedef struct setting_s {
@@ -48,8 +49,19 @@ typedef struct setting_s {
     bool is_click1;
 } setting_t;
 
+typedef struct animated_sprite {
+    Texture2D texture;
+    Rectangle frameRec;
+    int framecount;
+    int currentframe;
+    float frametime;
+    float timer;
+    Vector2 position;
+} animated_sprite;
+
 typedef struct textures_s {
     vector_t *vec_data;
+
     setting_t *setting_data;
     Texture2D menu;
     Texture2D title;
@@ -74,6 +86,7 @@ typedef struct textures_s {
     Texture2D home;
     Texture2D bill;
     Texture2D pdiddy;
+    Texture2D cat;
 } textures_t;
 
 #endif /* MENU_H_ */

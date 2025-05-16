@@ -156,44 +156,117 @@ static void select_music(textures_t *asset, game_info_t *game_data)
     DrawText("Undertale", (int)asset->vec_data->pos_select.x + 32, (int)asset->vec_data->pos_select.y + 52, 15, WHITE);
     DrawText("Doom", (int)asset->vec_data->pos_select.x + 32, (int)asset->vec_data->pos_select.y + 92, 15, WHITE);
 }
+animated_sprite setup_cat(void)
+{
+    animated_sprite cat = {0};
+
+    cat.texture = LoadTexture("bonus/menu/assets/sprite_sheet.png");
+    cat.framecount = 16;
+    cat.currentframe = 0;
+    cat.frametime = 0.015f;
+    cat.timer = 0.0f;
+    cat.frameRec = (Rectangle){
+    .x = 0,
+    .y = 0,
+    .width = 358,
+    .height = 200
+    };
+    cat.position = (Vector2){ 1400, 200 };
+    return cat;
+}
+
+void updates_sprite(animated_sprite *sprite, float deltaTime)
+{
+    sprite->timer += deltaTime;
+
+    if (sprite->timer >= sprite->frametime) {
+        sprite->timer = 0.0f;
+        sprite->currentframe = (sprite->currentframe + 1) % sprite->framecount;
+        sprite->frameRec.x = (float)sprite->currentframe * sprite->frameRec.width;
+    }
+}
 
 int my_menu(game_info_t *game_data)
 {
     SetTraceLogLevel(LOG_FATAL);
     int is_music = 0;
+    textures_t asset = {0};
+    animated_sprite cat = {0};
+    float delta = GetFrameTime();
+    bool miaow = false;
+    float musicTime = 0.0f; 
+    Vector2 temp;
 
     game_data->abel = false;
     game_data->john = false;
     game_data->bill = false;
-    textures_t asset = {0};
     InitWindow(screenWidth, screenHeight, "corewar");
     game_screen_t currentScreen = TITLE;
     SetTargetFPS(60);
     InitAudioDevice();
     Music music = LoadMusicStream("bonus/menu/assets/menu_music.mp3");
+    Music music2 = LoadMusicStream("bonus/menu/assets/choose.mp3");
+    Music music3 = LoadMusicStream("bonus/menu/assets/miaow.mp3");
     PlayMusicStream(music);
+    PlayMusicStream(music2);
+    PlayMusicStream(music3);
     ShowCursor();
     asset = create_menu();
     asset = create_settings(asset);
     asset = create_option(asset);
+    cat = setup_cat();
     asset.setting_data->button1 = false;
+    temp = cat.position;
     while (!WindowShouldClose())
     {
-        UpdateMusicStream(music);
         BeginDrawing();
         ClearBackground(RAYWHITE);
         DrawTexture(asset.menu, (int)asset.vec_data->pos_menu.x, (int)asset.vec_data->pos_menu.y, WHITE);
         DrawTexture(asset.mute, (int)asset.vec_data->pos_mute.x, (int)asset.vec_data->pos_mute.y, WHITE);
         if (is_hover(asset.mute, asset.vec_data->pos_mute)) {
-            if (is_music == 0)
+            if (is_music == 0) {
                 PauseMusicStream(music);
-            else
-                ResumeMusicStream(music);
+                PauseMusicStream(music2);
+                PauseMusicStream(music3);
+            }
             is_music = !is_music;
         }
         switch(currentScreen) {
             case TITLE:
             {
+                PauseMusicStream(music2);
+                if (is_music == 0 && miaow == false) {
+                    PauseMusicStream(music3);
+                    ResumeMusicStream(music);
+                }
+                UpdateMusicStream(music);
+                DrawTextureRec(cat.texture, cat.frameRec, cat.position, WHITE);
+                if (miaow == true) {
+                    PauseMusicStream(music);
+                    delta = GetFrameTime();
+                    updates_sprite(&cat, delta);
+                    if (is_music == 0) {
+                        ResumeMusicStream(music3);
+                        UpdateMusicStream(music3);
+                        musicTime += GetFrameTime();
+                        if (musicTime >= 33) {
+                            for (int i = 0; i != 20; i++) {
+                                cat.position.x -= (float)(i * 13);
+                                cat.position.y += (float)(i * 10);
+                                DrawTextureRec(cat.texture, cat.frameRec, cat.position, WHITE);
+                            }
+                            cat.position = temp;
+                            for (int i = 0; i != 10; i++) {
+                                cat.position.x -= (float)(i * 14 + 20);
+                                cat.position.y -= (float)(i * 4);
+                                DrawTextureRec(cat.texture, cat.frameRec, cat.position, WHITE);
+                            }
+                        }
+
+                    }
+                }
+                if (is_click(cat.texture, cat.position))
+                        miaow = !miaow;
                 DrawTexture(asset.enemy, (int)asset.vec_data->pos_enemy.x, (int)asset.vec_data->pos_enemy.y, WHITE);
                 DrawTexture(asset.title, (int)asset.vec_data->pos_title.x, (int)asset.vec_data->pos_title.y, WHITE);
                 DrawTexture(asset.start, (int)asset.vec_data->pos_start.x, (int)asset.vec_data->pos_start.y, WHITE);
@@ -224,7 +297,25 @@ int my_menu(game_info_t *game_data)
             } break;
             case SETTING:
             {
+                PauseMusicStream(music2);
+                if (is_music == 0 && miaow == false) {
+                    PauseMusicStream(music3);
+                    ResumeMusicStream(music);
+                }
+                UpdateMusicStream(music);
                 ClearBackground(RAYWHITE);
+                DrawTextureRec(cat.texture, cat.frameRec, cat.position, WHITE);
+                if (miaow == true) {
+                    PauseMusicStream(music);
+                    delta = GetFrameTime();
+                    updates_sprite(&cat, delta);
+                    if (is_music == 0) {
+                        ResumeMusicStream(music3);
+                        UpdateMusicStream(music3);
+                    }
+                }
+                if (is_click(cat.texture, cat.position))
+                        miaow = !miaow;
                 DrawTexture(asset.enemy, (int)asset.vec_data->pos_enemy.x, (int)asset.vec_data->pos_enemy.y, WHITE);
                 DrawTexture(asset.back, (int)asset.vec_data->pos_back.x, (int)asset.vec_data->pos_back.y, WHITE);
                 DrawTexture(asset.tick_on, (int)asset.vec_data->pos_tick_on.x, (int)asset.vec_data->pos_tick_on.y, WHITE);
@@ -254,6 +345,11 @@ int my_menu(game_info_t *game_data)
             } break;
             case OPTION:
             {
+                PauseMusicStream(music);
+                PauseMusicStream(music3);
+                if (is_music == 0)
+                    ResumeMusicStream(music2);
+                UpdateMusicStream(music2);
                 DrawTexture(asset.home, (int)asset.vec_data->pos_home.x, (int)asset.vec_data->pos_home.y, WHITE);
                 DrawTexture(asset.next, (int)asset.vec_data->pos_next.x, (int)asset.vec_data->pos_next.y, WHITE);
                 DrawTexture(asset.john, (int)asset.vec_data->pos_john.x, (int)asset.vec_data->pos_john.y, WHITE);
@@ -284,6 +380,11 @@ int my_menu(game_info_t *game_data)
 
             case OPTION_2:
             {
+                PauseMusicStream(music);
+                PauseMusicStream(music3);
+                if (is_music == 0)
+                    ResumeMusicStream(music2);
+                UpdateMusicStream(music2);
                 DrawTexture(asset.previous, (int)asset.vec_data->pos_home.x, (int)asset.vec_data->pos_home.y, WHITE);
                 DrawTexture(asset.next, (int)asset.vec_data->pos_next.x, (int)asset.vec_data->pos_next.y, WHITE);
                 DrawTexture(asset.bill, (int)asset.vec_data->pos_atom.x, (int)asset.vec_data->pos_atom.y, WHITE);
