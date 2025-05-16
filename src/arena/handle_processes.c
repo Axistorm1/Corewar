@@ -11,9 +11,10 @@
 #include "my_string.h"
 #include "utils.h"
 #include <stdlib.h>
+#include "corewar.h"
 #include <unistd.h>
 #include "arena.h"
-
+#include "bonus.h"
 static int (* const instructions[])
     (arena_t *, process_data_t *, instruction_t *) = {
     execute_not_instruction, execute_live_instruction,
@@ -77,6 +78,8 @@ static void handle_non_alive(arena_t *arena, byte4_t *index)
     if (arena->processes[i]->robot->process_count == 0)
         arena->processes[i]->robot->alive = false;
     free(arena->processes[i]);
+    if (BONUS_MODE == 1)
+        death_audio();
     arena->process_count--;
     arena->processes[i] = arena->processes[arena->process_count];
     arena->dead_process_count++;

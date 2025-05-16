@@ -23,6 +23,9 @@
     #define COLORS_MODULO 0xF
     #define COLORS_BS (unsigned int)__builtin_ctz(TOTAL_COLORS)
 
+void kill_audio(void);
+void death_audio(void);
+void revive_audio(void);
 void launch_ncurses(game_info_t *game_info);
 void run_ncurses(arena_t *arena, corewar_data_t *data);
 void update_console_window(char *str, byte2_t prog_num, byte4_t cycle);

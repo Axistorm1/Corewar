@@ -65,6 +65,7 @@ static textures_t create_settings(textures_t asset)
     asset.select = LoadTexture("bonus/menu/assets/select.png");
     asset.vec_data->pos_select.x = 725.0f;
     asset.vec_data->pos_select.y = 560.0f;
+
     return asset;
 }
 
@@ -88,6 +89,13 @@ static textures_t create_option(textures_t asset)
     asset.vec_data->pos_john.y = 0.0f;
     asset.vec_data->pos_take_john.x = 1525.0f;
     asset.vec_data->pos_take_john.y = 750.0f;
+    asset.home = LoadTexture("bonus/menu/assets/home.png");
+    asset.vec_data->pos_home.x = 850.0f;
+    asset.vec_data->pos_home.y = 750.0f;
+    asset.bill = LoadTexture("bonus/menu/assets/bill.png");
+    asset.pdiddy = LoadTexture("bonus/menu/assets/pdiddy.png");
+    asset.vec_data->pos_pdiddy.x = 1250.0f;
+    asset.vec_data->pos_pdiddy.y = 0.0f;
     return asset;
 }
 
@@ -155,6 +163,7 @@ int my_menu(game_info_t *game_data)
 
     game_data->abel = false;
     game_data->john = false;
+    game_data->bill = false;
     textures_t asset = {0};
     InitWindow(screenWidth, screenHeight, "corewar");
     game_screen_t currentScreen = TITLE;
@@ -237,15 +246,46 @@ int my_menu(game_info_t *game_data)
             } break;
             case OPTION:
             {
-                DrawTexture(asset.previous, (int)asset.vec_data->pos_previous.x, (int)asset.vec_data->pos_previous.y, WHITE);
+                DrawTexture(asset.home, (int)asset.vec_data->pos_home.x, (int)asset.vec_data->pos_home.y, WHITE);
                 DrawTexture(asset.next, (int)asset.vec_data->pos_next.x, (int)asset.vec_data->pos_next.y, WHITE);
                 DrawTexture(asset.john, (int)asset.vec_data->pos_john.x, (int)asset.vec_data->pos_john.y, WHITE);
-                if (is_hover(asset.previous, asset.vec_data->pos_previous)) {
+                if (is_hover(asset.home, asset.vec_data->pos_home)) {
                     currentScreen = TITLE;
                     break;
                 }
-                is_hover(asset.next, asset.vec_data->pos_next);
+                if (is_hover(asset.next, asset.vec_data->pos_next)) {
+                    currentScreen = OPTION_2;
+                    break;
+                }
                 DrawTexture(asset.atom, (int)asset.vec_data->pos_atom.x, (int)asset.vec_data->pos_atom.y, WHITE);
+                if (is_click(asset.take, asset.vec_data->pos_take_atom))
+                    game_data->bill = !game_data->bill;
+                if (game_data->bill == false)
+                    DrawTexture(asset.take, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
+                else
+                    DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
+                if (is_click(asset.take, asset.vec_data->pos_take_john))
+                    game_data->john = !game_data->john;
+                if (game_data->john == false)
+                    DrawTexture(asset.take, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
+                else
+                    DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
+                DrawText("         Abel\nThe best at being bad", 150, 620, 50, BLACK);
+                DrawText("John_Snow\nBro is cold", 1450, 620, 50, BLACK);
+            } break;
+
+            case OPTION_2:
+            {
+                DrawTexture(asset.previous, (int)asset.vec_data->pos_home.x, (int)asset.vec_data->pos_home.y, WHITE);
+                DrawTexture(asset.next, (int)asset.vec_data->pos_next.x, (int)asset.vec_data->pos_next.y, WHITE);
+                DrawTexture(asset.bill, (int)asset.vec_data->pos_atom.x, (int)asset.vec_data->pos_atom.y, WHITE);
+                DrawTexture(asset.pdiddy, (int)asset.vec_data->pos_pdiddy.x, (int)asset.vec_data->pos_pdiddy.y, WHITE);
+                if (is_hover(asset.previous, asset.vec_data->pos_previous)) {
+                    currentScreen = OPTION;
+                    break;
+                }
+                is_hover(asset.next, asset.vec_data->pos_next);
+                DrawTexture(asset.bill, (int)asset.vec_data->pos_atom.x, (int)asset.vec_data->pos_atom.y, WHITE);
                 if (is_click(asset.take, asset.vec_data->pos_take_atom))
                     game_data->abel = !game_data->abel;
                 if (game_data->abel == false)
@@ -258,8 +298,8 @@ int my_menu(game_info_t *game_data)
                     DrawTexture(asset.take, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
                 else
                     DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
-                DrawText("         Abel\nThe best at being bad", 150, 620, 50, BLACK);
-                DrawText("John_Snow\nBro is cold", 1450, 620, 50, BLACK);
+                DrawText("       Bill\nThe flying Dorito", 150, 620, 50, BLACK);
+                DrawText("    Pdd\nKid toucher", 1450, 620, 50, BLACK);
             } break;
         }
         EndDrawing();

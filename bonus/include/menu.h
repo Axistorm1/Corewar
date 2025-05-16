@@ -13,7 +13,8 @@
 typedef enum game_screen_e {
     TITLE,
     SETTING,
-    OPTION
+    OPTION,
+    OPTION_2
 } game_screen_t;
 
 typedef struct vector_s {
@@ -37,6 +38,8 @@ typedef struct vector_s {
     Vector2 pos_previous;
     Vector2 pos_next;
     Vector2 pos_john;
+    Vector2 pos_home;
+    Vector2 pos_pdiddy;
 } vector_t;
 
 typedef struct setting_s {
@@ -67,6 +70,9 @@ typedef struct textures_s {
     Texture2D previous;
     Texture2D next;
     Texture2D john;
+    Texture2D home;
+    Texture2D bill;
+    Texture2D pdiddy;
 } textures_t;
 
 #endif /* MENU_H_ */

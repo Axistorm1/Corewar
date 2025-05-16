@@ -652,12 +652,14 @@ void update_process_menu_window(arena_t *arena, bool paused)
     if (jungle->signal == SKIP)
         process->wait_cycles = 0;
     if (jungle->signal == KILL) {
+        kill_audio();
         process->alive = false;
         process->wait_cycles = (byte4_t)-1;
     }
     if (jungle->signal == CARRY)
         process->carry = !process->carry;
     if (jungle->signal == REVIVE) {
+        revive_audio();
         process->alive = true;
         process->wait_cycles = (byte4_t)op_tab[instruction->op_code].nbr_cycles;
     }

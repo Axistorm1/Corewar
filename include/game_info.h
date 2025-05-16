@@ -16,6 +16,8 @@ PACKED game_info_s {
     bool light_mode;
     bool abel;
     bool john;
+    bool bill;
+    bool pdd;
 } game_info_t;
 
 #endif /* BONUS_H_ */

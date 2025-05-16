@@ -11,14 +11,13 @@ file(GLOB SOURCES
     src/parsing/*.c)
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
-
     add_compile_options(-Wall -Wextra -Wconversion -Wpedantic)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(SDL2 REQUIRED sdl2)
     pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(RAYLIB REQUIRED raylib)
-    include_directories(${RAYLIB_INCLUDE_DIRS})
+    include_directories(${RAYLIB_INCLUDE_DIRS} bonus/include)
     link_directories(${RAYLIB_LIBRARY_DIRS})
     add_compile_definitions(BONUS_MODE=1)
     set(SOURCES ${SOURCES} bonus/bonus.c bonus/transcribe_dot_s.c bonus/parse_champion.c bonus/menu/menu.c bonus/audio.c)    
