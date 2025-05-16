@@ -67,7 +67,7 @@ Graphic version (all provided in the installer script):
 
 ---
 
-## ** Acknowledgements
+## **Acknowledgements**
 - Thanks to Epitech for this wonderful project
 
 ---
