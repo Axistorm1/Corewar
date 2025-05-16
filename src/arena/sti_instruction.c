@@ -29,7 +29,7 @@ int execute_sti_instruction(
     adr2 = get_data_in_param(&(type_and_param_t){instr->types[2],
         instr->params[2]}, PARAM_DIR | PARAM_REG | PARAM_DIRDEX, arena,
         process);
-    if (adress == 1l << 32 || adr2 == 1l << 32)
+    if (adress == ERROR_VALUE || adr2 == ERROR_VALUE)
         return 1;
     adress += adr2;
     write4_to_arena(arena, update_program_counter(process->pc, (sbyte2_t)

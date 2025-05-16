@@ -15,7 +15,7 @@ void index_check(
     instruction_t *instruction,
     unsigned int value_arr[MAX_ARGS])
 {
-    int list_index[] = {10, 11, 15, 14};
+    int list_index[] = {LDI, STI, LLDI, LFORK};
     int is_index = 0;
 
     for (int i = 0; i != INDEX_NBR; i++)
@@ -36,7 +36,7 @@ static void compute_index(
     instruction_t *instruction)
 {
     if (value & MSB)
-        instruction->params[0].index = (int16_t)(-((~value + 1) & 0xFFFF));
+        instruction->params[0].index = (int16_t)(-((~value + 1) & MSB_CONST));
     else
         instruction->params[0].index = (int16_t)value;
 }
@@ -45,15 +45,15 @@ int special_inst(
     instruction_t *instruction,
     u_char *bin)
 {
-    if (instruction->op_code == 12 || instruction->op_code == 15
-        || instruction->op_code == 9) {
-        compute_index((sbyte2_t)(bin[0] << 8) + bin[1], instruction);
+    if (instruction->op_code == FORK || instruction->op_code == LFORK
+        || instruction->op_code == ZJMP) {
+        compute_index((sbyte2_t)(bin[0] << BYTE) + bin[1], instruction);
         instruction->types[0] = PARAM_INDEX;
         return 2;
     }
     if (instruction->op_code == 1) {
-        instruction->params[0].dir = (bin[0] << 24) + (bin[1] << 16) +
-            (bin[2] << 8) + bin[3];
+        instruction->params[0].dir = (bin[0] << BYTE * 3) +
+            (bin[1] << BYTE * 2) + (bin[2] << BYTE) + bin[3];
         instruction->types[0] = PARAM_DIR;
         return 4;
     }

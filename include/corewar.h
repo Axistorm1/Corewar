@@ -17,6 +17,8 @@
         #define BONUS_MODE 0
     #endif
 
+    #define EXIT_ERROR 84
+
     #define MAX_ROBOTS 1023
     #define MAX_CYCLES 4'733'960
 

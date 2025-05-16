@@ -44,7 +44,6 @@ int execute_lfork_instruction(
         new->cycle_born = arena->total_cycles;
         arena->processes[arena->process_count] = new;
         arena->process_count++;
-        return 1;
     }
     return 1;
 }

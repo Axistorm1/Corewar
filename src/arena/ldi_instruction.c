@@ -36,7 +36,7 @@ int execute_lldi_instruction(
     tmp = get_data_in_param(&(type_and_param_t){instr->types[1],
         instr->params[1]}, PARAM_REG | PARAM_DIR | PARAM_DIRDEX,
         arena, process);
-    if (adress == 1l << 32 || tmp == 1l << 32)
+    if (adress == ERROR_VALUE || tmp == ERROR_VALUE)
         return 1;
     sum = arena->memory[process->pc + (adress)];
     sum += tmp;

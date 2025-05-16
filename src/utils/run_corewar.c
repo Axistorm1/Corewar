@@ -81,7 +81,7 @@ static int handle_program(
 {
     assign_default_values(data);
     if (!distribute_robots(data->robots, data->robot_count))
-        return 84;
+        return EXIT_ERROR;
     if (BONUS_MODE == 1)
         launch_ncurses(game_data);
     create_arena(data);
@@ -99,7 +99,7 @@ int run_corewar(int argc, const char **argv, char **env)
 
     if (!data || (BONUS_MODE == 1 && !is_graphical_env(env))) {
         free_garbage();
-        return 84;
+        return EXIT_ERROR;
     }
     if (data->usage)
         return handle_usage();

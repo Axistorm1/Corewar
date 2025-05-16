@@ -21,7 +21,7 @@ sbyte8_t get_data_in_param(
     parameter_t param = type_and_param->param;
 
     if (!(params_value & type))
-        return 1l << 32;
+        return ERROR_VALUE;
     if (type == PARAM_REG && param.reg < REG_NUMBER)
         return process->registers[param.reg];
     if (type == PARAM_DIR)
@@ -32,5 +32,5 @@ sbyte8_t get_data_in_param(
         return arena->memory[process->pc + param.index];
     if (type & PARAM_DIRDEX)
         return param.index;
-    return 1l << 32;
+    return ERROR_VALUE;
 }

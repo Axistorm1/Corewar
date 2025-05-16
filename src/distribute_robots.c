@@ -41,7 +41,7 @@ static int find_next_robot(
         if (placements[i] > current_end)
             distance = placements[i] - current_end;
         else
-            distance = (6144 - current_end) + placements[i] + 1;
+            distance = (MEM_SIZE - current_end) + placements[i] + 1;
         if (distance < min_distance) {
             min_distance = distance;
             next_placement = placements[i];

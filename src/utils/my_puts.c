@@ -5,6 +5,7 @@
 ** my_puts.c
 */
 
+#include "arena.h"
 #include "my_stdlib.h"
 #include "my_string.h"
 #include "my_ctype.h"
@@ -30,21 +31,21 @@ ssize_t my_puts(char *str)
 
 ssize_t my_puts_nb(ssize_t nb)
 {
-    char buffer[20];
+    char buffer[BUFFER_SIZE];
 
-    my_memset(buffer, 0, 20);
-    my_ltoa(nb, buffer, 10);
+    my_memset(buffer, 0, BUFFER_SIZE);
+    my_ltoa(nb, buffer, BASE_TEN);
     return write(STDOUT_FILENO, buffer, my_strlen(buffer));
 }
 
 ssize_t my_puts_hexa(ssize_t nb, size_t leading_zeros)
 {
-    char buffer[20];
+    char buffer[BUFFER_SIZE];
     char zeros[leading_zeros];
 
     my_memset(zeros, '0', leading_zeros);
-    my_memset(buffer, 0, 20);
-    my_ltoa(nb, buffer, 16);
+    my_memset(buffer, 0, BUFFER_SIZE);
+    my_ltoa(nb, buffer, BASE_HEXA);
     for (int i = 0; buffer[i]; i++)
         buffer[i] = (char)my_toupper(buffer[i]);
     write(STDOUT_FILENO, zeros, leading_zeros - my_strlen(buffer));

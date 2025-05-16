@@ -7,6 +7,7 @@
 
 #include "arena.h"
 #include "op.h"
+#include "parsing.h"
 #include "structures.h"
 #include "utils.h"
 #include "my_string.h"
@@ -19,10 +20,10 @@ void write4_to_arena(
     byte4_t data,
     byte4_t prog_number)
 {
-    arena->memory[adress % MEM_SIZE] = (byte1_t)(data >> 24) & 0xFF;
-    arena->memory[(adress + 1) % MEM_SIZE] = (data >> 16) & 0xFF;
-    arena->memory[(adress + 2) % MEM_SIZE] = (data >> 8) & 0xFF;
-    arena->memory[(adress + 3) % MEM_SIZE] = data & 0xFF;
+    arena->memory[adress % MEM_SIZE] = (byte1_t)(data >> BYTE * 3) & LSB;
+    arena->memory[(adress + 1) % MEM_SIZE] = (data >> BYTE * 2) & LSB;
+    arena->memory[(adress + 2) % MEM_SIZE] = (data >> BYTE) & LSB;
+    arena->memory[(adress + 3) % MEM_SIZE] = data & LSB;
     arena->ownership_map[adress] = prog_number;
     arena->ownership_map[(adress + 1) % MEM_SIZE] = prog_number;
     arena->ownership_map[(adress + 2) % MEM_SIZE] = prog_number;

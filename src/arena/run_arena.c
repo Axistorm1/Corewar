@@ -84,22 +84,22 @@ static bool keep_running(arena_t *arena, corewar_data_t *data)
 
 static void dump_memory(arena_t *arena)
 {
-    for (byte2_t i = 0; i < MEM_SIZE; i += 32) {
-        for (byte1_t j = 0; j < 32; j++)
-            my_puts_hexa(arena->memory[i + j], 2);
-        my_puts("");
+    for (byte2_t i = 0; i < MEM_SIZE; i += DUMP_LINE_SIZE) {
+        for (byte1_t j = 0; j < DUMP_LINE_SIZE; j++)
+            my_puts_hexa(arena->memory[i + j], DUMP_HEXA_PADDING);
+        my_puts(EMPTY_STR);
     }
 }
 
 static void find_winner(robot_info_t **robots, byte2_t robot_count)
 {
-    char player_line[200];
+    char player_line[PLAYER_LINE_SIZE];
 
     for (byte2_t i = 0; i < robot_count; i++)
         if (robots[i]->process_count) {
-            my_memset(player_line, 0, 200);
+            my_memset(player_line, 0, PLAYER_LINE_SIZE);
             my_strcat(player_line, "The player ");
-            my_itoa(robots[i]->prog_num, &player_line[11], 10);
+            my_itoa(robots[i]->prog_num, &player_line[11], BASE_TEN);
             my_strcat(player_line, "(");
             my_strcat(player_line, robots[i]->header->prog_name);
             my_strcat(player_line, ")has won.\n");

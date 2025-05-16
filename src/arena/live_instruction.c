@@ -16,11 +16,11 @@
 
 static void write_player_line(robot_info_t *robot, arena_t *arena)
 {
-    char player_line[200];
+    char player_line[PLAYER_LINE_SIZE];
 
-    my_memset(player_line, 0, 200);
+    my_memset(player_line, 0, PLAYER_LINE_SIZE);
     my_strcat(player_line, "The player ");
-    my_itoa(robot->prog_num, &player_line[11], 10);
+    my_itoa(robot->prog_num, &player_line[11], BASE_TEN);
     my_strcat(player_line, "(");
     my_strcat(player_line, robot->header->prog_name);
     my_strcat(player_line, ")is alive.\n");

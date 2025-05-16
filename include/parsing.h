@@ -15,8 +15,14 @@
     #define MAX_ARGS 3
     #define CODING_NBR 4
     #define CHAR_CODING_B 9
-    // the fuck is msb
+
     #define MSB 0x8000
+
+    #define MSB_CONST 0xFFFF
+
+    #define LSB 0xFF
+
+    #define BYTE 8
 
     #define P_REG 1
     #define P_INDEX 2

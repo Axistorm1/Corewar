@@ -5,6 +5,7 @@
 ** parse_params.c
 */
 
+#include "arena.h"
 #include "op.h"
 #include "parsing.h"
 #include "structures.h"
@@ -15,7 +16,7 @@
 static unsigned int get_param(
     char *param)
 {
-    unsigned int value = (unsigned int)(((param[0] - '0') * 10) +
+    unsigned int value = (unsigned int)(((param[0] - '0') * BASE_TEN) +
         (param[1] - '0'));
 
     return value;
@@ -29,7 +30,7 @@ static void get_values(
     int i)
 {
     if (type == P_INDEX || type == P_DIRDEX) {
-        instruction->params[i].index = (int16_t)((bin[0] << 8) + bin[1]);
+        instruction->params[i].index = (int16_t)((bin[0] << BYTE) + bin[1]);
         instruction->types[i] = PARAM_INDEX;
         if (type == P_DIRDEX)
             instruction->types[i] = PARAM_DIRDEX;
@@ -40,11 +41,11 @@ static void get_values(
     }
     if (type == P_DIRECT) {
         instruction->types[i] = PARAM_DIR;
-        instruction->params[i].dir =
-            (bin[0] << 24) + (bin[1] << 16) + (bin[2] << 8) + bin[3];
+        instruction->params[i].dir = (bin[0] << BYTE * 3) +
+            (bin[1] << BYTE * 2) + (bin[2] << BYTE) + bin[3];
     }
     if (type == P_INDIRECT) {
-        instruction->params[i].ind = (u_int16_t)((bin[0] << 8) + bin[1]);
+        instruction->params[i].ind = (u_int16_t)((bin[0] << BYTE) + bin[1]);
         instruction->types[i] = PARAM_IND;
     }
 }
@@ -82,9 +83,9 @@ int parse_params(
     if (bytes_read != 0)
         return bytes_read;
     int_to_bin(instruction->coding_byte, buffer);
-    for (uint i = 0; i < 6; i += 2) {
-        value = get_param(&buffer[i]);
-        type_arr[i / 2] = value;
+    for (uint i = 0; i < 3; i += 1) {
+        value = get_param(&buffer[i * 2]);
+        type_arr[i] = value;
     }
     index_check(instruction, type_arr);
     bytes_read = store_params(instruction, type_arr, bin);

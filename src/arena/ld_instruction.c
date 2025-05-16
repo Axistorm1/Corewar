@@ -31,7 +31,7 @@ int execute_lld_instruction(
     value = get_data_in_param(&(type_and_param_t)
         {instr->types[0], instr->params[0]},
         PARAM_DIR | PARAM_IND, arena, process);
-    if (value == 1l << 32)
+    if (value == ERROR_VALUE)
         return 1;
     if (instr->types[1] == PARAM_REG && instr->params[1].reg < REG_NUMBER) {
         process->registers[instr->params[1].reg] = (sbyte4_t)value;

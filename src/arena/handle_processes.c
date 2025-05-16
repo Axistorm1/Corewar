@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include "arena.h"
 #include "bonus.h"
+
 static int (* const instructions[])
     (arena_t *, process_data_t *, instruction_t *) = {
     execute_not_instruction, execute_live_instruction,
@@ -60,7 +61,7 @@ static void handle_new_instruction(
     if (update_pc == 1)
         proc->pc += proc->instruction->size;
     proc->instruction = analyze_memory(&arena->memory[proc->pc]);
-    if (!proc->instruction || proc->instruction->op_code > 16) {
+    if (!proc->instruction || proc->instruction->op_code > LAST_INSTRUCTION) {
         proc->instruction->op_code = 0;
         proc->instruction->coding_byte = 0;
         proc->instruction->size = 1;
@@ -72,13 +73,13 @@ static void handle_new_instruction(
 
 void handle_non_alive(arena_t *arena, byte4_t i)
 {
-    char tmp_bonus[150];
+    char tmp_bonus[BONUS_DEAD_MESSAGE_SIZE];
 
     arena->processes[i]->robot->process_count--;
     if (arena->processes[i]->robot->process_count == 0)
         arena->processes[i]->robot->alive = false;
     if (BONUS_MODE == 1) {
-        my_memset(tmp_bonus, 0, 150);
+        my_memset(tmp_bonus, 0, BONUS_DEAD_MESSAGE_SIZE);
         my_strcat(tmp_bonus, arena->processes[i]->robot->header->prog_name);
         my_strcat(tmp_bonus, " died. Rest in piss.");
         update_console_window(tmp_bonus,
@@ -95,14 +96,13 @@ void kill_non_alive_processes(arena_t *arena)
 {
     byte4_t i = 0;
 
-    while (i < arena->process_count) {
+    while (i < arena->process_count)
         if (!arena->processes[i]->alive)
             handle_non_alive(arena, i);
         else {
             arena->processes[i]->alive = false;
             i++;
         }
-    }
 }
 
 void run_processes(arena_t *arena)
