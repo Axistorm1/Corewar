@@ -94,6 +94,17 @@ static char *type_to_str(param_type_t type)
     return "Nothing";
 }
 
+static void kill_all_processes_from_robot(arena_t *arena, robot_info_t *robot)
+{
+    for (byte4_t i = 0; i < arena->process_count; i++)
+        if (arena->processes[i]->robot == robot) {
+            handle_non_alive(arena, i);
+            i = 0;
+        }
+        else
+            i++;
+}
+
 // add fullscreen toggle
 static void update_arena_window(arena_t *arena)
 {
@@ -522,9 +533,10 @@ static void update_help_menu(void)
     mvwprintw(wd, champions_offset + 1, 2, "LEFT\tCycle left through champions");
     mvwprintw(wd, champions_offset + 2, 2, "RIGHT\tCycle right through champions");
     mvwprintw(wd, champions_offset + 3, 2, "M\tShow decompiled code");
+    mvwprintw(wd, champions_offset + 3, 2, "K\tKill robot");
 
     // processes help
-    int processes_offset = champions_offset + 5;
+    int processes_offset = champions_offset + 6;
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, processes_offset, 2, "Processes:");
     wattroff(wd, A_UNDERLINE);
@@ -648,7 +660,8 @@ void update_process_menu_window(arena_t *arena, bool paused)
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, 14, 2, "Signals");
     wattroff(wd, A_UNDERLINE);
-    mvwprintw(wd, 15, 2, "1: Finish instruction  2: Kill process  3: Change carry  4: Revive");
+    mvwprintw(wd, 15, 2, "1: Finish instruction  2: Kill process  3: Change carry");
+    mvwprintw(wd, 16, 2, "4: Revive  5:  Fork process at adress");
 
     if (jungle->signal == SKIP)
         process->wait_cycles = 0;
@@ -664,6 +677,8 @@ void update_process_menu_window(arena_t *arena, bool paused)
         process->alive = true;
         process->wait_cycles = (byte4_t)op_tab[instruction->op_code].nbr_cycles;
     }
+    if (jungle->signal == FORK_SIG)
+        execute_fork_instruction(arena, process, &(instruction_t){FORK, 0, {PARAM_INDEX, PARAM_NOTHING, PARAM_NOTHING}, {{0}, {0}, {0}}, 0});
 
     refresh:
     wnoutrefresh(wd);
@@ -916,6 +931,8 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->current_robot_info = 0;
     if (key == 'm')
         jungle->source_code = !jungle->source_code;
+    if (key == 'k')
+        kill_all_processes_from_robot(arena, data->robots[jungle->current_robot_info]);
     return;
 
     game_info:
@@ -938,6 +955,8 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->signal = CARRY;
     if (key == '4')
         jungle->signal = REVIVE;
+    if (key == '5')
+        jungle->signal = FORK_SIG;
     return;
 
     source_code:

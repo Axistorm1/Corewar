@@ -28,6 +28,7 @@ process_data_t *create_new_process(
 void run_processes(arena_t *arena);
 void kill_non_alive_processes(arena_t *arena);
 void *free_processes(process_data_t **processes, byte4_t process_count);
+void handle_non_alive(arena_t *arena, byte4_t i);
 
 // instructions
 int execute_add_instruction(

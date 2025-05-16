@@ -31,10 +31,6 @@ void *my_memcpy(void *dest, const void *src, my_size_t)
 __attribute__((nonnull(1, 2)));
 void *my_memset(void *str, int c, my_size_t bytes)
 __attribute__((nonnull(1)));
-char **my_str_to_word_array(char *str, char *delimiters)
-__attribute__((nonnull(1)));
-char **str_to_word_array(char *str, char *delimiters)
-__attribute__((nonnull(1)));
 char *my_strcat(char *dest, const char *src)
 __attribute__((nonnull(1, 2)));
 char *my_strncat(char *dest, const char *src, my_size_t bytes)
@@ -70,8 +66,6 @@ my_size_t my_strspn(const char *str1, const char *str2)
 __attribute__((nonnull(1, 2)));
 char *my_strstr(const char *haystack, const char *needle)
 __attribute__((nonnull(1, 2)));
-char *my_strtok(char *str, const char *delim)
-__attribute__((nonnull(2)));
 my_size_t my_strxfrm(char *dest, const char *src, my_size_t bytes)
 __attribute__((nonnull(1, 2)));
 my_size_t str_array_len(char **array)
