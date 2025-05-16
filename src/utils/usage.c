@@ -26,7 +26,21 @@ static const char usage_text[] = "USAGE\n"
     " are as far away from each other as possible. The addresses are"
     " MEM_SIZE modulo.\n";
 
-static const char bonus_usage_text[] = "USAGE\n";
+static const char bonus_usage_text[] = "USAGE (Bonus)\n"
+    "./corewar [-dump nbr_cycle] [[-n prog_number] [-a load_address]"
+    " prog_name] ...\n\n"
+    ""
+    "DESCRIPTION\n"
+    "Core War is a programming game where players write small, "
+    "self-replicating programs (called warriors) that compete for control "
+    "of a virtual computer's memory (the Core). The goal is to disable "
+    "opponents' programs while ensuring your own survives\n"
+    "The bonus is comprised of two parts: the menu (made using raylib) "
+    "and the game (made in ncurses). The ncurses control are available by "
+    "pressing 'h' during its execution.\n\n"
+    ""
+    "Have fun!\n"
+    "Axistorm & Arkcadia <3\n";
 
 void display_usage(void)
 {

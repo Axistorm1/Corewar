@@ -49,7 +49,7 @@ static void free_garbage_array(
     for (size_t i = 0; i < garbage_size; i++)
         if (array[i])
             free(array[i]);
-    free(array);
+    my_free(array);
 }
 
 void collect_garbage(
