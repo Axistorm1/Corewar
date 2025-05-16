@@ -107,6 +107,7 @@ int run_corewar(int argc, const char **argv, char **env)
         if (my_menu(&game_data) == 0)
             return 0;
         setup_audio(&game_data);
+        add_raylib_champions(data, &game_data);
     }
     return handle_program(data, &game_data);
 }

@@ -176,6 +176,7 @@ int my_menu(game_info_t *game_data)
     asset = create_menu();
     asset = create_settings(asset);
     asset = create_option(asset);
+    asset.setting_data->button1 = false;
     while (!WindowShouldClose())
     {
         UpdateMusicStream(music);
@@ -230,9 +231,9 @@ int my_menu(game_info_t *game_data)
                 DrawTexture(asset.tick_on, (int)asset.vec_data->pos_fullscreen.x, (int)asset.vec_data->pos_fullscreen.y, WHITE);
                 DrawTexture(asset.swap, (int)asset.vec_data->pos_swap.x, (int)asset.vec_data->pos_swap.y, WHITE);
                 if (asset.setting_data->button1 == false)
-                    DrawText("White mode", 580, 455, 25, GREEN);
+                    DrawText("Light mode", 580, 455, 25, RED);
                 if (asset.setting_data->button1 == true)
-                    DrawText("White mode", 580, 455, 25, RED);
+                    DrawText("Light mode", 580, 455, 25, GREEN);
                 game_data->light_mode = asset.setting_data->button1;
                 DrawText("Game Music", 580, 520, 25, GRAY);
                 select_music(&asset, game_data);
@@ -267,7 +268,7 @@ int my_menu(game_info_t *game_data)
                 DrawTexture(asset.atom, (int)asset.vec_data->pos_atom.x, (int)asset.vec_data->pos_atom.y, WHITE);
                 if (is_click(asset.take, asset.vec_data->pos_take_atom))
                     game_data->abel = !game_data->abel;
-                if (game_data->bill == false)
+                if (game_data->abel == false)
                     DrawTexture(asset.take, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
                 else
                     DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
@@ -278,7 +279,7 @@ int my_menu(game_info_t *game_data)
                 else
                     DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
                 DrawText("         Abel\nThe best at being bad", 150, 620, 50, BLACK);
-                DrawText("John_Snow\nBro is cold", 1450, 620, 50, BLACK);
+                DrawText("Jon Snow\nBro is cold", 1450, 620, 50, BLACK);
             } break;
 
             case OPTION_2:
@@ -300,8 +301,8 @@ int my_menu(game_info_t *game_data)
                 else
                     DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_atom.x, (int)asset.vec_data->pos_take_atom.y, WHITE);
                 if (is_click(asset.take, asset.vec_data->pos_take_john))
-                    game_data->john = !game_data->john;
-                if (game_data->john == false)
+                    game_data->pdd = !game_data->pdd;
+                if (game_data->pdd == false)
                     DrawTexture(asset.take, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
                 else
                     DrawTexture(asset.take_on, (int)asset.vec_data->pos_take_john.x, (int)asset.vec_data->pos_take_john.y, WHITE);
