@@ -648,7 +648,8 @@ void update_process_menu_window(arena_t *arena, bool paused)
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, 14, 2, "Signals");
     wattroff(wd, A_UNDERLINE);
-    mvwprintw(wd, 15, 2, "1: Finish instruction  2: Kill process  3: Change carry  4: Revive");
+    mvwprintw(wd, 15, 2, "1: Finish instruction  2: Kill process  3: Change carry");
+    mvwprintw(wd, 16, 2, "4: Revive  5:  Fork process at adress");
 
     if (jungle->signal == SKIP)
         process->wait_cycles = 0;
@@ -664,6 +665,8 @@ void update_process_menu_window(arena_t *arena, bool paused)
         process->alive = true;
         process->wait_cycles = (byte4_t)op_tab[instruction->op_code].nbr_cycles;
     }
+    if (jungle->signal == FORK_SIG)
+        execute_fork_instruction(arena, process, &(instruction_t){FORK, 0, {PARAM_INDEX, PARAM_NOTHING, PARAM_NOTHING}, {{0}, {0}, {0}}, 0});
 
     refresh:
     wnoutrefresh(wd);
@@ -938,6 +941,8 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         jungle->signal = CARRY;
     if (key == '4')
         jungle->signal = REVIVE;
+    if (key == '5')
+        jungle->signal = FORK_SIG;
     return;
 
     source_code:

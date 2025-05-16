@@ -424,23 +424,6 @@ Test(my_stype, my_str_toupper) {
     cr_assert_str_eq(str, "HELLO", "Expected 'hello' to convert to 'HELLO'");
 }
 
-Test(my_string, my_strtok) {
-    char str[] = "hello,world,test";
-    char refstr[] = "hello,world,test";
-    char *token = my_strtok(str, ",");
-    char *reference = strtok(refstr, ",");
-
-    cr_assert_str_eq(token, reference, "Expected first token to be %s, but got '%s'", reference, token);
-
-    token = my_strtok(NULL, ",");
-    reference = strtok(NULL, ",");
-    cr_assert_str_eq(token, reference, "Expected second token to be %s but got '%s'", reference, token);
-
-    token = my_strtok(NULL, ",");
-    reference = strtok(NULL, ",");
-    cr_assert_str_eq(token, reference, "Expected third token to be %s but got '%s'", reference, token);
-}
-
 Test(my_string, str_array_len) {
     char *array[] = {"hello", "world", "test", NULL};
     size_t len = str_array_len(array);

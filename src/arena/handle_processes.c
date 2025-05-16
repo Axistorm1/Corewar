@@ -73,13 +73,20 @@ static void handle_new_instruction(
 static void handle_non_alive(arena_t *arena, byte4_t *index)
 {
     byte4_t i = *index;
+    char tmp_bonus[150];
 
     arena->processes[i]->robot->process_count--;
     if (arena->processes[i]->robot->process_count == 0)
         arena->processes[i]->robot->alive = false;
-    free(arena->processes[i]);
-    if (BONUS_MODE == 1)
+    if (BONUS_MODE == 1) {
+        my_memset(tmp_bonus, 0, 150);
+        my_strcat(tmp_bonus, arena->processes[i]->robot->header->prog_name);
+        my_strcat(tmp_bonus, " died. Rest in piss.");
+        update_console_window(tmp_bonus,
+            arena->processes[i]->robot->prog_num, arena->total_cycles);
         death_audio();
+    }
+    free(arena->processes[i]);
     arena->process_count--;
     arena->processes[i] = arena->processes[arena->process_count];
     arena->dead_process_count++;

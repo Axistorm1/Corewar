@@ -49,7 +49,6 @@ add_library(mystd STATIC
     my_string/my_strrev.c
     my_string/my_strspn.c
     my_string/my_strstr.c
-    my_string/my_strtok.c
     my_string/str_array_len.c
     my_string/str_tolower.c
     my_string/str_toupper.c

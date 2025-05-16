@@ -115,6 +115,7 @@ typedef enum signal_type_e {
     KILL,
     CARRY,
     REVIVE,
+    FORK_SIG,
 } signal_type_t;
 
 // this shit structure is for the bonus part only
