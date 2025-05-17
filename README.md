@@ -1,6 +1,29 @@
-# **Corewar**
+# 🔥 Corewar: The Battle of Code
 
-**The Corewar tournament is a game in which several programs called champions will fight to stay the last one alive.**
+**Corewar** is a programming game where players write programs, called **warriors**, that battle for control of a simulated computer memory called the **core**. The game is a test of logic, strategy, and low-level programming skill.
+
+---
+
+## 🧠 How It Works
+
+- **Language**: Warriors are written in an assembly-like language called **Redcode**.
+- **Simulator**: The game runs in a virtual machine that follows the rules of the **MARS** (Memory Array Redcode Simulator).
+- **Goal**: Each warrior tries to:
+  - Survive longest in the memory.
+  - Crash or disable the opponent's code.
+  - Take over the memory by replicating or overwriting other programs.
+
+---
+
+## 💻 Game Mechanics
+
+- The core memory is a circular array where each cell can contain a Redcode instruction.
+- Multiple warriors are loaded into different parts of the core.
+- Warriors execute one instruction per cycle (round-robin fashion).
+- If a warrior tries to execute an invalid instruction or runs out of processes, it dies.
+- The last warrior running (or the one with the most processes alive at timeout) wins.
+
+---
 
 ![Corewar](assets/screenshot_corewar.png)
 
