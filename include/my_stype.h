@@ -8,33 +8,33 @@ typedef unsigned long my_size_t;
 #ifndef MY_STYPE_H_
     #define MY_STYPE_H_
 
-int my_str_isalnum(char *str)
-__attribute__((nonnull(1)));
-int my_str_isalpha(char *str)
-__attribute__((nonnull(1)));
-int my_str_isblank(char *str)
-__attribute__((nonnull(1)));
-int my_str_iscntrl(char *str)
-__attribute__((nonnull(1)));
-int my_str_isdigit(const char *str)
-__attribute__((nonnull(1)));
-int my_str_isgraph(char *str)
-__attribute__((nonnull(1)));
-int my_str_islower(char *str)
-__attribute__((nonnull(1)));
-int my_str_isprint(char *str)
-__attribute__((nonnull(1)));
-int my_str_ispunct(char *str)
-__attribute__((nonnull(1)));
-int my_str_isspace(char *str)
-__attribute__((nonnull(1)));
-int my_str_isupper(char *str)
-__attribute__((nonnull(1)));
-int my_str_isxdigit(char *str)
-__attribute__((nonnull(1)));
-char *my_str_tolower(char *str)
-__attribute__((nonnull(1)));
-char *my_str_toupper(char *str)
-__attribute__((nonnull(1)));
+[[gnu::nonnull(1)]]
+int my_str_isalnum(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_isalpha(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_isblank(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_iscntrl(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_isdigit(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_isgraph(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_islower(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_isprint(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_ispunct(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_isspace(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_isupper(const char *str);
+[[gnu::nonnull(1)]]
+int my_str_isxdigit(const char *str);
+[[gnu::nonnull(1)]]
+char *my_str_tolower(char *str);
+[[gnu::nonnull(1)]]
+char *my_str_toupper(char *str);
 
 #endif /* MY_STYPE_H_ */

@@ -3,13 +3,6 @@ cmake_minimum_required(VERSION 3.10.0)
 project(mystd)
 
 add_library(mystd STATIC
-    my_stdlib/my_calloc.c
-    my_stdlib/my_free.c
-    my_stdlib/my_malloc.c
-    my_stdlib/my_reallocarray.c
-    my_stdlib/my_realloc.c
-    my_stdlib/my_strdup.c
-    my_stdlib/str_array_len.c
     my_stype/my_str_isalnum.c
     my_stype/my_str_isalpha.c
     my_stype/my_str_isblank.c

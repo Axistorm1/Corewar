@@ -1,7 +1,6 @@
 #include "op.h"
 #include "structures.h"
 #include "corewar.h"
-#include "my_stdlib.h"
 #include "arena.h"
 #include "bonus.h"
 #include <stdio.h>
@@ -108,11 +107,12 @@ static void run_arena(arena_t *arena, corewar_data_t *data)
 
 arena_t *create_arena(corewar_data_t *data)
 {
-    arena_t *arena = my_calloc(1, sizeof(arena_t));
+    arena_t *arena = calloc(1, sizeof(arena_t));
 
     arena->cycle_to_die = CYCLE_TO_DIE;
     load_robots_to_arena(data->robots, data->robot_count, arena);
     run_arena(arena, data);
     free_processes(arena->processes, arena->process_count);
+    free(arena);
     return arena;
 }

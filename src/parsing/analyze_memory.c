@@ -1,11 +1,11 @@
 #include "parsing.h"
 #include "structures.h"
-#include "my_stdlib.h"
+#include <stdlib.h>
 
 instruction_t *analyze_memory(byte1_t *buffer)
 {
     byte1_t offset = 0;
-    instruction_t *instruction = my_calloc(1, sizeof(instruction_t));
+    instruction_t *instruction = calloc(1, sizeof(instruction_t));
 
     instruction->op_code = buffer[0];
     instruction->coding_byte = buffer[1];

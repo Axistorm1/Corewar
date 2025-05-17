@@ -1,4 +1,3 @@
-#include "arena.h"
 #include "op.h"
 #include "parsing.h"
 #include "structures.h"
@@ -6,13 +5,10 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-static unsigned int get_param(
+static byte4_t get_param(
     char *param)
 {
-    unsigned int value = (unsigned int)(((param[0] - '0') * BASE_TEN) +
-        (param[1] - '0'));
-
-    return value;
+    return (byte4_t)(((param[0] - '0') * 10) + (param[1] - '0'));
 }
 
 //Can be used to check if the param value is correct for error handling

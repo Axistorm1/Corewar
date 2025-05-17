@@ -1,7 +1,6 @@
 #include "errors.h"
 #include "op.h"
 #include "structures.h"
-#include "my_stdlib.h"
 #include "corewar.h"
 #include "utils.h"
 #include <stdlib.h>
@@ -145,7 +144,7 @@ static robot_info_t **create_new_robot_list(
     byte2_t robot_count)
 {
     byte2_t count = 0;
-    robot_info_t **new_list = my_calloc(robot_count, sizeof(robot_info_t *));
+    robot_info_t **new_list = calloc(robot_count, sizeof(robot_info_t *));
 
     for (byte2_t i = 0; i < robot_count; i++)
         if (robots[i]->mem_adr == (byte2_t)-1) {
@@ -190,6 +189,7 @@ robot_info_t **distribute_robots(
     }
     compute_gaps(robot_count, gaps, placement_list, robots_sizes);
     robots = create_new_robot_list(robots, robot_count);
-    return place_in_gaps(placed_robots, robot_count - placed_robots,
-        gaps, robots);
+    place_in_gaps(placed_robots, robot_count - placed_robots, gaps, robots);
+    free(robots);
+    return (robot_info_t **)1;
 }

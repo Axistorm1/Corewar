@@ -3,7 +3,6 @@
 #include "op.h"
 #include "structures.h"
 #include "my_stype.h"
-#include "my_stdlib.h"
 #include "utils.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -69,19 +68,19 @@ robot_info_t *init_robot(
     int prog_adress)
 {
     FILE *fptr = open_file(filename, "r");
-    robot_info_t *info = my_calloc(1, sizeof(robot_info_t));
-    header_t *header = my_calloc(1, sizeof(header_t));
+    robot_info_t *info = calloc(1, sizeof(robot_info_t));
+    header_t *header = calloc(1, sizeof(header_t));
 
     if (!fptr)
         return NULL;
     fread(header, sizeof(header_t), 1, fptr);
     header->prog_size = (int)swap_endian((uint)header->prog_size);
-    info->memory = my_calloc((ulong)header->prog_size, sizeof(byte1_t));
+    info->memory = calloc((ulong)header->prog_size, sizeof(byte1_t));
     fread(info->memory, sizeof(byte1_t), (ulong)header->prog_size, fptr);
     fclose(fptr);
     if (!header || !info->memory)
         return write_error(INCORRECT_FILE, filename, -1);
-    info->filename = my_strdup(filename);
+    info->filename = strdup(filename);
     info->header = header;
     info->prog_num = (byte2_t)prog_number;
     info->mem_adr = (byte2_t)prog_adress;
@@ -190,10 +189,14 @@ corewar_data_t *check_args(
             data->usage = true;
             return data;
         }
-        if (!funcs[arg_type](data, argv, &i, -1))
+        if (!funcs[arg_type](data, argv, &i, -1)) {
+            free_corewar_data(data);
             return NULL;
+        }
     }
-    if (!check_corewar_data(data))
+    if (!check_corewar_data(data)) {
+        free_corewar_data(data);
         return NULL;
+    }
     return data;
 }

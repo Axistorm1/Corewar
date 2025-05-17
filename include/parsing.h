@@ -16,6 +16,7 @@
 
     #define BYTE 8
 
+    #define NOTHING 0
     #define P_REG 1
     #define P_INDEX 2
     #define P_DIRDEX 3
@@ -25,8 +26,6 @@
     #define REGIS_SIZE 1
 
     #define INDEX_NBR 4
-
-    #define NOTHING 0
 
 void int_to_bin(int n, char output[9]);
 

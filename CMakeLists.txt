@@ -6,13 +6,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB SOURCES
     src/*.c
-    src/utils/*.c
     src/arena/*.c
+    src/arena/instructions/*.c
+    src/utils/*.c
     src/parsing/*.c)
 
 if (${CMAKE_BUILD_TYPE} MATCHES "Tests")
     list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
-    set(SOURCES ${SOURCES} tests/tests_lib.c tests/rename_memory_buffers.c tests/tests_corewar.c)
+    set(SOURCES ${SOURCES} tests/tests_parsing.c tests/tests_corewar.c)
 endif()
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")

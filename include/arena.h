@@ -19,28 +19,23 @@
     #define BONUS_DEAD_MESSAGE_SIZE 150
     #define PLAYER_LINE_SIZE 200
 
-    #define BASE_TEN 10
-    #define BASE_HEXA 16
-
-    #define DUMP_HEXA_PADDING 2
-
-
 arena_t *create_arena(corewar_data_t *data);
-void write1_to_arena(arena_t *arena, byte2_t adress,
-    byte1_t data, byte4_t prog_number);
-void write4_to_arena(
-    arena_t *arena, byte2_t adress,
-    byte4_t data, byte4_t prog_number);
-void print_arena(arena_t *arena);
-void print_arena_fast(arena_t *arena);
-void print_arena_data(arena_t *arena);
 
-process_data_t *create_new_process(
-    process_data_t *parent, robot_info_t *robot);
+void write4_to_arena(arena_t *arena, byte2_t adress, byte4_t data, byte4_t prog_number);
+
+// processes
+process_data_t *create_new_process(process_data_t *parent, robot_info_t *robot);
 void run_processes(arena_t *arena);
+void handle_non_alive(arena_t *arena, byte4_t i);
 void kill_non_alive_processes(arena_t *arena);
 void *free_processes(process_data_t **processes, byte4_t process_count);
-void handle_non_alive(arena_t *arena, byte4_t i);
+
+// helper function to get a param from an instruction
+sbyte8_t get_data_in_param(
+    type_and_param_t *type_and_param,
+    byte1_t params_value,
+    arena_t *arena,
+    process_data_t *process);
 
 // instructions
 int execute_add_instruction(
@@ -111,16 +106,5 @@ int execute_not_instruction(
     arena_t *arena,
     process_data_t *process,
     instruction_t *instruction);
-
-sbyte8_t get_data_in_param(
-    type_and_param_t *type_and_param,
-    byte1_t params_value,
-    arena_t *arena,
-    process_data_t *process);
-sbyte8_t get_data_in_param_idx_mod(
-    type_and_param_t *type_and_param,
-    byte1_t params_value,
-    arena_t *arena,
-    process_data_t *process);
 
 #endif /* ARENA_H_ */

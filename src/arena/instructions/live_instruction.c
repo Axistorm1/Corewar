@@ -4,6 +4,7 @@
 #include "structures.h"
 #include "arena.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 static void write_player_line(robot_info_t *robot, arena_t *arena)
 {
@@ -14,6 +15,7 @@ static void write_player_line(robot_info_t *robot, arena_t *arena)
         puts(line);
     } else
         update_console_window(line, robot->prog_num, arena->total_cycles);
+    free(line);
 }
 
 static void handle_alive(process_data_t *process, arena_t *arena)

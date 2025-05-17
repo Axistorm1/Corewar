@@ -52,6 +52,8 @@ static void handle_new_instruction(
             (arena, proc, proc->instruction);
     if (update_pc == 1)
         proc->pc = update_program_counter(proc->pc, proc->instruction->size);
+    free(proc->instruction);
+    proc->instruction = NULL;
     proc->instruction = analyze_memory(&arena->memory[proc->pc]);
     if (!proc->instruction || proc->instruction->op_code > LAST_INSTRUCTION) {
         proc->instruction->op_code = 0;
@@ -78,6 +80,7 @@ void handle_non_alive(arena_t *arena, byte4_t i)
             arena->processes[i]->robot->prog_num, arena->total_cycles);
         death_audio();
     }
+    free(arena->processes[i]->instruction);
     free(arena->processes[i]);
     arena->process_count--;
     arena->processes[i] = arena->processes[arena->process_count];
@@ -113,8 +116,10 @@ void *free_processes(
     process_data_t **processes,
     byte4_t process_count)
 {
-    for (byte4_t i = 0; i < process_count; i++)
+    for (byte4_t i = 0; i < process_count; i++) {
+        free(processes[i]->instruction);
         free(processes[i]);
+    }
     free(processes);
     return NULL;
 }

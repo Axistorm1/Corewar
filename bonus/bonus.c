@@ -3,8 +3,8 @@
 #include "corewar.h"
 #include "game_info.h"
 #include "op.h"
+#include "utils.h"
 #include "structures.h"
-#include "my_stdlib.h"
 #include <alloca.h>
 #include <ctype.h>
 #include <ncurses.h>
@@ -381,10 +381,12 @@ void update_console_window(
     }
 }
 
-static void quit_ncurses(void)
+static void quit_ncurses(corewar_data_t *data, arena_t *arena)
 {
     exit_ncurses();
-    free_garbage();
+    free_processes(arena->processes, arena->process_count);
+    free(arena);
+    free_corewar_data(data);
     exit(0);
 }
 
@@ -449,7 +451,7 @@ static void display_secret_menu(WINDOW *wd)
 }
 
 // maybe add a big COREWAR ascii? like btop (UwU btop my beloved)
-static void update_help_menu(void)
+static void update_help_menu(corewar_data_t *data, arena_t *arena)
 {
     WINDOW *wd = newwin(LINES - 6, 40, 5, (COLS >> 1) - 20);
 
@@ -562,7 +564,7 @@ static void update_help_menu(void)
     int key = wgetch_l(wd);
 
     if (key == 'q')
-        quit_ncurses();
+        quit_ncurses(data, arena);
 
     if (key == 'p')
         jungle->process_menu = true;
@@ -806,7 +808,7 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
 
     // quit
     if (key == 'q')
-        quit_ncurses();
+        quit_ncurses(data, arena);
 
     // switch active
     if (key == KEY_STAB || key == '\t')
@@ -827,7 +829,7 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
         key = wgetch_l(wd);
         while (key != ' ') {
             if (key == 'q')
-                quit_ncurses();
+                quit_ncurses(data, arena);
             if (jungle->process_menu) {
                 mvwprintw(jungle->arena, getmaxy(jungle->arena) / 2 - 1, getmaxx(jungle->arena) / 2 - 32, "GAME PAUSED");
                 wnoutrefresh(wd);
@@ -852,7 +854,7 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
 
     // help menu
     if (key == 'h')
-        update_help_menu();
+        update_help_menu(data, arena);
 
     // processes menu
     if (key == 'p' && !jungle->source_code)
@@ -1004,7 +1006,7 @@ void run_ncurses(arena_t *arena, corewar_data_t *data)
 
 static void sigint_handler(int a)
 {
-    quit_ncurses();
+    exit_ncurses();
     exit(a);
     abort();
     raise(SIGINT);
@@ -1019,7 +1021,7 @@ static void add_champion(char *name, corewar_data_t *data)
     strcpy(&binary_files_location[16], name);
 
     data->robot_count++;
-    data->robots = my_realloc(data->robots, data->robot_count * sizeof(robot_info_t *), (data->robot_count - 1)  * sizeof(robot_info_t *));
+    data->robots = realloc(data->robots, data->robot_count * sizeof(robot_info_t *));
     data->robots[data->robot_count - 1] = init_robot(binary_files_location, -1, -1);
 }
 
