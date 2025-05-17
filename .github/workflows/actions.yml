@@ -23,6 +23,12 @@ jobs:
       - name: Download make
         run: sudo apt install make
 
+      - name: Download dependencies
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          ./installer.sh
+
       - name: Run make
         timeout-minutes: 2
         shell: bash

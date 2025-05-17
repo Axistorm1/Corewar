@@ -22,7 +22,6 @@ debug:
 .PHONY: clean
 clean:
 	@rm -rf $(BUILD_DIR)
-	@rm -f *.gcno *.gcda *.gcov
 
 .PHONY: fclean
 fclean: clean
