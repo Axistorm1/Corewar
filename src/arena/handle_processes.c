@@ -1,17 +1,9 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** handle_processes.c
-*/
-
-#include "op.h"
 #include "parsing.h"
 #include "structures.h"
-#include "my_string.h"
 #include "utils.h"
 #include <stdlib.h>
 #include "corewar.h"
+#include <string.h>
 #include <unistd.h>
 #include "arena.h"
 #include "bonus.h"
@@ -34,13 +26,13 @@ process_data_t *create_new_process(
 {
     process_data_t *process = malloc(sizeof(process_data_t));
 
-    my_memset(process, 0, sizeof(process_data_t));
+    memset(process, 0, sizeof(process_data_t));
     process->parent = parent;
     process->robot = robot;
     process->pc = robot->mem_adr;
     process->registers[0] = robot->prog_num;
     if (parent) {
-        my_memcpy(process->registers, parent->registers,
+        memcpy(process->registers, parent->registers,
             REG_SIZE * REG_NUMBER);
         process->pc = parent->pc;
     }
@@ -79,9 +71,9 @@ void handle_non_alive(arena_t *arena, byte4_t i)
     if (arena->processes[i]->robot->process_count == 0)
         arena->processes[i]->robot->alive = false;
     if (BONUS_MODE == 1) {
-        my_memset(tmp_bonus, 0, BONUS_DEAD_MESSAGE_SIZE);
-        my_strcat(tmp_bonus, arena->processes[i]->robot->header->prog_name);
-        my_strcat(tmp_bonus, " died. Rest in piss.");
+        memset(tmp_bonus, 0, BONUS_DEAD_MESSAGE_SIZE);
+        strcat(tmp_bonus, arena->processes[i]->robot->header->prog_name);
+        strcat(tmp_bonus, " died. Rest in piss.");
         update_console_window(tmp_bonus,
             arena->processes[i]->robot->prog_num, arena->total_cycles);
         death_audio();

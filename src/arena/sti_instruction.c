@@ -1,15 +1,7 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** sti_instruction.c
-*/
-
 #include "arena.h"
 #include "op.h"
 #include "structures.h"
 #include "utils.h"
-#include <stdint.h>
 
 int execute_sti_instruction(
     arena_t *arena,

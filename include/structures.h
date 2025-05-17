@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** structures.h
-*/
-
 #ifndef STRUCTURES_H_
     #define STRUCTURES_H_
 

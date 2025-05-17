@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** asm
-** File description:
-** transform little endian to big endian
-*/
-
 #include "parsing.h"
 #include "utils.h"
 

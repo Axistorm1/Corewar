@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** parse_special_params.c
-*/
-
 #include "parsing.h"
 #include "structures.h"
 #include <stddef.h>

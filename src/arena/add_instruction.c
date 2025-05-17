@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** add_instruction.c
-*/
-
 #include "arena.h"
 #include "corewar.h"
 #include "op.h"

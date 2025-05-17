@@ -1,22 +1,15 @@
-/*
-** EPITECH PROJECT, 2025
-** my_stype
-** File description:
-** Checks if a string is only uppercase
-*/
-
 #include "my_stype.h"
-#include "../my_ctype/my_ctype.h"
-#include "../my_string/my_string.h"
+#include <ctype.h>
+#include <string.h>
 
 int my_str_isupper(char *str)
 {
-    my_size_t len = my_strlen(str);
+    my_size_t len = strlen(str);
 
     if (len == 0)
         return 0;
     for (my_size_t i = 0; i < len; i++)
-        if (!my_isupper(str[i]))
+        if (!isupper(str[i]))
             return 0;
     return 1;
 }

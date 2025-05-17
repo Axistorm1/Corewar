@@ -1,11 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** parsing.h
-*/
-
-
 #ifndef PARSING_H_
     #define PARSING_H_
 

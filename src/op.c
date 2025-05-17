@@ -1,12 +1,4 @@
-/*
-** EPITECH PROJECT, 2025
-** asm
-** File description:
-** The main instructions
-*/
-
 #include "op.h"
-#include <unistd.h>
 
 const op_t op_tab[] = {
     {"none", 0, {0}, 0, 1, "Nothing"},

@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** header
-** File description:
-** header
-*/
-
 #include "op.h"
 #include "parsing.h"
 #include "structures.h"

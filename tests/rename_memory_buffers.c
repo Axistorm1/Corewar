@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** make sure any memory buffer can be parsed and not crash
-*/
-
 #include <criterion/criterion.h>
 #include "parsing.h"
 #include <stdint.h>

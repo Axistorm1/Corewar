@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** arena.h
-*/
-
 #ifndef ARENA_H_
     #define ARENA_H_
 

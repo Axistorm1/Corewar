@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** my_stype
-** File description:
-** private header for my_stype
-*/
-
 #ifndef MY_STYPE_PRIVATE_H_
     #define MY_STYPE_PRIVATE_H_
 

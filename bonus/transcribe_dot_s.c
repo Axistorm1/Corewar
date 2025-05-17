@@ -1,11 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** corewar.h
-*/
-
-#include "my_string.h"
 #include "structures.h"
 #include "parsing.h"
 #include "my_stdlib.h"

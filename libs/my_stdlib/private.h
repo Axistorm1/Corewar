@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2024
-** my_stdlib
-** File description:
-** Private macros and functions
-*/
-
 #ifndef MY_STDLIB_PRIVATE_H_
     #define MY_STDLIB_PRIVATE_H_
 

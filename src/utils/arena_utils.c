@@ -1,18 +1,8 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** arena_utils.c
-*/
-
 #include "arena.h"
 #include "op.h"
 #include "parsing.h"
 #include "structures.h"
 #include "utils.h"
-#include "my_string.h"
-#include "my_stdlib.h"
-#include <unistd.h>
 
 void write4_to_arena(
     arena_t *arena,

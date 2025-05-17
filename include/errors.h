@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** errors.h
-*/
-
 #ifndef ERRORS_H_
     #define ERRORS_H_
 

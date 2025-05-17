@@ -1,17 +1,8 @@
-/*
-** EPITECH PROJECT, 2025
-** B-CPE-200-TLS-2-1-amazed-romeo.louvel
-** File description:
-** tests_lib_strings
-*/
-
 #include <assert.h>
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>
 #include "corewar.h"
-#include "my_string.h"
 #include "my_stdlib.h"
-#include "my_string.h"
 #include "my_stdlib.h"
 #include "my_stype.h"
 

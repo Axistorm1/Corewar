@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** and_instruction.c
-*/
-
 #include "op.h"
 #include "structures.h"
 #include "arena.h"

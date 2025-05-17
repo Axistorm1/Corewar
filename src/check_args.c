@@ -1,33 +1,26 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** check_args.c
-*/
-
 #include "corewar.h"
 #include "errors.h"
 #include "op.h"
 #include "structures.h"
-#include "my_string.h"
 #include "my_stype.h"
 #include "my_stdlib.h"
 #include "utils.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
 static int identify_arg(const char *arg)
 {
-    if (!my_strcmp(arg, "-h"))
+    if (!strcmp(arg, "-h"))
         return -1;
-    if (!my_strcmp(arg, "-dump"))
+    if (!strcmp(arg, "-dump"))
         return 0;
-    if (!my_strcmp(arg, "-n"))
+    if (!strcmp(arg, "-n"))
         return 1;
-    if (!my_strcmp(arg, "-a"))
+    if (!strcmp(arg, "-a"))
         return 2;
     return 3;
 }
@@ -41,7 +34,7 @@ static bool handle_dump(
     if (!argv[*i + 1] || !my_str_isdigit(argv[*i + 1]))
         return write_error(BAD_VALUE, argv[*i], -1);
     *i += 1;
-    data->dump_cycle = (uint32_t)my_atol(argv[*i]);
+    data->dump_cycle = (uint32_t)atol(argv[*i]);
     if (data->dump_cycle > MAX_CYCLES)
         write_error(MAX_CYCLE, NULL, data->dump_cycle);
     return true;
@@ -61,7 +54,7 @@ static FILE *open_file(const char *filename, char *mode)
         return write_error(INCORRECT_HEADER, filename, -1);
     fptr = fopen(filename, mode);
     fread(&buffer, sizeof(byte4_t), 1, fptr);
-    if (my_strcmp(my_strrchr(filename, '.'), ".cor") ||
+    if (strcmp(strrchr(filename, '.'), ".cor") ||
         swap_endian((u_int)(buffer)) != COREWAR_EXEC_MAGIC) {
         fclose(fptr);
         return write_error(NOT_COR_FILE, filename, -1);
@@ -107,7 +100,7 @@ static bool handle_n(
         return write_error(MISSING_CHAMPION, NULL, -1);
     if (!argv[*i + 1] || !my_str_isdigit(argv[*i + 1]))
         return write_error(BAD_VALUE, argv[*i], -1);
-    prog_num = my_atoi(argv[*i + 1]);
+    prog_num = atoi(argv[*i + 1]);
     if (prog_num == 0)
         return write_error(PROG_NUM_0, argv[*i], -1);
     if (prog_num > UINT16_MAX)
@@ -135,7 +128,7 @@ bool handle_a(
         return write_error(MISSING_CHAMPION, NULL, -1);
     if (!argv[*i + 1] || !my_str_isdigit(argv[*i + 1]))
         return write_error(BAD_VALUE, argv[*i], -1);
-    prog_adr = my_atoi(argv[*i + 1]) % MEM_SIZE;
+    prog_adr = atoi(argv[*i + 1]) % MEM_SIZE;
     *i += 2;
     if (identify_arg(argv[*i]) == 1 && tmp == -1)
         return handle_n(data, argv, i, prog_adr);

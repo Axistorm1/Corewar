@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** asm
-** File description:
-** Header for the operations
-*/
-
 #ifndef OP_H_
     #define OP_H_
 

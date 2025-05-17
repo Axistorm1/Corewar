@@ -1,15 +1,5 @@
-/*
-** EPITECH PROJECT, 2025
-** G-AIA-200-TLS-2-1-cuddle-pavel.de-wavrechin
-** File description:
-** cuddle
-*/
-
 #include "errors.h"
-#include "my_string.h"
-#include "utils.h"
 #include <stdio.h>
-#include <unistd.h>
 
 static const char *const error_strings[] = {
     "Incorrect argument",
@@ -33,38 +23,28 @@ static const char *const warning_strings[] = {
     "The total memory amount of the programs is higher than the arena size"
 };
 
-static void write_auxiliary(
-    const char *before,
-    ssize_t number)
-{
-    if (before) {
-        write(STDOUT_FILENO, before, my_strlen(before));
-        write(STDOUT_FILENO, ":", 1);
-    }
-    if (number != -1) {
-        my_puts_nb(number);
-        write(STDOUT_FILENO, ":", 1);
-    }
-    if (before || number != -1)
-        write(STDOUT_FILENO, " ", 1);
-}
-
 void *write_error(
     int error_code,
     const char *before,
     ssize_t number)
 {
     const char *string = NULL;
+    char *color = NULL;
 
     if (error_code < WARNINGS_START) {
         string = error_strings[error_code];
-        write(STDOUT_FILENO, "\033[31m", 5);
+        color = "\033[31m";
     } else {
         string = warning_strings[error_code - WARNINGS_START];
-        write(STDOUT_FILENO, "\033[36m", 5);
+        color = "\033[36m";
     }
-    write_auxiliary(before, number);
-    write(STDOUT_FILENO, string, my_strlen(string));
-    my_puts("\033[0m");
+    if (before)
+        printf("%s%s: %s\033[0m\n", color, before, string);
+    if (number != -1)
+        printf("%s%ld: %s\033[0m\n", color, number, string);
+    if (before && number != -1)
+        printf("%s%s%ld: %s\033[0m\n", color, before, number, string);
+    if (!before && number == -1)
+        printf("%s%s\033[0m\n", color, string);
     return NULL;
 }

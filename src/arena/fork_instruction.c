@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** fork_instruction.c
-*/
-
 #include "arena.h"
 #include "op.h"
 #include "structures.h"

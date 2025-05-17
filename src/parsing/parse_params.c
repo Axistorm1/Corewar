@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** parse_params.c
-*/
-
 #include "arena.h"
 #include "op.h"
 #include "parsing.h"

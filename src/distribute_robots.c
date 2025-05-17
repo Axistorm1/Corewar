@@ -1,17 +1,11 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** distribute_robots.c
-*/
-
 #include "errors.h"
 #include "op.h"
 #include "structures.h"
-#include "my_string.h"
 #include "my_stdlib.h"
 #include "corewar.h"
 #include "utils.h"
+#include <stdlib.h>
+#include <string.h>
 
 static byte2_t count_placed_robots(
     robot_info_t **robots,
@@ -66,7 +60,7 @@ static void compute_gaps(
             robot_count, placements, gaps[current_gap][0]);
         gaps[current_gap][2] = gaps[current_gap][1] - gaps[current_gap][0];
         if (gaps[current_gap][2] < 0)
-            gaps[current_gap][2] = MEM_SIZE - my_abs(gaps[current_gap][2]);
+            gaps[current_gap][2] = MEM_SIZE - abs(gaps[current_gap][2]);
         current_gap++;
     }
 }
@@ -98,7 +92,7 @@ static void place_robots_in_gap(gap_placement_info_t *gap_info)
             (i + 1) - (gap_info->robots_in_gap[i]->header->prog_size / 2) +
             gap_info->gap_start) % MEM_SIZE;
         if (adress < 0)
-            adress = MEM_SIZE - my_abs(adress);
+            adress = MEM_SIZE - abs(adress);
         gap_info->robots_in_gap[i]->mem_adr = (byte2_t)adress;
     }
 }
@@ -114,8 +108,8 @@ static robot_info_t **place_in_gaps(
     int highest_index = 0;
     int gaps_copy[placed_count][3];
 
-    my_memset(pos_count, 0, sizeof(int) * placed_count);
-    my_memcpy(gaps_copy, gaps, sizeof(int) * placed_count * 3);
+    memset(pos_count, 0, sizeof(int) * placed_count);
+    memcpy(gaps_copy, gaps, sizeof(int) * placed_count * 3);
     for (byte2_t i = 0; i < to_place_count; i++) {
         highest_index = find_highest_gap(placed_count, gaps, pos_count);
         if (gaps[highest_index][2] > robots[i]->header->prog_size) {

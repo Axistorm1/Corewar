@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** analyze_memory.c
-*/
-
 #include "parsing.h"
 #include "structures.h"
 #include "my_stdlib.h"

@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** menu.h
-*/
-
 #ifndef MENU_H_
     #define MENU_H_
 

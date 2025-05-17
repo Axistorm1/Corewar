@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** zjmp_instruction.c
-*/
-
 #include "corewar.h"
 #include "op.h"
 #include "structures.h"

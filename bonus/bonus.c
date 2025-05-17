@@ -5,7 +5,6 @@
 #include "op.h"
 #include "structures.h"
 #include "my_stdlib.h"
-#include "my_string.h"
 #include <alloca.h>
 #include <ctype.h>
 #include <ncurses.h>

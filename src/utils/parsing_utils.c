@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** parsing_utils.c
-*/
-
 #include "structures.h"
 #include "parsing.h"
 

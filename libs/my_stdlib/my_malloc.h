@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** my_malloc
-** File description:
-** Header for my_malloc
-*/
-
 #ifndef MY_BOOL_H_
     #define MY_BOOL_H_
 

@@ -1,13 +1,5 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** check_args.c
-*/
-
 #include <raylib.h>
 #include "menu.h"
-#include "my_string.h"
 #include "my_stype.h"
 #include "my_stdlib.h"
 #include <stdlib.h>
@@ -194,7 +186,7 @@ int my_menu(game_info_t *game_data)
     animated_sprite cat = {0};
     float delta = GetFrameTime();
     bool miaow = false;
-    float musicTime = 0.0f; 
+    float musicTime = 0.0f;
     Vector2 temp;
 
     game_data->abel = false;

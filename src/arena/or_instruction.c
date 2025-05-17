@@ -1,14 +1,6 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** or_instruction.c
-*/
-
 #include "arena.h"
 #include "op.h"
 #include "structures.h"
-#include "arena.h"
 
 int execute_or_instruction(
     arena_t *arena,

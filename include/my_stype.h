@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2024
-** my_ctype
-** File description:
-** Header for my_ctype
-*/
-
 #ifndef MY_SIZE_T_H_
     #define MY_SIZE_T_H_
 

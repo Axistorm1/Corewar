@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** ldi_instruction.c
-*/
-
 #include "op.h"
 #include "arena.h"
 #include "structures.h"

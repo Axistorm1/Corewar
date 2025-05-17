@@ -1,20 +1,12 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** run_arena.c
-*/
-
 #include "op.h"
 #include "structures.h"
 #include "corewar.h"
 #include "my_stdlib.h"
-#include "my_string.h"
 #include "arena.h"
 #include "bonus.h"
-#include "utils.h"
+#include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
+#include <string.h>
 #include <unistd.h>
 
 // this will certainly crash if the prog size of a robot is > 6144 * 2
@@ -25,16 +17,16 @@ static void initialize_robot_in_memory(
     byte2_t size = MEM_SIZE - robot->mem_adr;
 
     if (robot->mem_adr + robot->header->prog_size >= MEM_SIZE) {
-        my_memcpy(&arena->memory[robot->mem_adr], robot->memory, size);
-        my_memcpy(&arena->memory[0], &robot->memory[size],
+        memcpy(&arena->memory[robot->mem_adr], robot->memory, size);
+        memcpy(&arena->memory[0], &robot->memory[size],
             (ulong)robot->header->prog_size - size);
         for (byte2_t j = 0; j < size; j++)
             arena->ownership_map[robot->mem_adr + j] = robot->prog_num;
         for (byte2_t j = 0; j < robot->header->prog_size - size; j++)
             arena->ownership_map[0 + j] = robot->prog_num;
     } else {
-        my_memcpy(&arena->memory[robot->mem_adr], robot->memory,
-        (ulong)robot->header->prog_size);
+        memcpy(&arena->memory[robot->mem_adr], robot->memory,
+        (byte8_t)robot->header->prog_size);
         for (int j = 0; j < robot->header->prog_size; j++)
             arena->ownership_map[robot->mem_adr + j] = robot->prog_num;
     }
@@ -86,25 +78,16 @@ static void dump_memory(arena_t *arena)
 {
     for (byte2_t i = 0; i < MEM_SIZE; i += DUMP_LINE_SIZE) {
         for (byte1_t j = 0; j < DUMP_LINE_SIZE; j++)
-            my_puts_hexa(arena->memory[i + j], DUMP_HEXA_PADDING);
-        my_puts(EMPTY_STR);
+            printf("%02X", arena->memory[i + j]);
+        printf("\n");
     }
 }
 
 static void find_winner(robot_info_t **robots, byte2_t robot_count)
 {
-    char player_line[PLAYER_LINE_SIZE];
-
     for (byte2_t i = 0; i < robot_count; i++)
-        if (robots[i]->process_count) {
-            my_memset(player_line, 0, PLAYER_LINE_SIZE);
-            my_strcat(player_line, "The player ");
-            my_itoa(robots[i]->prog_num, &player_line[11], BASE_TEN);
-            my_strcat(player_line, "(");
-            my_strcat(player_line, robots[i]->header->prog_name);
-            my_strcat(player_line, ")has won.\n");
-            write(STDOUT_FILENO, player_line, my_strlen(player_line));
-        }
+        if (robots[i]->process_count)
+            printf("The player %d(%s) has won.\n", robots[i]->prog_num, robots[i]->header->prog_name);
 }
 
 static void run_arena(arena_t *arena, corewar_data_t *data)
@@ -118,7 +101,7 @@ static void run_arena(arena_t *arena, corewar_data_t *data)
     if (data->dump_cycle != (byte4_t)-1)
         dump_memory(arena);
     if (arena->robots_alive == 0)
-        my_puts("No player has won.");
+        puts("No player has won.");
     else
         find_winner(data->robots, data->robot_count);
 }

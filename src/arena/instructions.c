@@ -1,12 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** instructions.c
-** The two functions found in this file are really important;
-** Any modification to them must be explained;
-*/
-
 #include "op.h"
 #include "arena.h"
 #include "structures.h"

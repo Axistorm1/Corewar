@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** not_instruction.c
-*/
-
 #include "corewar.h"
 #include "structures.h"
 #include "utils.h"

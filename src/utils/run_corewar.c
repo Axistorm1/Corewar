@@ -1,21 +1,12 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** run_corewar.c
-*/
-
 #include "corewar.h"
 #include "structures.h"
-#include "my_string.h"
 #include "my_stdlib.h"
 #include "utils.h"
 #include "bonus.h"
 #include "arena.h"
 #include "game_info.h"
 #include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 
@@ -24,7 +15,7 @@ static bool is_graphical_env(char **env)
     if (BONUS_MODE == 1)
         return isatty(STDOUT_FILENO);
     for (size_t i = 0; env[i]; i++)
-        if (!my_strncmp(env[i], "DISPLAY", 7))
+        if (!strncmp(env[i], "DISPLAY", 7))
             return true;
     return false;
 }

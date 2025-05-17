@@ -1,11 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** my_malloc
-** File description:
-** Allocate memory
-** why is this here
-*/
-
 #include "my_stdlib.h"
 #include "my_malloc.h"
 #include <stddef.h>

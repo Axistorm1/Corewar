@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** usage.c
-*/
-
 #include "corewar.h"
 #include "utils.h"
 #include <unistd.h>

@@ -1,11 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** audio
-*/
-
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include "game_info.h"

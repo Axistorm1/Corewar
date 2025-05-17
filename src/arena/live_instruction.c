@@ -1,36 +1,19 @@
-/*
-** EPITECH PROJECT, 2025
-** corewar
-** File description:
-** live_instruction.c
-*/
-
 #include "bonus.h"
 #include "corewar.h"
 #include "op.h"
 #include "structures.h"
 #include "arena.h"
-#include "my_stdlib.h"
-#include "my_string.h"
-#include <unistd.h>
+#include <stdio.h>
 
 static void write_player_line(robot_info_t *robot, arena_t *arena)
 {
-    char player_line[PLAYER_LINE_SIZE];
+    char *line = NULL;
 
-    my_memset(player_line, 0, PLAYER_LINE_SIZE);
-    my_strcat(player_line, "The player ");
-    my_itoa(robot->prog_num, &player_line[11], BASE_TEN);
-    my_strcat(player_line, "(");
-    my_strcat(player_line, robot->header->prog_name);
-    my_strcat(player_line, ")is alive.\n");
+    asprintf(&line, "The player %d(%s) is alive.", robot->prog_num, robot->header->prog_name);
     if (BONUS_MODE == 0) {
-        write(STDOUT_FILENO, player_line, my_strlen(player_line));
-        return;
-    }
-    if (BONUS_MODE == 1)
-        update_console_window(
-            player_line, robot->prog_num, arena->total_cycles);
+        puts(line);
+    } else
+        update_console_window(line, robot->prog_num, arena->total_cycles);
 }
 
 static void handle_alive(process_data_t *process, arena_t *arena)
