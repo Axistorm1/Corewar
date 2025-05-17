@@ -1,6 +1,7 @@
 #include "parsing.h"
 #include "structures.h"
 #include "utils.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include "corewar.h"
 #include <string.h>
@@ -67,20 +68,14 @@ static void handle_new_instruction(
 
 void handle_non_alive(arena_t *arena, byte4_t i)
 {
-    char tmp_bonus[BONUS_DEAD_MESSAGE_SIZE];
+    process_data_t *proc = arena->processes[i];
 
-    arena->processes[i]->robot->process_count--;
+    proc->robot->process_count--;
     if (arena->processes[i]->robot->process_count == 0)
         arena->processes[i]->robot->alive = false;
-    if (BONUS_MODE == 1) {
-        memset(tmp_bonus, 0, BONUS_DEAD_MESSAGE_SIZE);
-        strcat(tmp_bonus, arena->processes[i]->robot->header->prog_name);
-        strcat(tmp_bonus, " died. Rest in piss.");
-        update_console_window(tmp_bonus,
-            arena->processes[i]->robot->prog_num, arena->total_cycles);
+    if (BONUS_MODE == 1)
         death_audio();
-    }
-    free(arena->processes[i]->instruction);
+    free(proc->instruction);
     free(arena->processes[i]);
     arena->process_count--;
     arena->processes[i] = arena->processes[arena->process_count];

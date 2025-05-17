@@ -105,7 +105,7 @@ static void run_arena(arena_t *arena, corewar_data_t *data)
         find_winner(data->robots, data->robot_count);
 }
 
-arena_t *create_arena(corewar_data_t *data)
+void create_arena(corewar_data_t *data)
 {
     arena_t *arena = calloc(1, sizeof(arena_t));
 
@@ -114,5 +114,4 @@ arena_t *create_arena(corewar_data_t *data)
     run_arena(arena, data);
     free_processes(arena->processes, arena->process_count);
     free(arena);
-    return arena;
 }

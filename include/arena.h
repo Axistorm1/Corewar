@@ -19,7 +19,7 @@
     #define BONUS_DEAD_MESSAGE_SIZE 150
     #define PLAYER_LINE_SIZE 200
 
-arena_t *create_arena(corewar_data_t *data);
+void create_arena(corewar_data_t *data);
 
 void write4_to_arena(arena_t *arena, byte2_t adress, byte4_t data, byte4_t prog_number);
 
