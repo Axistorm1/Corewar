@@ -1,40 +1,61 @@
 cmake_minimum_required(VERSION 3.10.0)
 
-project(corewar)
+project(corewar C)
 
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB SOURCES
     src/*.c
     src/arena/*.c
     src/arena/instructions/*.c
+    src/graphic/*.c
+    src/graphic/menu/*.c
     src/utils/*.c
     src/parsing/*.c)
 
-if (${CMAKE_BUILD_TYPE} MATCHES "Tests")
+if (CMAKE_BUILD_TYPE STREQUAL "Tests")
     list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
-    set(SOURCES ${SOURCES} tests/tests_parsing.c tests/tests_corewar.c)
+    list(APPEND SOURCES
+        tests/tests_parsing.c
+        tests/tests_corewar.c)
+    find_package(criterion REQUIRED)
 endif()
 
-if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
-    add_compile_options(-Wall -Wextra -Wconversion -Wpedantic)
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(SDL2 REQUIRED sdl2)
-    pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(RAYLIB REQUIRED raylib)
-    include_directories(${RAYLIB_INCLUDE_DIRS} bonus/include)
-    link_directories(${RAYLIB_LIBRARY_DIRS})
-    add_compile_definitions(BONUS_MODE=1)
-    set(SOURCES ${SOURCES} bonus/bonus.c bonus/transcribe_dot_s.c bonus/parse_champion.c bonus/menu/menu.c bonus/audio.c)
-    set(RAYLIB_LIBS ${RAYLIB_LIBRARIES} -lGL -lm -lpthread -ldl -lrt -lX11)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SDL2 REQUIRED sdl2)
+pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
+pkg_check_modules(RAYLIB REQUIRED raylib)
+
+include_directories(include ${RAYLIB_INCLUDE_DIRS})
+
+add_compile_definitions(BONUS_MODE=1)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options(-Weverything -Wall -Wextra -Wconversion -Wpedantic
+        -fsanitize=address
+        -Wno-unsafe-buffer-usage
+        -Wno-pre-c23-compat -Wno-cast-qual -Wno-vla
+        -Wunused-result)
+    add_link_options(-fsanitize=address)
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Tests")
+    add_compile_options(--coverage)
+    add_link_options(--coverage)
 endif()
 
 add_executable(corewar ${SOURCES})
-target_include_directories(corewar PRIVATE include)
 
-if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
-    target_link_libraries(corewar PRIVATE ncurses ${RAYLIB_LIBS} ${SDL2_LIBRARIES} ${SDL2_MIXER_LIBRARIES})
+target_link_libraries(corewar PRIVATE
+    ncurses
+    ${RAYLIB_LIBRARIES}
+    ${SDL2_LIBRARIES}
+    ${SDL2_MIXER_LIBRARIES}
+    m pthread dl rt X11)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Tests")
+    target_link_libraries(corewar PRIVATE criterion)
 endif()
-
-set_property(TARGET corewar PROPERTY C_STANDARD 23)
