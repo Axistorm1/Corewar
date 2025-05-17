@@ -20,4 +20,6 @@ void *free_robots(robot_info_t **robots, size_t count);
 
 size_t str_array_len(char **array);
 
+int my_str_isdigit(const char *str);
+
 #endif /* UTILS_H_ */

@@ -10,7 +10,7 @@ CMAKE_DEBUG_FLAGS = -fsanitize=address -Weverything \
                     -Wno-unsafe-buffer-usage \
                     -Wno-pre-c23-compat -Wno-cast-qual -Wno-vla
 CMAKE_BONUS_FLAG = -O3 -Wno-unused-result
-CMAKE_TESTS_FLAGS = -lcriterion --coverage -lgcov
+CMAKE_TESTS_FLAGS = --coverage -lcriterion
 
 MAKEFLAGS += --no-print-directory
 
@@ -56,7 +56,7 @@ bonus:
 .PHONY: tests_run
 tests_run: fclean
 	@mkdir -p build
-	@cd build && CC=$(CC) cmake -DCMAKE_BUILD_TYPE=Tests \
+	@cd build && CC=gcc cmake -DCMAKE_BUILD_TYPE=Tests \
 	        -DCMAKE_CXX_FLAGS="" \
 	        -DCMAKE_C_FLAGS="$(CMAKE_TESTS_FLAGS)" \
 	        -DCMAKE_EXE_LINKER_FLAGS="" ..

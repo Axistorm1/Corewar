@@ -33,12 +33,8 @@ endif()
 add_executable(corewar ${SOURCES})
 target_include_directories(corewar PRIVATE include)
 
-add_subdirectory(libs)
-
-target_link_libraries(corewar PRIVATE mystd)
 if(${CMAKE_BUILD_TYPE} MATCHES "Bonus")
-    target_link_libraries(corewar PRIVATE mystd ncurses ${RAYLIB_LIBS} ${SDL2_LIBRARIES} ${SDL2_MIXER_LIBRARIES})
+    target_link_libraries(corewar PRIVATE ncurses ${RAYLIB_LIBS} ${SDL2_LIBRARIES} ${SDL2_MIXER_LIBRARIES})
 endif()
 
-target_include_directories(corewar PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/libs")
 set_property(TARGET corewar PROPERTY C_STANDARD 23)

@@ -2,9 +2,6 @@
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>
 #include "corewar.h"
-#include "my_stdlib.h"
-#include "my_stdlib.h"
-#include "my_stype.h"
 
 extern char **environ;
 

@@ -1,6 +1,5 @@
 #include <raylib.h>
 #include "menu.h"
-#include "my_stype.h"
 #include <stdlib.h>
 #include "game_info.h"
 

@@ -2,7 +2,6 @@
 #include "errors.h"
 #include "op.h"
 #include "structures.h"
-#include "my_stype.h"
 #include "utils.h"
 #include <stdint.h>
 #include <stdio.h>
