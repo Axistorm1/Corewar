@@ -5,7 +5,8 @@
 // This is the default usage as given in the subject,
 // We NEED to make an actual good one
 // UPDATE FOR BONUS
-static const char usage_text[] = "USAGE\n"
+static const char usage_text[] =
+    "USAGE\n"
     "./corewar [-dump nbr_cycle] [[-n prog_number] [-a load_address]"
     " prog_name] ...\n"
     "DESCRIPTION\n"
@@ -19,7 +20,8 @@ static const char usage_text[] = "USAGE\n"
     " are as far away from each other as possible. The addresses are"
     " MEM_SIZE modulo.\n";
 
-static const char bonus_usage_text[] = "USAGE (Bonus)\n"
+static const char bonus_usage_text[] =
+    "USAGE (Bonus)\n"
     "./corewar [-dump nbr_cycle] [[-n prog_number] [-a load_address]"
     " prog_name] ...\n\n"
     ""

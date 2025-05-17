@@ -1,11 +1,11 @@
 #ifndef GAME_INFO_H_
-    #define GAME_INFO_H_
+#define GAME_INFO_H_
 
-    #include "structures.h"
+#include "structures.h"
 
-typedef struct
-PACKED game_info_s {
-    int music_select;
+typedef struct PACKED game_info_s
+{
+    int  music_select;
     bool light_mode;
     bool abel;
     bool john;

@@ -3,10 +3,8 @@
 #include "structures.h"
 #include "utils.h"
 
-int execute_st_instruction(
-    arena_t *arena,
-    process_data_t *process,
-    instruction_t *instr)
+int execute_st_instruction(arena_t *arena, process_data_t *process,
+                           instruction_t *instr)
 {
     sbyte4_t value = 0;
 
@@ -17,8 +15,8 @@ int execute_st_instruction(
     if (instr->types[1] == PARAM_REG && instr->params[1].reg < REG_NUMBER)
         process->registers[instr->params[1].reg] = value;
     else if (instr->types[1] == PARAM_IND)
-        write4_to_arena(arena,
-            update_program_counter(process->pc, instr->params[1].index),
+        write4_to_arena(
+            arena, update_program_counter(process->pc, instr->params[1].index),
             (byte4_t)value, process->robot->prog_num);
     return 1;
 }

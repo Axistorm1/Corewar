@@ -1,6 +1,6 @@
+#include "game_info.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include "game_info.h"
 
 void setup_audio(game_info_t *game_data)
 {
@@ -20,18 +20,18 @@ void setup_audio(game_info_t *game_data)
 
 void death_audio(void)
 {
-   Mix_Chunk* death = Mix_LoadWAV("bonus/menu/assets/death.mp3");
-   Mix_PlayChannel(-1, death, 0);
+    Mix_Chunk *death = Mix_LoadWAV("bonus/menu/assets/death.mp3");
+    Mix_PlayChannel(-1, death, 0);
 }
 
 void revive_audio(void)
 {
-   Mix_Chunk* revive = Mix_LoadWAV("bonus/menu/assets/revive.mp3");
-   Mix_PlayChannel(-1, revive, 0);
+    Mix_Chunk *revive = Mix_LoadWAV("bonus/menu/assets/revive.mp3");
+    Mix_PlayChannel(-1, revive, 0);
 }
 
 void kill_audio(void)
 {
-   Mix_Chunk* revive = Mix_LoadWAV("bonus/menu/assets/kill.mp3");
-   Mix_PlayChannel(-1, revive, 0);
+    Mix_Chunk *revive = Mix_LoadWAV("bonus/menu/assets/kill.mp3");
+    Mix_PlayChannel(-1, revive, 0);
 }

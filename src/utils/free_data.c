@@ -4,7 +4,8 @@
 
 void *free_robots(robot_info_t **robots, size_t count)
 {
-    for (size_t i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++)
+    {
         free(robots[i]->filename);
         free(robots[i]->header);
         free(robots[i]->memory);

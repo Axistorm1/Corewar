@@ -1,15 +1,13 @@
 #ifndef UTILS_H_
-    #define UTILS_H_
+#define UTILS_H_
 
-    #include "structures.h"
+#include "structures.h"
 
 void display_usage(void);
 
 unsigned int swap_endian(unsigned int num);
 
-byte2_t update_program_counter(
-    byte2_t program_counter,
-    sbyte2_t n);
+byte2_t update_program_counter(byte2_t program_counter, sbyte2_t n);
 
 bool handle_a(corewar_data_t *data, const char **argv, int *i, int tmp);
 

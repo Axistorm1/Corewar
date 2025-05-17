@@ -1,6 +1,6 @@
+#include "utils.h"
 #include <ctype.h>
 #include <string.h>
-#include "utils.h"
 
 int my_str_isdigit(const char *str)
 {

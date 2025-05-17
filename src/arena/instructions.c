@@ -1,15 +1,13 @@
-#include "op.h"
 #include "arena.h"
+#include "op.h"
 #include "structures.h"
 
-sbyte8_t get_data_in_param(
-    type_and_param_t *type_and_param,
-    byte1_t params_value,
-    arena_t *arena,
-    process_data_t *process)
+sbyte8_t get_data_in_param(type_and_param_t *type_and_param,
+                           byte1_t params_value, arena_t *arena,
+                           process_data_t *process)
 {
-    param_type_t type = type_and_param->type;
-    parameter_t param = type_and_param->param;
+    param_type_t type  = type_and_param->type;
+    parameter_t  param = type_and_param->param;
 
     if (!(params_value & type))
         return ERROR_VALUE;

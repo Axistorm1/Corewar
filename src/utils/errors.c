@@ -20,23 +20,22 @@ static const char *const error_strings[] = {
 static const char *const warning_strings[] = {
     "is lonely in the arena :( Consider finding him some friends",
     "cycle will never be reached (MAX: 4,733,960)",
-    "The total memory amount of the programs is higher than the arena size"
-};
+    "The total memory amount of the programs is higher than the arena size"};
 
-void *write_error(
-    int error_code,
-    const char *before,
-    ssize_t number)
+void *write_error(int error_code, const char *before, ssize_t number)
 {
     const char *string = NULL;
-    char *color = NULL;
+    char       *color  = NULL;
 
-    if (error_code < WARNINGS_START) {
+    if (error_code < WARNINGS_START)
+    {
         string = error_strings[error_code];
-        color = "\033[31m";
-    } else {
+        color  = "\033[31m";
+    }
+    else
+    {
         string = warning_strings[error_code - WARNINGS_START];
-        color = "\033[36m";
+        color  = "\033[36m";
     }
     if (before)
         printf("%s%s: %s\033[0m\n", color, before, string);

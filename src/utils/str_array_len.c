@@ -1,5 +1,5 @@
-#include <string.h>
 #include "utils.h"
+#include <string.h>
 
 size_t str_array_len(char **array)
 {
