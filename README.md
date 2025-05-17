@@ -6,7 +6,7 @@
 
 ## 🧠 How It Works
 
-- **Language**: Warriors are written in an assembly-like language called **Redcode**.
+- **Language**: Warriors are written in an assembly-like language called **Redcode** (this version uses a pseudo-redcode language).
 - **Simulator**: The game runs in a virtual machine that follows the rules of the **MARS** (Memory Array Redcode Simulator).
 - **Goal**: Each warrior tries to:
   - Survive longest in the memory.
@@ -19,9 +19,9 @@
 
 - The core memory is a circular array where each cell can contain a Redcode instruction.
 - Multiple warriors are loaded into different parts of the core.
-- Warriors execute one instruction per cycle (round-robin fashion).
-- If a warrior tries to execute an invalid instruction or runs out of processes, it dies.
-- The last warrior running (or the one with the most processes alive at timeout) wins.
+- Warriors execute instructions based on their 'cooldown'.
+- If a warrior runs out of processes, it dies.
+- The last warrior running wins.
 
 ---
 
