@@ -24,6 +24,3 @@ cmake -DBUILD_EXAMPLES=ON ..
 make -j$(nproc)
 sudo make install
 cd ../.. && rm -rf raylib
-
-# Uncomment to install criterion (for testing purposes only)
-# sudo apt install libcriterion-dev

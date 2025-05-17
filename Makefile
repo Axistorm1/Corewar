@@ -19,14 +19,6 @@ debug:
 	@cmake --build $(BUILD_DIR) --parallel 12
 	@cp $(BUILD_DIR)/$(NAME) .
 
-.PHONY: tests
-tests:
-	@mkdir -p $(BUILD_DIR)
-	@cd $(BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Tests ..
-	@cmake --build $(BUILD_DIR) --parallel 12
-	@cp $(BUILD_DIR)/$(NAME) .
-	@./$(NAME)
-
 .PHONY: clean
 clean:
 	@rm -rf $(BUILD_DIR)

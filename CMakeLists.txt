@@ -16,14 +16,6 @@ file(GLOB SOURCES
     src/utils/*.c
     src/parsing/*.c)
 
-if (CMAKE_BUILD_TYPE STREQUAL "Tests")
-    list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
-    list(APPEND SOURCES
-        tests/tests_parsing.c
-        tests/tests_corewar.c)
-    find_package(criterion REQUIRED)
-endif()
-
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
@@ -42,11 +34,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_link_options(-fsanitize=address)
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Tests")
-    add_compile_options(--coverage)
-    add_link_options(--coverage)
-endif()
-
 add_executable(corewar ${SOURCES})
 
 target_link_libraries(corewar PRIVATE
@@ -55,7 +42,3 @@ target_link_libraries(corewar PRIVATE
     ${SDL2_LIBRARIES}
     ${SDL2_MIXER_LIBRARIES}
     m pthread dl rt X11)
-
-if(CMAKE_BUILD_TYPE STREQUAL "Tests")
-    target_link_libraries(corewar PRIVATE criterion)
-endif()
