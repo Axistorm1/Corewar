@@ -1,40 +1,43 @@
-# **Corewar**  
+# **Corewar**
 
-**The Corewar tournament is a game in which several programs called champions will fight to stay the last one alive.**  
+**The Corewar tournament is a game in which several programs called champions will fight to stay the last one alive.**
 
-![Corewar](assets/screenshot_corewar.png)  
-
----
-
-## **Table of Contents**  
-- [Features](#features)  
-- [Installation](#installation)  
-- [Usage](#usage)  
-- [Acknowledgements](#acknowledgements)  
+![Corewar](assets/screenshot_corewar.png)
 
 ---
 
-## **Features**  
+## **Table of Contents**
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Acknowledgements](#acknowledgements)
+
+---
+
+## **Features**
 ✨ Key features: <br>
 ✔️ Efficient virtual machine <br>
 ✔️ Beautiful graphic version <br>
 
 ---
 
-## **Installation**  
+## **Installation**
 **Prerequisites:** <br>
+All available in the install script <br>
 Default:
-- GCC / Clang
+- Git
+- Make + Cmake
+- GCC + Clang
 
-Graphic version (all provided in the installer script):
+Graphic version:
 - Raylib
 - Ncurses
 - SDL
 
-**Steps:**  
-1. Clone the repository:  
+**Steps:**
+1. Clone the repository:
    ```sh
-   git clone https://github.com/EpitechPGEPromo2029/B-CPE-200-TLS-2-1-corewar-valentin.bort-esgueva.git --depth=1
+   git clone https://github.com/Axistorm1/Corewar.git --depth=1
    ```
 2. Navigate to the project directory:
    ```sh
@@ -75,4 +78,3 @@ Graphic version (all provided in the installer script):
 **⭐ Star this repo if you liked it! ⭐**
 
 ---
-
