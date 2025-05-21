@@ -12,7 +12,7 @@
 #define EXIT_ERROR 84
 
 #define MAX_ROBOTS 1023
-#define MAX_CYCLES 4'733'960
+#define MAX_CYCLES 4733960
 
 corewar_data_t *check_args(int argc, const char **argv, corewar_data_t *data);
 robot_info_t  **distribute_robots(robot_info_t **robots, byte2_t robot_count);

@@ -573,7 +573,7 @@ page_2:
     mvwprintw(wd, champions_offset + 2, 2,
               "RIGHT\tCycle right through champions");
     mvwprintw(wd, champions_offset + 3, 2, "M\tShow decompiled code");
-    mvwprintw(wd, champions_offset + 3, 2, "K\tKill robot");
+    mvwprintw(wd, champions_offset + 4, 2, "K\tKill robot");
 
     // processes help
     int processes_offset = champions_offset + 6;
@@ -582,9 +582,10 @@ page_2:
     wattroff(wd, A_UNDERLINE);
     mvwprintw(wd, processes_offset + 1, 2, "DOWN\tMove down in processes");
     mvwprintw(wd, processes_offset + 2, 2, "UP\tMove up in processes");
+    mvwprintw(wd, processes_offset + 3, 2, "I\tDisplay instructions list");
 
     // decompiled menu
-    int decompiled_offset = processes_offset + 4;
+    int decompiled_offset = processes_offset + 5;
     wattron(wd, A_UNDERLINE);
     mvwprintw(wd, decompiled_offset, 2, "Decompiled menu:");
     wattroff(wd, A_UNDERLINE);
@@ -625,9 +626,46 @@ events:
     delwin(wd);
 }
 
+void update_instruction_help()
+{
+    WINDOW *wd = newwin(LINES * 5 / 8, COLS >> 2, LINES * 1 / 5, 0);
+
+    werase(wd);
+
+    box(wd, ACS_VLINE, ACS_HLINE);
+
+    mvwprintw(wd, 0, 4, "Instructions");
+
+    wattron(wd, A_UNDERLINE);
+    mvwprintw(wd, 2, 2, "OP Name  -> Parameters");
+    wattroff(wd, A_UNDERLINE);
+
+    mvwprintw(wd, 3, 2, "0  NONE  -> None");
+    mvwprintw(wd, 4, 2, "1  LIVE  -> Dir");
+    mvwprintw(wd, 5, 2, "2  LD    -> Dir/Ind - Reg");
+    mvwprintw(wd, 6, 2, "3  ST    -> Reg - Ind/Reg");
+    mvwprintw(wd, 7, 2, "4  ADD   -> Reg - Reg - Reg");
+    mvwprintw(wd, 8, 2, "5  SUB   -> Reg - Reg - Reg");
+    mvwprintw(wd, 9, 2, "6  AND   -> Any - Any - Reg");
+    mvwprintw(wd, 10, 2, "7  OR    -> Any - Any - Reg");
+    mvwprintw(wd, 11, 2, "8  XOR   -> Any - Any - Reg");
+    mvwprintw(wd, 12, 2, "9  ZJMP  -> Dir");
+    mvwprintw(wd, 13, 2, "A  LDI   -> Any - Dir/Ind - Reg");
+    mvwprintw(wd, 14, 2, "B  STI   -> Reg - Any - Dir/Reg");
+    mvwprintw(wd, 15, 2, "C  FORK  -> Dir");
+    mvwprintw(wd, 16, 2, "D  LLD   -> Dir/Ind - Reg");
+    mvwprintw(wd, 17, 2, "E  LLDI  -> Any - Dir/Reg - Reg");
+    mvwprintw(wd, 18, 2, "F  LFORK -> Dir");
+    mvwprintw(wd, 19, 2, "10 AFF   -> Reg");
+
+    wnoutrefresh(wd);
+    delwin(wd);
+}
+
 // top -> process number and robot
 // some stats/info
 // what to change (with numbers to use) [signals]
+// on the side -> instruction list
 void update_process_menu_window(arena_t *arena, bool paused)
 {
     if (paused)
@@ -635,9 +673,13 @@ void update_process_menu_window(arena_t *arena, bool paused)
         WINDOW *wd = newwin(LINES >> 1, COLS >> 1, LINES >> 2, COLS >> 2);
         werase(wd);
         wnoutrefresh(wd);
+        delwin(wd);
     }
     if (!jungle->process_menu)
         return;
+
+    if (jungle->instructions_help)
+        update_instruction_help();
 
     WINDOW *wd = newwin(LINES >> 1, COLS >> 1, LINES >> 2, COLS >> 2);
 
@@ -866,7 +908,7 @@ static void handle_cycling_speed(int key)
         jungle->cycling_speed++;
 }
 
-static void handle_process_change(int key, arena_t *arena)
+static void handle_process_menu_events(int key, arena_t *arena)
 {
     if (key == KEY_LEFT)
     {
@@ -878,6 +920,21 @@ static void handle_process_change(int key, arena_t *arena)
         jungle->current_process++;
     if (jungle->current_process >= arena->process_count)
         jungle->current_process = 0;
+
+    if (key == 'i')
+        jungle->instructions_help = !jungle->instructions_help;
+
+    jungle->signal = NO_SIGNAL;
+    if (key == '1')
+        jungle->signal = SKIP;
+    if (key == '2')
+        jungle->signal = KILL;
+    if (key == '3')
+        jungle->signal = CARRY;
+    if (key == '4')
+        jungle->signal = REVIVE;
+    if (key == '5')
+        jungle->signal = FORK_SIG;
 }
 
 static void handle_events(corewar_data_t *data, arena_t *arena)
@@ -921,7 +978,7 @@ static void handle_events(corewar_data_t *data, arena_t *arena)
                 mvwprintw(jungle->arena, getmaxy(jungle->arena) / 2 - 1,
                           getmaxx(jungle->arena) / 2 - 32, "GAME PAUSED");
                 wnoutrefresh(wd);
-                handle_process_change(key, arena);
+                handle_process_menu_events(key, arena);
                 update_process_menu_window(arena, false);
             }
             if (key == 'p')
@@ -1038,19 +1095,7 @@ console:
     return;
 
 process_menu:
-    handle_process_change(key, arena);
-
-    jungle->signal = NO_SIGNAL;
-    if (key == '1')
-        jungle->signal = SKIP;
-    if (key == '2')
-        jungle->signal = KILL;
-    if (key == '3')
-        jungle->signal = CARRY;
-    if (key == '4')
-        jungle->signal = REVIVE;
-    if (key == '5')
-        jungle->signal = FORK_SIG;
+    handle_process_menu_events(key, arena);
     return;
 
 source_code:

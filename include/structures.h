@@ -136,6 +136,7 @@ typedef struct windows_jungle_s
     bool     fullscreen_arena;
     bool     source_code;
     bool     dump_decompiled;
+    bool     instructions_help;
 } windows_jungle_t;
 
 typedef struct PACKED corewar_data_s
