@@ -74,10 +74,6 @@ Graphic version:
    ```sh
    make
    ```
-4. For the graphic version:
-   ```sh
-   make bonus
-   ```
 ---
 
 ## **Usage**
